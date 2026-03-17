@@ -1,0 +1,42 @@
+---
+# Integration test for auth_method_oci
+
+- name: Test auth_method_oci module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create auth_method_oci
+      auth_method_oci:
+        state: present
+        group_ocid: "test_value"
+        name: "test_value"
+        tenant_ocid: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create auth_method_oci (idempotent)
+      auth_method_oci:
+        state: present
+        group_ocid: "test_value"
+        name: "test_value"
+        tenant_ocid: "test_value"
+      register: idempotent_result
+
+    - name: Delete auth_method_oci
+      auth_method_oci:
+        state: absent
+        group_ocid: "test_value"
+        name: "test_value"
+        tenant_ocid: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

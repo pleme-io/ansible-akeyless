@@ -1,0 +1,51 @@
+---
+# Integration test for target_godaddy
+
+- name: Test target_godaddy module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create target_godaddy
+      target_godaddy:
+        state: present
+        api_key: "test_value"
+        imap_fqdn: "test_value"
+        imap_password: "test_value"
+        imap_username: "test_value"
+        name: "test_value"
+        secret: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create target_godaddy (idempotent)
+      target_godaddy:
+        state: present
+        api_key: "test_value"
+        imap_fqdn: "test_value"
+        imap_password: "test_value"
+        imap_username: "test_value"
+        name: "test_value"
+        secret: "test_value"
+      register: idempotent_result
+
+    - name: Delete target_godaddy
+      target_godaddy:
+        state: absent
+        api_key: "test_value"
+        imap_fqdn: "test_value"
+        imap_password: "test_value"
+        imap_username: "test_value"
+        name: "test_value"
+        secret: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

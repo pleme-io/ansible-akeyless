@@ -1,0 +1,39 @@
+---
+# Integration test for static_secret
+
+- name: Test static_secret module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create static_secret
+      static_secret:
+        state: present
+        name: "test_value"
+        value: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create static_secret (idempotent)
+      static_secret:
+        state: present
+        name: "test_value"
+        value: "test_value"
+      register: idempotent_result
+
+    - name: Delete static_secret
+      static_secret:
+        state: absent
+        name: "test_value"
+        value: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

@@ -1,0 +1,288 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright: (c) 2026, pleme-io
+# MIT License
+
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
+DOCUMENTATION = r'''
+---
+module: pki_cert_issuer
+short_description: Manages a PKI certificate issuer
+description:
+  - Manage pki_cert_issuer resources.
+options:
+    state:
+      description: Whether the resource should be present or absent.
+      type: str
+      choices: ["present", "absent"]
+      default: present
+    allow_any_name:
+      description: "If set, clients can request certificates for any CN"
+      type: bool
+    allow_copy_ext_from_csr:
+      description: "Allow copying extra extensions from CSR"
+      type: bool
+    allow_subdomains:
+      description: "Allow certificates for subdomains of allowed domains"
+      type: bool
+    allowed_domains:
+      description: "Comma-delimited list of allowed domains"
+      type: str
+    allowed_extra_extensions:
+      description: "JSON string of allowed extra extensions"
+      type: str
+    allowed_ip_sans:
+      description: "Comma-delimited list of allowed CIDRs for IP SANs"
+      type: str
+    allowed_uri_sans:
+      description: "Comma-delimited list of allowed URIs for URI SANs"
+      type: str
+    auto_renew:
+      description: "Automatically renew certificates before expiration"
+      type: bool
+    ca_target:
+      description: "Name of existing CA target (required in Public CA mode)"
+      type: str
+    client_flag:
+      description: "Flag certificates for client auth use"
+      type: bool
+    code_signing_flag:
+      description: "Flag certificates for code signing use"
+      type: bool
+    country:
+      description: "Comma-separated list of countries for issued certificate"
+      type: str
+    create_private_crl:
+      description: "Expose CRL endpoint in Gateway"
+      type: bool
+    create_private_ocsp:
+      description: "Expose private OCSP endpoint"
+      type: bool
+    create_public_crl:
+      description: "Expose public CRL endpoint"
+      type: bool
+    create_public_ocsp:
+      description: "Expose public OCSP endpoint"
+      type: bool
+    critical_key_usage:
+      description: "Mark key usage as critical"
+      type: str
+    delete_protection:
+      description: "Enable delete protection"
+      type: bool
+    description:
+      description: "Description of the object"
+      type: str
+    destination_path:
+      description: "Destination path for generated certificates"
+      type: str
+    disable_wildcards:
+      description: "Disable wildcard certificates"
+      type: bool
+    enable_acme:
+      description: "Enable ACME protocol"
+      type: bool
+    expiration_event_in:
+      description: "How many days before the expiration of the certificate would you like to be notified."
+      type: list
+      elements: str
+    gw_cluster_url:
+      description: "Gateway cluster URL"
+      type: str
+    is_ca:
+      description: "If set, the basic constraints is-ca flag is set"
+      type: bool
+    key_usage:
+      description: "Key usage: DigitalSignature, KeyAgreement, KeyEncipherment"
+      type: str
+    locality:
+      description: "Locality for issued certificate"
+      type: str
+    max_path_len:
+      description: "Maximum path length for CA certificates"
+      type: int
+    name:
+      description: "PKI certificate issuer name"
+      type: str
+      required: true
+    not_enforce_hostnames:
+      description: "Do not enforce hostnames"
+      type: bool
+    not_require_cn:
+      description: "Do not require common name"
+      type: bool
+    ocsp_ttl:
+      description: "OCSP response TTL"
+      type: str
+    organizational_units:
+      description: "Organizational units for issued certificate"
+      type: str
+    organizations:
+      description: "Organization for issued certificate"
+      type: str
+    postal_code:
+      description: "Postal code for issued certificate"
+      type: str
+    protect_certificates:
+      description: "Protect generated certificates"
+      type: bool
+    province:
+      description: "Province for issued certificate"
+      type: str
+    scheduled_renew:
+      description: "Number of days before expiration to renew certificates"
+      type: int
+    server_flag:
+      description: "Flag certificates for server auth use"
+      type: bool
+    signer_key_name:
+      description: "Key to sign certificates with"
+      type: str
+    street_address:
+      description: "Street address for issued certificate"
+      type: str
+    tag:
+      description: "Tags for the PKI cert issuer"
+      type: list
+      elements: str
+    ttl:
+      description: "Certificate TTL"
+      type: str
+      required: true
+'''
+
+EXAMPLES = r'''
+- name: Create pki_cert_issuer
+  pki_cert_issuer:
+    state: present
+
+- name: Delete pki_cert_issuer
+  pki_cert_issuer:
+    state: absent
+'''
+
+RETURN = r'''
+# No computed fields
+'''
+
+from ansible.module_utils.basic import AnsibleModule
+
+
+def create_resource(module):
+    """Create the resource."""
+    try:
+        # TODO: implement API call
+        module.exit_json(changed=True, msg="pki_cert_issuer created")
+    except Exception as e:
+        module.fail_json(msg="Failed to create pki_cert_issuer: %s" % str(e))
+
+
+def update_resource(module):
+    """Update the resource."""
+    # WARNING: The following fields are immutable after creation.
+    #   - name
+    #   - signer_key_name
+    # Changing them requires destroy + recreate.
+
+    try:
+        # TODO: implement API call
+        module.exit_json(changed=True, msg="pki_cert_issuer updated")
+    except Exception as e:
+        module.fail_json(msg="Failed to update pki_cert_issuer: %s" % str(e))
+
+
+def delete_resource(module):
+    """Delete the resource."""
+    try:
+        # TODO: implement API call
+        module.exit_json(changed=True, msg="pki_cert_issuer deleted")
+    except Exception as e:
+        module.fail_json(msg="Failed to delete pki_cert_issuer: %s" % str(e))
+
+
+def read_resource(module):
+    """Read the current state of the resource."""
+    try:
+        # TODO: implement API call
+        return None
+    except Exception as e:
+        module.fail_json(msg="Failed to read pki_cert_issuer: %s" % str(e))
+
+
+def main():
+    argument_spec = {
+        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+        'allow_any_name': {'type': 'bool'},
+        'allow_copy_ext_from_csr': {'type': 'bool'},
+        'allow_subdomains': {'type': 'bool'},
+        'allowed_domains': {'type': 'str'},
+        'allowed_extra_extensions': {'type': 'str'},
+        'allowed_ip_sans': {'type': 'str'},
+        'allowed_uri_sans': {'type': 'str'},
+        'auto_renew': {'type': 'bool'},
+        'ca_target': {'type': 'str'},
+        'client_flag': {'type': 'bool'},
+        'code_signing_flag': {'type': 'bool'},
+        'country': {'type': 'str'},
+        'create_private_crl': {'type': 'bool'},
+        'create_private_ocsp': {'type': 'bool'},
+        'create_public_crl': {'type': 'bool'},
+        'create_public_ocsp': {'type': 'bool'},
+        'critical_key_usage': {'type': 'str'},
+        'delete_protection': {'type': 'bool'},
+        'description': {'type': 'str'},
+        'destination_path': {'type': 'str'},
+        'disable_wildcards': {'type': 'bool'},
+        'enable_acme': {'type': 'bool'},
+        'expiration_event_in': {'type': 'list', 'elements': 'str'},
+        'gw_cluster_url': {'type': 'str'},
+        'is_ca': {'type': 'bool'},
+        'key_usage': {'type': 'str'},
+        'locality': {'type': 'str'},
+        'max_path_len': {'type': 'int'},
+        'name': {'type': 'str', 'required': True},
+        'not_enforce_hostnames': {'type': 'bool'},
+        'not_require_cn': {'type': 'bool'},
+        'ocsp_ttl': {'type': 'str'},
+        'organizational_units': {'type': 'str'},
+        'organizations': {'type': 'str'},
+        'postal_code': {'type': 'str'},
+        'protect_certificates': {'type': 'bool'},
+        'province': {'type': 'str'},
+        'scheduled_renew': {'type': 'int'},
+        'server_flag': {'type': 'bool'},
+        'signer_key_name': {'type': 'str'},
+        'street_address': {'type': 'str'},
+        'tag': {'type': 'list', 'elements': 'str'},
+        'ttl': {'type': 'str', 'required': True},
+    }
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+    )
+
+    state = module.params.get('state', 'present')
+    current = read_resource(module)
+
+    if module.check_mode:
+        module.exit_json(changed=(current is None and state == 'present')
+                         or (current is not None and state == 'absent'))
+
+    if state == 'absent':
+        if current is not None:
+            delete_resource(module)
+        else:
+            module.exit_json(changed=False, msg="pki_cert_issuer already absent")
+    else:
+        if current is None:
+            create_resource(module)
+        else:
+            update_resource(module)
+
+
+if __name__ == '__main__':
+    main()

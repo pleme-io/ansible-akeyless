@@ -1,0 +1,51 @@
+---
+# Integration test for target_globalsign
+
+- name: Test target_globalsign module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create target_globalsign
+      target_globalsign:
+        state: present
+        contact_email: "test_value"
+        contact_first_name: "test_value"
+        contact_last_name: "test_value"
+        contact_phone: "test_value"
+        name: "test_value"
+        profile_id: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create target_globalsign (idempotent)
+      target_globalsign:
+        state: present
+        contact_email: "test_value"
+        contact_first_name: "test_value"
+        contact_last_name: "test_value"
+        contact_phone: "test_value"
+        name: "test_value"
+        profile_id: "test_value"
+      register: idempotent_result
+
+    - name: Delete target_globalsign
+      target_globalsign:
+        state: absent
+        contact_email: "test_value"
+        contact_first_name: "test_value"
+        contact_last_name: "test_value"
+        contact_phone: "test_value"
+        name: "test_value"
+        profile_id: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

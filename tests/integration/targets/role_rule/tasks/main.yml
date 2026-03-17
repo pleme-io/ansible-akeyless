@@ -1,0 +1,42 @@
+---
+# Integration test for role_rule
+
+- name: Test role_rule module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create role_rule
+      role_rule:
+        state: present
+        capability: "test_value"
+        path: "test_value"
+        role_name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create role_rule (idempotent)
+      role_rule:
+        state: present
+        capability: "test_value"
+        path: "test_value"
+        role_name: "test_value"
+      register: idempotent_result
+
+    - name: Delete role_rule
+      role_rule:
+        state: absent
+        capability: "test_value"
+        path: "test_value"
+        role_name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

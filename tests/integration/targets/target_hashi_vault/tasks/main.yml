@@ -1,0 +1,36 @@
+---
+# Integration test for target_hashi_vault
+
+- name: Test target_hashi_vault module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create target_hashi_vault
+      target_hashi_vault:
+        state: present
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create target_hashi_vault (idempotent)
+      target_hashi_vault:
+        state: present
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete target_hashi_vault
+      target_hashi_vault:
+        state: absent
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

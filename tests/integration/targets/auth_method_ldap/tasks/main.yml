@@ -1,0 +1,36 @@
+---
+# Integration test for auth_method_ldap
+
+- name: Test auth_method_ldap module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create auth_method_ldap
+      auth_method_ldap:
+        state: present
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create auth_method_ldap (idempotent)
+      auth_method_ldap:
+        state: present
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete auth_method_ldap
+      auth_method_ldap:
+        state: absent
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

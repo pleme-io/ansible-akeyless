@@ -1,0 +1,48 @@
+---
+# Integration test for target_zerossl
+
+- name: Test target_zerossl module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create target_zerossl
+      target_zerossl:
+        state: present
+        api_key: "test_value"
+        imap_fqdn: "test_value"
+        imap_password: "test_value"
+        imap_username: "test_value"
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create target_zerossl (idempotent)
+      target_zerossl:
+        state: present
+        api_key: "test_value"
+        imap_fqdn: "test_value"
+        imap_password: "test_value"
+        imap_username: "test_value"
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete target_zerossl
+      target_zerossl:
+        state: absent
+        api_key: "test_value"
+        imap_fqdn: "test_value"
+        imap_password: "test_value"
+        imap_username: "test_value"
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

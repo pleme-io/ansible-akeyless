@@ -1,0 +1,39 @@
+---
+# Integration test for classic_key
+
+- name: Test classic_key module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create classic_key
+      classic_key:
+        state: present
+        alg: "test_value"
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create classic_key (idempotent)
+      classic_key:
+        state: present
+        alg: "test_value"
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete classic_key
+      classic_key:
+        state: absent
+        alg: "test_value"
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed
