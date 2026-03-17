@@ -1,0 +1,42 @@
+---
+# Integration test for dynamic_secret_custom
+
+- name: Test dynamic_secret_custom module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create dynamic_secret_custom
+      dynamic_secret_custom:
+        state: present
+        create_sync_url: "test_value"
+        name: "test_value"
+        revoke_sync_url: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create dynamic_secret_custom (idempotent)
+      dynamic_secret_custom:
+        state: present
+        create_sync_url: "test_value"
+        name: "test_value"
+        revoke_sync_url: "test_value"
+      register: idempotent_result
+
+    - name: Delete dynamic_secret_custom
+      dynamic_secret_custom:
+        state: absent
+        create_sync_url: "test_value"
+        name: "test_value"
+        revoke_sync_url: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

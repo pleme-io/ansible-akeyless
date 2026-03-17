@@ -1,0 +1,39 @@
+---
+# Integration test for auth_method_aws_iam
+
+- name: Test auth_method_aws_iam module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create auth_method_aws_iam
+      auth_method_aws_iam:
+        state: present
+        bound_aws_account_id: "test_value"
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create auth_method_aws_iam (idempotent)
+      auth_method_aws_iam:
+        state: present
+        bound_aws_account_id: "test_value"
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete auth_method_aws_iam
+      auth_method_aws_iam:
+        state: absent
+        bound_aws_account_id: "test_value"
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

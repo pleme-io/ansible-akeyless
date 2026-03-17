@@ -1,0 +1,42 @@
+---
+# Integration test for target_globalsign_atlas
+
+- name: Test target_globalsign_atlas module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create target_globalsign_atlas
+      target_globalsign_atlas:
+        state: present
+        api_key: "test_value"
+        api_secret: "test_value"
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create target_globalsign_atlas (idempotent)
+      target_globalsign_atlas:
+        state: present
+        api_key: "test_value"
+        api_secret: "test_value"
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete target_globalsign_atlas
+      target_globalsign_atlas:
+        state: absent
+        api_key: "test_value"
+        api_secret: "test_value"
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

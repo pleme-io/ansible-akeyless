@@ -1,0 +1,39 @@
+---
+# Integration test for auth_method_oauth2
+
+- name: Test auth_method_oauth2 module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create auth_method_oauth2
+      auth_method_oauth2:
+        state: present
+        name: "test_value"
+        unique_identifier: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create auth_method_oauth2 (idempotent)
+      auth_method_oauth2:
+        state: present
+        name: "test_value"
+        unique_identifier: "test_value"
+      register: idempotent_result
+
+    - name: Delete auth_method_oauth2
+      auth_method_oauth2:
+        state: absent
+        name: "test_value"
+        unique_identifier: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

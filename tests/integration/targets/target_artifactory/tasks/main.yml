@@ -1,0 +1,45 @@
+---
+# Integration test for target_artifactory
+
+- name: Test target_artifactory module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create target_artifactory
+      target_artifactory:
+        state: present
+        artifactory_admin_name: "test_value"
+        artifactory_admin_pwd: "test_value"
+        base_url: "test_value"
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create target_artifactory (idempotent)
+      target_artifactory:
+        state: present
+        artifactory_admin_name: "test_value"
+        artifactory_admin_pwd: "test_value"
+        base_url: "test_value"
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete target_artifactory
+      target_artifactory:
+        state: absent
+        artifactory_admin_name: "test_value"
+        artifactory_admin_pwd: "test_value"
+        base_url: "test_value"
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

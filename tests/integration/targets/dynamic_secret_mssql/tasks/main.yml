@@ -1,0 +1,36 @@
+---
+# Integration test for dynamic_secret_mssql
+
+- name: Test dynamic_secret_mssql module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create dynamic_secret_mssql
+      dynamic_secret_mssql:
+        state: present
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create dynamic_secret_mssql (idempotent)
+      dynamic_secret_mssql:
+        state: present
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete dynamic_secret_mssql
+      dynamic_secret_mssql:
+        state: absent
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed
