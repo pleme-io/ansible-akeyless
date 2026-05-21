@@ -4,16 +4,18 @@ name: release
 #   - A pushed annotated tag of the form `vX.Y.Z`
 #   - Manual workflow_dispatch (specify version in the input)
 #
+# All build / test / publish logic lives in flake.nix as Nix apps; this
+# workflow is a thin orchestrator. The shape mirrors substrate's canonical
+# pattern (see substrate/lib/infra/ansible-collection.nix).
+#
 # Pipeline:
-#   1. Check out the tagged commit (or the branch for dispatch).
-#   2. Install ansible-core + akeyless SDK + test deps.
-#   3. Run the same gate suite CI runs: sanity smoke + unit + OpenAPI matrix.
-#   4. Resolve the version from the tag (or input).
-#   5. Build the Galaxy tarball via scripts/release.sh.
-#   6. If the ANSIBLE_GALAXY_API_KEY repo secret is set, publish to
-#      galaxy.ansible.com. If not, this step is a no-op -- the tarball
-#      still gets attached to the GitHub Release.
-#   7. Cut a GitHub Release with the tarball + sha256 attached.
+#   1. Check out the tagged commit
+#   2. Install Nix
+#   3. `nix flake check`        — runs smoke + unit + openapi derivations
+#   4. `nix run .#build`        — produces the Galaxy tarball
+#   5. `nix run .#publish`      — publishes if ANSIBLE_GALAXY_TOKEN is set;
+#                                 short-circuits otherwise
+#   6. Attach the tarball to a GitHub Release
 
 on:
   push:
@@ -22,32 +24,28 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g. 0.3.0)'
-        required: true
+        description: 'Version to publish (e.g. 0.3.0); informational only — galaxy.yml is the source of truth'
+        required: false
         type: string
 
 permissions:
   contents: write   # required to create the GitHub Release
 
 jobs:
-  build_and_publish:
-    name: build + publish
+  release:
+    name: release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
 
-      - name: Install Python deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install 'ansible-core>=2.14' pytest jsonschema pyyaml 'akeyless>=5.0.22'
+      - name: Cache Nix store
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Fetch upstream OpenAPI spec
+      - name: Fetch upstream OpenAPI spec for coverage matrix
         run: |
           mkdir -p tests/openapi
           curl -fsSL \
@@ -55,54 +53,33 @@ jobs:
             -o tests/openapi/openapi.yaml
           echo "AKEYLESS_OPENAPI_YAML=$(pwd)/tests/openapi/openapi.yaml" >> "$GITHUB_ENV"
 
-      - name: Run sanity smoke test
-        run: python3 tests/sanity/smoke.py
-
-      - name: Run unit tests
-        run: pytest tests/unit/ -v
-
-      - name: Run OpenAPI coverage matrix
-        run: pytest tests/openapi/ -v
-
-      - name: Resolve version
-        id: version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            v="${{ github.event.inputs.version }}"
-          else
-            v="${GITHUB_REF#refs/tags/v}"
-          fi
-          echo "version=${v}" >> "$GITHUB_OUTPUT"
-          echo "Resolved version: ${v}"
+      - name: Run all flake checks (smoke + unit + openapi)
+        run: nix flake check --no-warn-dirty
 
       - name: Build collection tarball
-        env:
-          VERSION: ${{ steps.version.outputs.version }}
-        run: ./scripts/release.sh build
+        run: nix run --no-warn-dirty .#build
 
       - name: Publish to Ansible Galaxy
-        # Only runs when the API key secret has been provisioned. Until the
-        # user configures it, this step short-circuits and the tarball is
-        # still attached to the GitHub Release. GitHub Actions doesn't allow
-        # referencing `secrets.*` in an `if:` directly, so we materialize the
-        # secret into an env var on a preceding step and gate on its presence.
+        # The substrate publish app exits 1 if ANSIBLE_GALAXY_TOKEN is unset;
+        # we gate the step on the secret so unconfigured repos pass cleanly
+        # and the tarball still ships via the GitHub Release.
         env:
-          VERSION: ${{ steps.version.outputs.version }}
-          ANSIBLE_GALAXY_API_KEY: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
+          ANSIBLE_GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
         run: |
-          if [ -z "${ANSIBLE_GALAXY_API_KEY}" ]; then
-            echo "[release] ANSIBLE_GALAXY_API_KEY not set -- skipping Galaxy publish."
-            echo "[release] To enable, add the secret in repo Settings > Secrets and variables > Actions."
+          if [ -z "${ANSIBLE_GALAXY_TOKEN}" ]; then
+            echo "ANSIBLE_GALAXY_TOKEN not set — skipping Galaxy publish."
+            echo "Add the secret in Settings > Secrets and variables > Actions to enable."
             exit 0
           fi
-          ./scripts/release.sh publish
+          nix run --no-warn-dirty .#publish
+
+      - name: Compute SHA-256 of tarball
+        run: sha256sum akeyless-akeyless-*.tar.gz | tee akeyless-akeyless.sha256
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "v${{ steps.version.outputs.version }}"
-          tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            ./akeyless-akeyless-*.tar.gz
-            ./akeyless-akeyless-*.tar.gz.sha256
+            akeyless-akeyless-*.tar.gz
+            akeyless-akeyless.sha256
