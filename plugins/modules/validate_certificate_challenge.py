@@ -1,0 +1,79 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Copyright: (c) 2026, pleme-io
+# MIT License
+
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
+DOCUMENTATION = r'''
+---
+module: validate_certificate_challenge
+short_description: Validate HTTP-01 challenge and finalize certificate issuance
+description:
+  - Validate HTTP-01 challenge and finalize certificate issuance
+options:
+    Result:
+      description: ""
+      type: dict
+    cert_display_id:
+      description: "Certificate display ID from Phase 1"
+      type: str
+    name:
+      description: "Certificate name (alternative to cert-display-id)"
+      type: str
+    timeout:
+      description: "Validation timeout in seconds (default: 120)"
+      type: int
+'''
+
+EXAMPLES = r'''
+- name: Run validate_certificate_challenge
+  validate_certificate_challenge:
+  register: result
+'''
+
+RETURN = r'''
+result:
+  description: "Raw result of the action call"
+  type: dict
+  returned: success
+'''
+
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.akeyless.akeyless.plugins.module_utils.akeyless_client import (
+    get_client, call_api, build_body,
+)
+
+
+def run_action(module, client, token):
+    """Invoke the action and return the SDK response."""
+    body = build_body("ValidateCertificateChallenge", dict(module.params, token=token))
+    return call_api(module, client, "validate_certificate_challenge", body)
+
+
+def main():
+    argument_spec = {
+        'Result': {'type': 'dict'},
+        'cert_display_id': {'type': 'str'},
+        'name': {'type': 'str'},
+        'timeout': {'type': 'int'},
+        'gateway_url': {'type': 'str'},
+        'access_id': {'type': 'str'},
+        'access_key': {'type': 'str', 'no_log': True},
+        'access_type': {'type': 'str', 'default': 'access_key'},
+    }
+
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
+
+    client, token = get_client(module)
+    result = run_action(module, client, token)
+    # Mask sensitive response fields before echoing back to the user.
+    _sensitive = {'cert'}
+    masked = { k: ('***' if k in _sensitive else v) for k, v in (result or {}).items() }
+    module.exit_json(changed=True, result=masked)
+
+
+if __name__ == '__main__':
+    main()

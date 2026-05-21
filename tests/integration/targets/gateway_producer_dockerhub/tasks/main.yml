@@ -1,0 +1,36 @@
+---
+# Integration test for gateway_producer_dockerhub
+
+- name: Test gateway_producer_dockerhub module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create gateway_producer_dockerhub
+      gateway_producer_dockerhub:
+        state: present
+        name: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create gateway_producer_dockerhub (idempotent)
+      gateway_producer_dockerhub:
+        state: present
+        name: "test_value"
+      register: idempotent_result
+
+    - name: Delete gateway_producer_dockerhub
+      gateway_producer_dockerhub:
+        state: absent
+        name: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

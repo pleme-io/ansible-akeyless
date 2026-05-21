@@ -60,46 +60,38 @@ RETURN = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.akeyless.akeyless.plugins.module_utils.akeyless_client import (
+    get_client, call_api, build_body,
+)
 
 
-def create_resource(module):
+def create_resource(module, client, token):
     """Create the resource."""
-    try:
-        # TODO: implement API call
-        module.exit_json(changed=True, msg="target_gitlab created")
-    except Exception as e:
-        module.fail_json(msg="Failed to create target_gitlab: %s" % str(e))
+    body = build_body("TargetCreateGitlab", dict(module.params, token=token))
+    return call_api(module, client, "target_create_gitlab", body)
 
 
-def update_resource(module):
+def update_resource(module, client, token):
     """Update the resource."""
     # WARNING: The following fields are immutable after creation.
     #   - name
     # Changing them requires destroy + recreate.
 
-    try:
-        # TODO: implement API call
-        module.exit_json(changed=True, msg="target_gitlab updated")
-    except Exception as e:
-        module.fail_json(msg="Failed to update target_gitlab: %s" % str(e))
+    # TODO(phase-1b): use read_mapping for honest diff
+    body = build_body("TargetUpdateGitlab", dict(module.params, token=token))
+    return call_api(module, client, "target_update_gitlab", body)
 
 
-def delete_resource(module):
+def delete_resource(module, client, token):
     """Delete the resource."""
-    try:
-        # TODO: implement API call
-        module.exit_json(changed=True, msg="target_gitlab deleted")
-    except Exception as e:
-        module.fail_json(msg="Failed to delete target_gitlab: %s" % str(e))
+    body = build_body("TargetDelete", dict(module.params, token=token))
+    return call_api(module, client, "target_delete", body)
 
 
-def read_resource(module):
-    """Read the current state of the resource."""
-    try:
-        # TODO: implement API call
-        return None
-    except Exception as e:
-        module.fail_json(msg="Failed to read target_gitlab: %s" % str(e))
+def read_resource(module, client, token):
+    """Read the current state of the resource. Returns None if absent."""
+    body = build_body("TargetGet", {"name": module.params.get("name"), "token": token})
+    return call_api(module, client, "target_get", body, swallow_404=True)
 
 
 def main():
@@ -112,6 +104,10 @@ def main():
         'key': {'type': 'str'},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
+        'gateway_url': {'type': 'str'},
+        'access_id': {'type': 'str'},
+        'access_key': {'type': 'str', 'no_log': True},
+        'access_type': {'type': 'str', 'default': 'access_key'},
     }
 
     module = AnsibleModule(
@@ -119,23 +115,25 @@ def main():
         supports_check_mode=True,
     )
 
+    client, token = get_client(module)
     state = module.params.get('state', 'present')
-    current = read_resource(module)
+    current = read_resource(module, client, token)
 
     if module.check_mode:
-        module.exit_json(changed=(current is None and state == 'present')
-                         or (current is not None and state == 'absent'))
+        changed = (current is None and state == 'present') or (current is not None and state == 'absent')
+        module.exit_json(changed=changed)
 
     if state == 'absent':
         if current is not None:
-            delete_resource(module)
-        else:
-            module.exit_json(changed=False, msg="target_gitlab already absent")
+            result = delete_resource(module, client, token)
+            module.exit_json(changed=True, result=result)
+        module.exit_json(changed=False, msg="target_gitlab already absent")
     else:
         if current is None:
-            create_resource(module)
-        else:
-            update_resource(module)
+            result = create_resource(module, client, token)
+            module.exit_json(changed=True, result=result)
+        result = update_resource(module, client, token)
+        module.exit_json(changed=True, result=result)
 
 
 if __name__ == '__main__':
