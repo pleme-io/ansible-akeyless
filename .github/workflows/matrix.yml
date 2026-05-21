@@ -63,7 +63,7 @@ jobs:
         run: |
           mkdir -p tests/openapi
           curl -fsSL \
-            https://raw.githubusercontent.com/akeylesslabs/akeyless-go/main/api/openapi.yaml \
+            https://raw.githubusercontent.com/akeylesslabs/akeyless-go/master/api/openapi.yaml \
             -o tests/openapi/openapi.yaml
           echo "AKEYLESS_OPENAPI_YAML=$(pwd)/tests/openapi/openapi.yaml" >> "$GITHUB_ENV"
 
