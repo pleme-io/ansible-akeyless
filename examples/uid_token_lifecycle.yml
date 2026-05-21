@@ -1,0 +1,51 @@
+---
+# Universal Identity (UID) auth-method + token lifecycle.
+#
+# This is the PRM-1790 customer flow: an auth method whose identity is a
+# self-rotating token, useful for ephemeral workloads.
+
+- name: UID auth method + token lifecycle
+  hosts: localhost
+  gather_facts: false
+  collections: [akeyless.akeyless]
+  vars:
+    uid_am: /demo/auth_methods/uid_demo
+
+  tasks:
+    - name: Create the UID auth method
+      akeyless.akeyless.auth_method_universal_identity:
+        name: "{{ uid_am }}"
+        ttl: 3600
+        deny_inheritance: false
+        deny_rotate: false
+        state: present
+
+    - name: Generate a UID token
+      akeyless.akeyless.uid_generate_token:
+        auth_method_name: "{{ uid_am }}"
+      register: gen
+
+    - name: Show the generated token (will be ***-masked in the result)
+      ansible.builtin.debug:
+        var: gen.result
+
+    - name: Rotate the token (returns a new value + invalidates the old)
+      akeyless.akeyless.uid_rotate_token:
+        uid_token: "{{ gen.result.token | default('') }}"
+      register: rotated
+
+    - name: Mint a child token under the rotated parent
+      akeyless.akeyless.uid_create_child_token:
+        uid_token: "{{ rotated.result.token | default('') }}"
+        ttl: 600
+      register: child
+
+    - name: List children of the parent token
+      akeyless.akeyless.uid_list_children:
+        uid_token: "{{ rotated.result.token | default('') }}"
+      register: children
+
+    - name: Revoke the child
+      akeyless.akeyless.uid_revoke_token:
+        revoke_token: "{{ child.result.token | default('') }}"
+        revoke_type: revokeSelf

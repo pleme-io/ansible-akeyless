@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Akeyless API support
+    url: https://www.akeyless.io/contact-us/
+    about: For questions about the Akeyless API itself (not this collection), please contact Akeyless directly.
+  - name: Akeyless Python SDK issues
+    url: https://github.com/pleme-io/akeyless-python/issues
+    about: For bugs in the underlying akeyless Python SDK (which this collection wraps).
+  - name: Resource spec changes
+    url: https://github.com/pleme-io/akeyless-terraform-resources
+    about: To add or change a module, file the TOML spec change upstream here. Modules are auto-generated from this repo.

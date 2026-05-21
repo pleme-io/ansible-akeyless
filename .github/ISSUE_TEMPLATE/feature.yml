@@ -1,0 +1,41 @@
+name: Feature request
+description: A new module behaviour, helper improvement, example, or doc that isn't a missing API endpoint.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for behaviour changes to existing modules, helper additions, examples, or docs.
+        For a missing Akeyless API endpoint, use the **Missing endpoint** template instead.
+
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Use case
+      description: What are you trying to accomplish? Why doesn't the current surface fit?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Concrete description of the new behaviour, helper, example, or doc.
+    validations:
+      required: true
+
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Current workaround (if any)
+      description: How are you working around it today?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This is not a request for a new module wrapping an existing Akeyless API endpoint (those use the "Missing endpoint" template).
+          required: true
