@@ -1,85 +1,10 @@
 name: release
-
-# Triggered by:
-#   - A pushed annotated tag of the form `vX.Y.Z`
-#   - Manual workflow_dispatch (specify version in the input)
-#
-# All build / test / publish logic lives in flake.nix as Nix apps; this
-# workflow is a thin orchestrator. The shape mirrors substrate's canonical
-# pattern (see substrate/lib/infra/ansible-collection.nix).
-#
-# Pipeline:
-#   1. Check out the tagged commit
-#   2. Install Nix
-#   3. `nix flake check`        — runs smoke + unit + openapi derivations
-#   4. `nix run .#build`        — produces the Galaxy tarball
-#   5. `nix run .#publish`      — publishes if ANSIBLE_GALAXY_TOKEN is set;
-#                                 short-circuits otherwise
-#   6. Attach the tarball to a GitHub Release
-
 on:
   push:
-    tags:
-      - 'v*'
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to publish (e.g. 0.3.0); informational only — galaxy.yml is the source of truth'
-        required: false
-        type: string
-
-permissions:
-  contents: write   # required to create the GitHub Release
-
+    tags: ['v*']
+  workflow_dispatch: {}
 jobs:
   release:
-    name: release
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Nix
-        uses: DeterminateSystems/nix-installer-action@main
-
-      - name: Cache Nix store
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Fetch upstream OpenAPI spec for coverage matrix
-        run: |
-          mkdir -p tests/openapi
-          curl -fsSL \
-            https://raw.githubusercontent.com/akeylesslabs/akeyless-go/master/api/openapi.yaml \
-            -o tests/openapi/openapi.yaml
-          echo "AKEYLESS_OPENAPI_YAML=$(pwd)/tests/openapi/openapi.yaml" >> "$GITHUB_ENV"
-
-      - name: Run all flake checks (smoke + unit + openapi)
-        run: nix flake check --no-warn-dirty
-
-      - name: Build collection tarball
-        run: nix run --no-warn-dirty .#build
-
-      - name: Publish to Ansible Galaxy
-        # The substrate publish app exits 1 if ANSIBLE_GALAXY_TOKEN is unset;
-        # we gate the step on the secret so unconfigured repos pass cleanly
-        # and the tarball still ships via the GitHub Release.
-        env:
-          ANSIBLE_GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}
-        run: |
-          if [ -z "${ANSIBLE_GALAXY_TOKEN}" ]; then
-            echo "ANSIBLE_GALAXY_TOKEN not set — skipping Galaxy publish."
-            echo "Add the secret in Settings > Secrets and variables > Actions to enable."
-            exit 0
-          fi
-          nix run --no-warn-dirty .#publish
-
-      - name: Compute SHA-256 of tarball
-        run: sha256sum drzln0-akeyless-*.tar.gz | tee drzln0-akeyless.sha256
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          generate_release_notes: true
-          files: |
-            drzln0-akeyless-*.tar.gz
-            drzln0-akeyless.sha256
+    uses: pleme-io/substrate/.github/workflows/ansible-collection-release.yml@main
+    secrets:
+      ANSIBLE_GALAXY_TOKEN: ${{ secrets.ANSIBLE_GALAXY_TOKEN }}

@@ -1,0 +1,7 @@
+name: auto-bump
+on:
+  push:
+    branches: [main]
+jobs:
+  bump:
+    uses: pleme-io/substrate/.github/workflows/ansible-collection-auto-bump.yml@main

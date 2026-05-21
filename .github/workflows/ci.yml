@@ -1,33 +1,7 @@
 name: ci
-
-# Single-entry CI: the flake exposes three checks (smoke, unit, openapi)
-# and `nix flake check` runs them all. No shell glue in the repo.
-
 on: [push, pull_request]
-
 jobs:
   check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: DeterminateSystems/nix-installer-action@main
-      - uses: DeterminateSystems/magic-nix-cache-action@main
-
-      - name: Fetch upstream OpenAPI spec
-        run: |
-          mkdir -p tests/openapi
-          curl -fsSL \
-            https://raw.githubusercontent.com/akeylesslabs/akeyless-go/master/api/openapi.yaml \
-            -o tests/openapi/openapi.yaml
-          echo "AKEYLESS_OPENAPI_YAML=$(pwd)/tests/openapi/openapi.yaml" >> "$GITHUB_ENV"
-
-      - name: nix flake check
-        run: nix flake check --no-warn-dirty
-
-      - name: Upload OpenAPI coverage report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: openapi-coverage
-          path: tests/openapi/COVERAGE.md
+    uses: pleme-io/substrate/.github/workflows/ansible-collection-ci.yml@main
+    with:
+      openapi-spec-url: https://raw.githubusercontent.com/akeylesslabs/akeyless-go/master/api/openapi.yaml

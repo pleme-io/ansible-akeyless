@@ -1,0 +1,9 @@
+name: integration-live
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  live:
+    uses: pleme-io/substrate/.github/workflows/ansible-collection-integration-live.yml@main
