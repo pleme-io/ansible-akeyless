@@ -117,7 +117,7 @@ def main() -> int:
 
         source = p.read_text()
 
-        if "from ansible_collections.akeyless.akeyless.plugins.module_utils.akeyless_client" not in source:
+        if "from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client" not in source:
             failures.append(f"{fn}: missing akeyless_client import")
             continue
 

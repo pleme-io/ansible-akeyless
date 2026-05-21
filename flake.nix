@@ -1,5 +1,5 @@
 {
-  description = "akeyless.akeyless — auto-generated Ansible collection for Akeyless Vault";
+  description = "drzln0.akeyless — auto-generated Ansible collection for Akeyless Vault";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
@@ -14,7 +14,7 @@
         pkgs = import nixpkgs { inherit system; };
         ansibleCollection = import "${substrate}/lib/infra/ansible-collection.nix";
         base = ansibleCollection.mkAnsibleCollection pkgs {
-          namespace = "akeyless";
+          namespace = "drzln0";
           name = "akeyless";
           # version source of truth = galaxy.yml; bumped via `nix run .#bump`.
           version = "0.1.0";
@@ -74,7 +74,7 @@
           apps = base.apps // {
             release = {
               type = "app";
-              program = toString (pkgs.writeShellScript "akeyless-akeyless-release" ''
+              program = toString (pkgs.writeShellScript "drzln0-akeyless-release" ''
                 set -euo pipefail
                 ${pkgs.nix}/bin/nix flake check --no-warn-dirty
                 ${pkgs.nix}/bin/nix run .#build

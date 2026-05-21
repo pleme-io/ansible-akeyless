@@ -13,13 +13,13 @@
 - name: Demonstrate check mode
   hosts: localhost
   gather_facts: false
-  collections: [akeyless.akeyless]
+  collections: [drzln0.akeyless]
   vars:
     secret_path: /demo/check_mode_secret
 
   tasks:
     - name: Plan a create (no actual write in --check)
-      akeyless.akeyless.static_secret:
+      drzln0.akeyless.static_secret:
         name: "{{ secret_path }}"
         value: planned-value
         state: present
@@ -32,6 +32,6 @@
         success_msg: "Check-mode plan succeeded; no real write attempted."
 
     - name: Plan a delete (no actual delete in --check)
-      akeyless.akeyless.static_secret:
+      drzln0.akeyless.static_secret:
         name: "{{ secret_path }}"
         state: absent

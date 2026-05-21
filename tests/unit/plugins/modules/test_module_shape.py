@@ -22,7 +22,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[4]
 MODULES_DIR = REPO_ROOT / "plugins" / "modules"
 HELPER_IMPORT = (
-    "from ansible_collections.akeyless.akeyless.plugins.module_utils.akeyless_client"
+    "from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client"
 )
 HELPER_NAMES = {"get_client", "call_api", "build_body"}
 AUTH_KEYS = {"gateway_url", "access_id", "access_key", "access_type"}

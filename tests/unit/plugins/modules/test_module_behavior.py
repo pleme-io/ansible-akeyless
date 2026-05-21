@@ -32,20 +32,20 @@ HELPER_PATH = REPO_ROOT / "plugins" / "module_utils" / "akeyless_client.py"
 
 def _install_collection_helper(helper_module):
     """Bind the loaded helper module under the
-    `ansible_collections.akeyless.akeyless.plugins.module_utils.akeyless_client`
+    `ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client`
     path so generated modules' `from ansible_collections...` import resolves."""
     parents = [
         "ansible_collections",
-        "ansible_collections.akeyless",
-        "ansible_collections.akeyless.akeyless",
-        "ansible_collections.akeyless.akeyless.plugins",
-        "ansible_collections.akeyless.akeyless.plugins.module_utils",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
     ]
     for name in parents:
         if name not in sys.modules:
             sys.modules[name] = types.ModuleType(name)
     full = (
-        "ansible_collections.akeyless.akeyless"
+        "ansible_collections.drzln0.akeyless"
         ".plugins.module_utils.akeyless_client"
     )
     sys.modules[full] = helper_module

@@ -6,14 +6,14 @@
 - name: Issue a certificate
   hosts: localhost
   gather_facts: false
-  collections: [akeyless.akeyless]
+  collections: [drzln0.akeyless]
   vars:
     issuer_name: /demo/issuers/web
     cert_csr_pem: "{{ lookup('file', '/tmp/csr.pem') }}"  # generated externally
 
   tasks:
     - name: Make sure the issuer exists
-      akeyless.akeyless.pki_cert_issuer:
+      drzln0.akeyless.pki_cert_issuer:
         name: "{{ issuer_name }}"
         signer_key_name: /demo/keys/web_ca
         ttl: 86400
@@ -22,7 +22,7 @@
         state: present
 
     - name: Provision a leaf certificate from a CSR
-      akeyless.akeyless.provision_certificate:
+      drzln0.akeyless.provision_certificate:
         cert_issuer_name: "{{ issuer_name }}"
         csr_data_base64: "{{ cert_csr_pem | b64encode }}"
         ttl: 3600
