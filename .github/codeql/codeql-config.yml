@@ -1,0 +1,16 @@
+# CodeQL configuration.
+#
+# Excludes test fixtures and the cached upstream OpenAPI spec from analysis;
+# nothing in those paths is shipped to users.
+
+name: ansible-akeyless
+
+paths:
+  - plugins
+  - meta
+
+paths-ignore:
+  - tests
+  - examples
+  - "**/*.md"
+  - "**/openapi.yaml"

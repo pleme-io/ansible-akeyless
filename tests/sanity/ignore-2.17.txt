@@ -1,0 +1,13 @@
+# ansible-test sanity ignore list -- 2.17 channel.
+#
+# These exceptions are documented and intentional. New findings should be
+# triaged on a per-module basis; do not blanket-ignore in this file. If a
+# finding is systematic across the generated surface, fix it in
+# ansible-forge upstream rather than enumerating modules here.
+#
+# Format: one finding per line, "<path> <test>:<code>".
+#
+# The first-pass workflow currently runs validate-modules under `|| true`
+# (see .github/workflows/ansible-test.yml). As entries land here, drop
+# the `|| true` to make validate-modules a hard gate for the un-ignored
+# surface.
