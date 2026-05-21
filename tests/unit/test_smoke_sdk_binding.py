@@ -96,9 +96,10 @@ def test_helper_imports_cleanly():
 def test_galaxy_yml_well_formed():
     """galaxy.yml must declare namespace, name, and version."""
     text = GALAXY.read_text()
-    assert "namespace: akeyless" in text
+    # Don't pin the namespace string (it's configurable via provider.toml);
+    # just confirm the required keys are present and non-empty.
+    assert "namespace:" in text and "namespace:\n" not in text
     assert "name: akeyless" in text
-    # Don't pin version; just check that a version field is present.
     assert "version:" in text
 
 
