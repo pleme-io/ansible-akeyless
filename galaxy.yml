@@ -1,0 +1,9 @@
+namespace: akeyless
+name: akeyless
+version: 0.1.0
+readme: README.md
+authors: [pleme-io]
+description: "Auto-generated Ansible modules for Akeyless Vault — managed by iac-forge."
+license: [MIT]
+dependencies: {}
+tags: [security, secrets, akeyless]

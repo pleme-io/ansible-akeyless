@@ -1,0 +1,39 @@
+---
+# Integration test for kmip_environment_v2
+
+- name: Test kmip_environment_v2 module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create kmip_environment_v2
+      kmip_environment_v2:
+        state: present
+        hostname: "test_value"
+        root: "test_value"
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create kmip_environment_v2 (idempotent)
+      kmip_environment_v2:
+        state: present
+        hostname: "test_value"
+        root: "test_value"
+      register: idempotent_result
+
+    - name: Delete kmip_environment_v2
+      kmip_environment_v2:
+        state: absent
+        hostname: "test_value"
+        root: "test_value"
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed

@@ -55,47 +55,37 @@ RETURN = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.akeyless.akeyless.plugins.module_utils.akeyless_client import (
+    get_client, call_api, build_body,
+)
 
 
-def create_resource(module):
+def create_resource(module, client, token):
     """Create the resource."""
-    try:
-        # TODO: implement API call
-        module.exit_json(changed=True, msg="role_rule created")
-    except Exception as e:
-        module.fail_json(msg="Failed to create role_rule: %s" % str(e))
+    body = build_body("SetRoleRule", dict(module.params, token=token))
+    return call_api(module, client, "set_role_rule", body)
 
 
-def update_resource(module):
-    """Update the resource."""
+def update_resource(module, client, token):
+    """Update not supported by the upstream API -- delete + recreate instead."""
     # WARNING: The following fields are immutable after creation.
     #   - capability
     #   - path
     # Changing them requires destroy + recreate.
 
-    try:
-        # TODO: implement API call
-        module.exit_json(changed=True, msg="role_rule updated")
-    except Exception as e:
-        module.fail_json(msg="Failed to update role_rule: %s" % str(e))
+    module.fail_json(msg="role_rule: update not supported, delete+recreate")
 
 
-def delete_resource(module):
+def delete_resource(module, client, token):
     """Delete the resource."""
-    try:
-        # TODO: implement API call
-        module.exit_json(changed=True, msg="role_rule deleted")
-    except Exception as e:
-        module.fail_json(msg="Failed to delete role_rule: %s" % str(e))
+    body = build_body("DeleteRoleRule", dict(module.params, token=token))
+    return call_api(module, client, "delete_role_rule", body)
 
 
-def read_resource(module):
-    """Read the current state of the resource."""
-    try:
-        # TODO: implement API call
-        return None
-    except Exception as e:
-        module.fail_json(msg="Failed to read role_rule: %s" % str(e))
+def read_resource(module, client, token):
+    """Read the current state of the resource. Returns None if absent."""
+    body = build_body("GetRole", {"name": module.params.get("name"), "token": token})
+    return call_api(module, client, "get_role", body, swallow_404=True)
 
 
 def main():
@@ -106,6 +96,10 @@ def main():
         'role_name': {'type': 'str', 'required': True},
         'rule_type': {'type': 'str'},
         'ttl': {'type': 'int'},
+        'gateway_url': {'type': 'str'},
+        'access_id': {'type': 'str'},
+        'access_key': {'type': 'str', 'no_log': True},
+        'access_type': {'type': 'str', 'default': 'access_key'},
     }
 
     module = AnsibleModule(
@@ -113,23 +107,25 @@ def main():
         supports_check_mode=True,
     )
 
+    client, token = get_client(module)
     state = module.params.get('state', 'present')
-    current = read_resource(module)
+    current = read_resource(module, client, token)
 
     if module.check_mode:
-        module.exit_json(changed=(current is None and state == 'present')
-                         or (current is not None and state == 'absent'))
+        changed = (current is None and state == 'present') or (current is not None and state == 'absent')
+        module.exit_json(changed=changed)
 
     if state == 'absent':
         if current is not None:
-            delete_resource(module)
-        else:
-            module.exit_json(changed=False, msg="role_rule already absent")
+            result = delete_resource(module, client, token)
+            module.exit_json(changed=True, result=result)
+        module.exit_json(changed=False, msg="role_rule already absent")
     else:
         if current is None:
-            create_resource(module)
-        else:
-            update_resource(module)
+            result = create_resource(module, client, token)
+            module.exit_json(changed=True, result=result)
+        result = update_resource(module, client, token)
+        module.exit_json(changed=True, result=result)
 
 
 if __name__ == '__main__':

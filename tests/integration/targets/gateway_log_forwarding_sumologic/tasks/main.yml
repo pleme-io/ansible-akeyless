@@ -1,0 +1,33 @@
+---
+# Integration test for gateway_log_forwarding_sumologic
+
+- name: Test gateway_log_forwarding_sumologic module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Create gateway_log_forwarding_sumologic
+      gateway_log_forwarding_sumologic:
+        state: present
+      register: create_result
+
+    - name: Verify creation
+      ansible.builtin.assert:
+        that:
+          - create_result.changed
+
+    - name: Create gateway_log_forwarding_sumologic (idempotent)
+      gateway_log_forwarding_sumologic:
+        state: present
+      register: idempotent_result
+
+    - name: Delete gateway_log_forwarding_sumologic
+      gateway_log_forwarding_sumologic:
+        state: absent
+      register: delete_result
+
+    - name: Verify deletion
+      ansible.builtin.assert:
+        that:
+          - delete_result.changed
