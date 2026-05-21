@@ -89,13 +89,18 @@ _OPENAPI_CACHE: dict = {}
 
 
 def _load_openapi() -> dict:
-    """Parse the OpenAPI spec once and cache it for the whole test run."""
+    """Parse the OpenAPI spec once and cache it for the whole test run.
+
+    Returns {} if the spec or yaml parser is unavailable. Callers that need
+    the spec should check for an empty result and `pytest.skip(...)` from
+    INSIDE a test body — calling pytest.skip during collection (e.g. via a
+    parametrize-arg generator) explodes pytest with a module-level skip.
+    """
     if "spec" in _OPENAPI_CACHE:
         return _OPENAPI_CACHE["spec"]
-    if not OPENAPI_YAML.exists():
-        pytest.skip(f"OpenAPI spec not available at {OPENAPI_YAML}")
-    if yaml is None:
-        pytest.skip("pyyaml not installed -- pip install pyyaml")
+    if not OPENAPI_YAML.exists() or yaml is None:
+        _OPENAPI_CACHE["spec"] = {}
+        return {}
     loader = getattr(yaml, "CSafeLoader", yaml.SafeLoader)
     with OPENAPI_YAML.open() as f:
         spec = yaml.load(f, Loader=loader)
@@ -248,6 +253,8 @@ def _literal_or_none(node):
 def test_every_module_calls_real_operation_id():
     """Every call_api(..., "<method>", ...) literal must map to an OpenAPI operationId."""
     ops = _operation_index()
+    if not ops:
+        pytest.skip(f"OpenAPI spec not reachable at {OPENAPI_YAML} (set AKEYLESS_OPENAPI_YAML)")
     snake_to_op = {op_to_snake(o): o for o in ops}
 
     missing = []
@@ -266,6 +273,8 @@ def test_every_module_calls_real_operation_id():
 def test_coverage_report():
     """Walk the OpenAPI spec, write COVERAGE.md, fail if uncovered ops aren't classified."""
     ops = _operation_index()
+    if not ops:
+        pytest.skip(f"OpenAPI spec not reachable at {OPENAPI_YAML} (set AKEYLESS_OPENAPI_YAML)")
     skip = _load_skip()
     snake_to_op = {op_to_snake(o): o for o in ops}
 
