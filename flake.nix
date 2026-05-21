@@ -6,9 +6,16 @@
     flake-utils.url = "github:numtide/flake-utils";
     substrate.url = "github:pleme-io/substrate";
     substrate.inputs.nixpkgs.follows = "nixpkgs";
+    # tatara-lisp ships the `tatara-script` binary that every substrate
+    # ansible-collection app is now written against. We pin it explicitly
+    # so CI runners + local dev resolve identically (substrate's helper
+    # accepts an opt-in `tataraScript` derivation; without it, the
+    # wrapper assumes the binary is on PATH).
+    tatara-lisp.url = "github:pleme-io/tatara-lisp";
+    tatara-lisp.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, flake-utils, substrate, ... }:
+  outputs = { self, nixpkgs, flake-utils, substrate, tatara-lisp, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -23,6 +30,7 @@
           authors = [ "pleme-io" ];
           license = [ "MIT" ];
           minAnsibleVersion = "2.14.0";
+          tataraScript = tatara-lisp.packages.${system}.tatara-script;
         };
 
         pythonEnv = pkgs.python3.withPackages (ps: with ps; [
