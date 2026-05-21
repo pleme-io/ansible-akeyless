@@ -11,3 +11,5 @@ homepage: https://github.com/pleme-io/ansible-akeyless
 issues: https://github.com/pleme-io/ansible-akeyless/issues
 dependencies: {}
 tags: [security, secrets, akeyless]
+
+# trigger e2e CD test 2026-05-21
