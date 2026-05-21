@@ -1,0 +1,47 @@
+# Copyright: (c) 2026, pleme-io
+# MIT License
+#
+# Modules with a known structural mismatch between their argument_spec and the
+# upstream OpenAPI schema's `required` set. The fix lives in `ansible-forge`
+# (generator emitter) -- patches against the generated plugins/modules/*.py
+# would be overwritten on the next regen.
+#
+# Each entry asserts the exact expected `missing_required` set so the xfail
+# can't silently absorb new gaps. If a module here regresses by adding more
+# missing fields, the assertion in test_module_request_body_matches_openapi_schema
+# fires and the entry must be updated (or the generator fixed).
+
+xfail:
+
+  gateway_allowed_access:
+    missing_required:
+      - access_id
+    reason: "Schema requires a body-level access_id distinct from the auth access_id; generator collapses both onto the auth field. Track upstream in ansible-forge."
+
+  gateway_k8s_auth_config:
+    missing_required:
+      - access_id
+    reason: "Schema requires a body-level access_id distinct from the auth access_id; generator collapses both onto the auth field. Track upstream in ansible-forge."
+
+  target_aws:
+    missing_required:
+      - access_key
+    reason: "Schema requires both body access_key (AWS secret access key) and the auth access_key; generator collapses both onto the auth field. Track upstream in ansible-forge."
+
+  target_globalsign:
+    missing_required:
+      - password
+      - username
+    reason: "GlobalSign credentials required upstream; generator emits both as optional. Track upstream in ansible-forge."
+
+  target_sectigo:
+    missing_required:
+      - password
+      - username
+    reason: "Sectigo credentials required upstream; generator emits both as optional. Track upstream in ansible-forge."
+
+  target_windows:
+    missing_required:
+      - password
+      - username
+    reason: "Windows target credentials required upstream; generator emits both as optional. Track upstream in ansible-forge."
