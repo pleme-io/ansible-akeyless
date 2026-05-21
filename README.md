@@ -3,6 +3,7 @@
 > Auto-generated Ansible collection for Akeyless Vault — 208 modules covering the full V2 API surface, regenerated from upstream resource specs on every change.
 
 [![CI](https://github.com/pleme-io/ansible-akeyless/actions/workflows/ci.yml/badge.svg)](https://github.com/pleme-io/ansible-akeyless/actions/workflows/ci.yml)
+[![Release](https://github.com/pleme-io/ansible-akeyless/actions/workflows/release.yml/badge.svg)](https://github.com/pleme-io/ansible-akeyless/actions/workflows/release.yml)
 [![Galaxy](https://img.shields.io/ansible/collection/v/akeyless/akeyless)](https://galaxy.ansible.com/akeyless/akeyless)
 [![Downloads](https://img.shields.io/ansible/collection/d/akeyless/akeyless)](https://galaxy.ansible.com/akeyless/akeyless)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)

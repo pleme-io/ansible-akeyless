@@ -1,0 +1,700 @@
+# Copyright: (c) 2026, pleme-io
+# MIT License
+#
+# OpenAPI operationIds explicitly skipped from the Ansible coverage matrix.
+#
+# Categories:
+#   - pangea_specific : Pangea-related endpoints, out of Ansible scope
+#   - deprecated      : Superseded by a newer resource-prefixed operationId
+#   - future_phase    : Known-good gap deferred to a later release
+#   - internal_only   : Admin/internal/console-only endpoint, not for declarative automation
+#
+# Adding an op here makes the coverage matrix test pass for that op. Removing
+# coverage of an op (or the appearance of a new op upstream that isn't classified)
+# will fail tests/openapi/test_coverage_matrix.py::test_coverage_report.
+
+skip:
+
+  # ----- deprecated (110) -----
+  createAWSTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createArtifactoryTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethod:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodAWSIAM:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodAzureAD:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodCert:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodEmail:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodGCP:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodK8S:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodLDAP:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodOAuth2:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodOCI:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodOIDC:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodSAML:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAuthMethodUniversalIdentity:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createAzureTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createDBTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createDockerhubTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createDynamicSecret:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createEKSTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createEventForwarder:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createGKETarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createGcpTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createGithubTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createGitlabTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createGlobalSignAtlasTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createGlobalSignTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createGodaddyTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createHashiVaultTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createKey:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createLinkedTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createNativeK8STarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createPingTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createRabbitMQTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createRotatedSecret:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createSSHTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createSalesforceTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createUserEvent:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createWebTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createWindowsTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createZeroSSLTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  createldapTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form (e.g. targetCreateAws)."
+  deleteAuthMethods:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  deleteEventForwarder:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  deleteGatewayAllowedAccessId:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  deleteGwCluster:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  deleteItems:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  deleteRoles:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  deleteTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  deleteTargetAssociation:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  deleteTargets:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  getAnalyticsData:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  getDynamicSecretValue:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  getLastUserEventStatus:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  getRSAPublic:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  getRotatedSecretValue:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  getSSHCertificate:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  getTags:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  getTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  getTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_get form."
+  listAcmeAccounts:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_list form."
+  listSharedItems:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed *_list form."
+  updateAWSTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAWSTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateArtifactoryTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAssoc:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodAWSIAM:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodAzureAD:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodCert:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodGCP:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodK8S:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodLDAP:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodOAuth2:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodOCI:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodOIDC:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodSAML:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAuthMethodUniversalIdentity:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateAzureTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateDBTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateDBTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateDockerhubTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateEKSTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateEventForwarder:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateGKETarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateGcpTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateGithubTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateGitlabTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateGlobalSignAtlasTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateGlobalSignTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateGodaddyTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateHashiVaultTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateLdapTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateLdapTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateLinkedTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateNativeK8STarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updatePingTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateRDPTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateRabbitMQTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateRabbitMQTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateRotatedSecret:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateRotationSettings:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateSSHTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateSSHTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateSalesforceTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateWebTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateWebTargetDetails:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateWindowsTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+  updateZeroSSLTarget:
+    category: deprecated
+    reason: "Legacy operationId; superseded by the resource-prefixed form."
+
+  # ----- future_phase (74) -----
+  CertificateDiscovery:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  CreateESM:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  CreateUSC:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  ExportClassicKey:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  GatewayUpdateLdapAuthConfig:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  GatewayUpdateTlsCert:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  GetPKICertificate:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  UpdateClassicKeyCertificate:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  aliasDetails:
+    category: future_phase
+    reason: "Alias management; deferred."
+  assocTargetItem:
+    category: future_phase
+    reason: "Association helper; covered by role_assoc / role_rule for the common cases."
+  authMethodDelete:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  authMethodGet:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  authMethodList:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  calcPasswordSecurityInfo:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  deactivateAcmeAccount:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  decryptGPG:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  decryptPKCS1:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  decryptWithClassicKey:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  describeAssoc:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  describePermissions:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  describeSubClaims:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  detokenize:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  detokenizeBatch:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  dynamicSecretGetValue:
+    category: future_phase
+    reason: "Read-time secret retrieval; deferred to a future *_value lookup plugin."
+  encryptGPG:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  encryptWithClassicKey:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  eventAction:
+    category: future_phase
+    reason: "Event subsystem read endpoint; covered when the event_forwarder modules expand."
+  eventForwarderGet:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  gatewayCreateProducerChef:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  gatewayMigratePersonalItems:
+    category: future_phase
+    reason: "Bulk migration endpoint; deferred to dedicated migration tooling."
+  gatewayStatusMigration:
+    category: future_phase
+    reason: "Bulk migration endpoint; deferred to dedicated migration tooling."
+  gatewaySyncMigration:
+    category: future_phase
+    reason: "Bulk migration endpoint; deferred to dedicated migration tooling."
+  gatewayUpdateProducerChef:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  generateAcmeEab:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  importPasswords:
+    category: future_phase
+    reason: "Bulk migration endpoint; deferred to dedicated migration tooling."
+  kmipClientDeleteRule:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  kmipClientSetRule:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  kmipMoveServer:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  kmipRenewClientCertificate:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  kmipRenewServerCertificate:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  kmipSetServerState:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  moveObjects:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  rawCreds:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  refreshKey:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  requestAccess:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  resetAccessKey:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  reverseRBAC:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  "revoke-creds":
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  rollbackSecret:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  rotateKey:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  rotateOidcClientSecret:
+    category: future_phase
+    reason: "Rotation trigger; deferred to *_rotate action."
+  rotateSecret:
+    category: future_phase
+    reason: "Rotation trigger; deferred to *_rotate action."
+  rotatedSecretDelete:
+    category: future_phase
+    reason: "Rotation trigger; deferred to *_rotate action."
+  rotatedSecretGetValue:
+    category: future_phase
+    reason: "Read-time secret retrieval; deferred to a future *_value lookup plugin."
+  setItemState:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  shareItem:
+    category: future_phase
+    reason: "Sharing flows; deferred."
+  signGPG:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  signPKICertWithClassicKey:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  signRsaSsaPss:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  staticCredsAuth:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  staticSecretDeleteSync:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  staticSecretSync:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  targetGetDetails:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  tokenize:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  tokenizeBatch:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  unwrapToken:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  uploadRSA:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  validateToken:
+    category: future_phase
+    reason: "Validation RPC; deferred."
+  vaultAddress:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  verifyDataWithClassicKey:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  verifyGPG:
+    category: future_phase
+    reason: "Endpoint not yet wrapped; safe to defer until needed."
+  verifyJWTWithClassicKey:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  verifyPKICertWithClassicKey:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+  verifyRsaSsaPss:
+    category: future_phase
+    reason: "Specialized crypto/RPC variant; covered by the base action modules. Add a dedicated wrapper when needed."
+
+  # ----- internal_only (42) -----
+  Connect:
+    category: internal_only
+    reason: "SDK helper invoked transparently by the module helper; not a user-facing module."
+  CreatePasskey:
+    category: internal_only
+    reason: "Passkey enrollment is per-user interactive flow."
+  KubeconfigGenerate:
+    category: internal_only
+    reason: "Kubernetes cluster auth helper; for kubectl/CSI use, not Ansible."
+  auth:
+    category: internal_only
+    reason: "SDK helper invoked transparently by the module helper; not a user-facing module."
+  changeAdminAccountPassword:
+    category: internal_only
+    reason: "Admin account password change; security-critical, not for automation."
+  configure:
+    category: internal_only
+    reason: "SDK helper invoked transparently by the module helper; not a user-facing module."
+  dynamicSecretTmpCredsDelete:
+    category: internal_only
+    reason: "Temporary credentials / users; ephemeral, not declarative."
+  dynamicSecretTmpCredsGet:
+    category: internal_only
+    reason: "Temporary credentials / users; ephemeral, not declarative."
+  dynamicSecretTmpCredsUpdate:
+    category: internal_only
+    reason: "Temporary credentials / users; ephemeral, not declarative."
+  gatewayDownloadCustomerFragments:
+    category: internal_only
+    reason: "Gateway introspection endpoint; not a configurable resource."
+  gatewayGetCache:
+    category: internal_only
+    reason: "Gateway introspection endpoint; not a configurable resource."
+  gatewayGetConfig:
+    category: internal_only
+    reason: "Gateway introspection endpoint; not a configurable resource."
+  gatewayGetDefaults:
+    category: internal_only
+    reason: "Gateway introspection endpoint; not a configurable resource."
+  gatewayGetLdapAuthConfig:
+    category: internal_only
+    reason: "Gateway introspection endpoint; not a configurable resource."
+  gatewayGetRemoteAccess:
+    category: internal_only
+    reason: "Gateway introspection endpoint; not a configurable resource."
+  gatewayGetTmpUsers:
+    category: internal_only
+    reason: "Gateway introspection endpoint; not a configurable resource."
+  gatewayRevokeTmpUsers:
+    category: internal_only
+    reason: "Temporary credentials / users; ephemeral, not declarative."
+  gatewayStartProducer:
+    category: internal_only
+    reason: "Gateway lifecycle/runtime control; out of band of declarative config."
+  gatewayStopProducer:
+    category: internal_only
+    reason: "Gateway lifecycle/runtime control; out of band of declarative config."
+  gatewayUpdateCache:
+    category: internal_only
+    reason: "Gateway runtime override; not a declarative resource."
+  gatewayUpdateDefaults:
+    category: internal_only
+    reason: "Gateway runtime override; not a declarative resource."
+  gatewayUpdateItem:
+    category: internal_only
+    reason: "Gateway runtime override; not a declarative resource."
+  gatewayUpdateRemoteAccess:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gatewayUpdateRemoteAccessDesktopApp:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gatewayUpdateRemoteAccessRdpRecordings:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gatewayUpdateTmpUsers:
+    category: internal_only
+    reason: "Temporary credentials / users; ephemeral, not declarative."
+  getAccountLogo:
+    category: internal_only
+    reason: "Branding asset upload; UI-only."
+  getAccountSettings:
+    category: internal_only
+    reason: "Account-level settings managed via console."
+  getKubeExecCreds:
+    category: internal_only
+    reason: "Kubernetes cluster auth helper; for kubectl/CSI use, not Ansible."
+  gwUpdateRemoteAccessSessionLogsAwsS3:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsAzureAnalytics:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsDatadog:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsElasticsearch:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsGoogleChronicle:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsLogstash:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsLogzIo:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsSplunk:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsStdout:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsSumologic:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  gwUpdateRemoteAccessSessionLogsSyslog:
+    category: internal_only
+    reason: "Remote-access daemon config; managed via Gateway UI."
+  listSRASessions:
+    category: internal_only
+    reason: "Secure Remote Access (SRA) operation; managed via Akeyless console, not Ansible."
+  updateAccountSettings:
+    category: internal_only
+    reason: "Account-level settings managed via console."

@@ -90,6 +90,38 @@ dance required. A few notes:
 - Docs in `README.md` and `SECURITY.md` are hand-maintained — feel free to
   improve clarity.
 
+## Release process
+
+Releases are tag-driven and run end-to-end through GitHub Actions
+(`.github/workflows/release.yml`). The flow:
+
+1. Update `CHANGELOG.md`: move items from `[Unreleased]` to a new versioned
+   section with today's date.
+2. Commit the changelog update.
+3. Tag: `git tag -a v0.3.0 -m "Release v0.3.0"`
+4. Push: `git push origin v0.3.0`
+5. The `release.yml` workflow then:
+   - Runs the full gate suite (sanity smoke + unit + OpenAPI matrix)
+   - Resolves the version from the tag (`v0.3.0` -> `0.3.0`)
+   - Builds the Galaxy tarball via `scripts/release.sh build`
+   - If the `ANSIBLE_GALAXY_API_KEY` repo secret is configured, publishes
+     to <https://galaxy.ansible.com> via `scripts/release.sh publish`
+   - Creates a GitHub Release with the tarball + sha256 attached and
+     auto-generated release notes
+
+Until the Galaxy API key is provisioned, the publish step is a no-op
+(the tarball is still built and attached to the GitHub Release). This
+lets the release machinery be exercised against the full test suite
+ahead of the first real Galaxy push.
+
+To dry-run a release locally without tagging:
+
+```bash
+VERSION=0.3.0-rc.1 scripts/release.sh build
+# inspect the produced akeyless-akeyless-0.3.0-rc.1.tar.gz
+scripts/release.sh clean
+```
+
 ## Code of conduct
 
 By participating you agree to abide by the
