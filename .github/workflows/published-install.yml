@@ -1,0 +1,10 @@
+name: published-install
+on:
+  schedule:
+    - cron: '23 6 * * *'
+  workflow_dispatch: {}
+jobs:
+  install:
+    uses: pleme-io/substrate/.github/workflows/ansible-collection-published-install.yml@main
+    with:
+      collection: drzln0.akeyless

@@ -1,75 +1,8 @@
 name: ansible-test
-
-# Official ansible-test sanity + units runner.
-#
-# ansible-test requires the collection to live at
-# ansible_collections/<namespace>/<name>/, so checkout uses `path:` to lay
-# it out correctly. Both jobs install ansible-core, then invoke ansible-test
-# from inside the collection directory.
-#
-# NOTE: `|| true` on the first invocations is intentional during ramp-up --
-# the generated modules emit a long tail of cosmetic doc/license findings
-# that are tracked in tests/sanity/ignore-*.txt as they get triaged. Once
-# the ignore lists are tuned for the running ansible-core branch, drop the
-# `|| true` to make these gating.
-
-on:
-  push:
-  pull_request:
-
+on: [push, pull_request]
 jobs:
-  sanity:
-    name: ansible-test sanity (py ${{ matrix.python }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python: ['3.11', '3.12']
-    steps:
-      - name: Checkout into collection path
-        uses: actions/checkout@v4
-        with:
-          path: ansible_collections/drzln0/akeyless
-
-      - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: Install ansible-core
-        run: |
-          python -m pip install --upgrade pip
-          pip install 'ansible-core>=2.17,<2.20'
-
-      - name: Run ansible-test sanity
-        working-directory: ansible_collections/drzln0/akeyless
-        run: |
-          ansible-test sanity --python ${{ matrix.python }} --requirements --skip-test pep8 || true
-
-  units:
-    name: ansible-test units (py ${{ matrix.python }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python: ['3.11', '3.12']
-    steps:
-      - name: Checkout into collection path
-        uses: actions/checkout@v4
-        with:
-          path: ansible_collections/drzln0/akeyless
-
-      - name: Set up Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python }}
-
-      - name: Install ansible-core + runtime deps
-        run: |
-          python -m pip install --upgrade pip
-          pip install 'ansible-core>=2.17,<2.20' 'akeyless>=5.0.22' pytest pyyaml jsonschema
-
-      - name: Run ansible-test units
-        working-directory: ansible_collections/drzln0/akeyless
-        run: |
-          ansible-test units --python ${{ matrix.python }} --requirements || true
+  test:
+    uses: pleme-io/substrate/.github/workflows/ansible-collection-ansible-test.yml@main
+    with:
+      namespace: drzln0
+      name: akeyless

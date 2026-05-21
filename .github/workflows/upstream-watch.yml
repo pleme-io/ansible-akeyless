@@ -1,0 +1,11 @@
+name: upstream-watch
+on:
+  schedule:
+    - cron: '17 */4 * * *'
+  workflow_dispatch: {}
+jobs:
+  watch:
+    uses: pleme-io/substrate/.github/workflows/ansible-collection-upstream-watch.yml@main
+    with:
+      upstream-spec-url: https://raw.githubusercontent.com/akeylesslabs/akeyless-go/master/api/openapi.yaml
+      spec-resources-repo: pleme-io/akeyless-terraform-resources
