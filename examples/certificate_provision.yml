@@ -1,0 +1,33 @@
+---
+# Provision a certificate via the PKI cert-issuer + action module.
+#
+# Prereqs: a PKI cert issuer named `demo_issuer` exists (or create one below).
+
+- name: Issue a certificate
+  hosts: localhost
+  gather_facts: false
+  collections: [akeyless.akeyless]
+  vars:
+    issuer_name: /demo/issuers/web
+    cert_csr_pem: "{{ lookup('file', '/tmp/csr.pem') }}"  # generated externally
+
+  tasks:
+    - name: Make sure the issuer exists
+      akeyless.akeyless.pki_cert_issuer:
+        name: "{{ issuer_name }}"
+        signer_key_name: /demo/keys/web_ca
+        ttl: 86400
+        allow_subdomains: true
+        allowed_domains: ["example.com"]
+        state: present
+
+    - name: Provision a leaf certificate from a CSR
+      akeyless.akeyless.provision_certificate:
+        cert_issuer_name: "{{ issuer_name }}"
+        csr_data_base64: "{{ cert_csr_pem | b64encode }}"
+        ttl: 3600
+      register: cert
+
+    - name: Show that we got a cert (sensitive fields will be ***-masked)
+      ansible.builtin.debug:
+        var: cert.result

@@ -1,0 +1,43 @@
+---
+# Create an API-key auth method, a role, associate them, and attach rules.
+#
+# This is a common bootstrap pattern: an automation principal that can
+# read a specific path of secrets but nothing else.
+
+- name: Bootstrap an auth method + role + rules
+  hosts: localhost
+  gather_facts: false
+  collections: [akeyless.akeyless]
+  vars:
+    am_name: /demo/auth_methods/ci_runner
+    role_name: /demo/roles/secrets_reader
+    secrets_prefix: /demo/app/*
+
+  tasks:
+    - name: Create the API-key auth method
+      akeyless.akeyless.auth_method_api_key:
+        name: "{{ am_name }}"
+        description: "Ephemeral auth method for CI"
+        state: present
+      register: am
+
+    - name: Create the role
+      akeyless.akeyless.role:
+        name: "{{ role_name }}"
+        description: "Read-only access to {{ secrets_prefix }}"
+        state: present
+
+    - name: Associate the auth method with the role
+      akeyless.akeyless.role_assoc:
+        role_name: "{{ role_name }}"
+        am_name: "{{ am_name }}"
+        sub_claims: { "env": ["ci"] }
+        state: present
+
+    - name: Attach a read rule scoped to the secrets prefix
+      akeyless.akeyless.role_rule:
+        role_name: "{{ role_name }}"
+        path: "{{ secrets_prefix }}"
+        capability: ["read", "list"]
+        rule_type: item-rule
+        state: present

@@ -1,0 +1,60 @@
+name: Missing endpoint
+description: An Akeyless API endpoint isn't yet wrapped by a module in this collection.
+labels: [missing-endpoint, enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This collection is auto-generated from TOML resource specs in
+        [`akeyless-terraform-resources`](https://github.com/pleme-io/akeyless-terraform-resources).
+        Adding a new module means adding a TOML spec there; the next regen pulls it in here.
+        File this issue first so we can coordinate, then send the TOML PR upstream.
+
+  - type: input
+    id: operation_id
+    attributes:
+      label: OpenAPI operationId
+      description: From the Akeyless OpenAPI spec — the exact operationId or path.
+      placeholder: "e.g. createPKICertIssuer or /create-pki-cert-issuer"
+    validations:
+      required: true
+
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Use case
+      description: What are you trying to do with this endpoint in Ansible?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: shape
+    attributes:
+      label: Module shape
+      description: Best-guess at how it should be modelled.
+      options:
+        - CRUD resource (state present/absent, idempotent)
+        - Data source (read-only _info module)
+        - RPC action (one-shot, no state)
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: draft_toml
+    attributes:
+      label: Draft TOML spec (optional)
+      description: |
+        If you've drafted a spec for [`akeyless-terraform-resources/resources/`](https://github.com/pleme-io/akeyless-terraform-resources/tree/main/resources), paste it here.
+        See [existing specs](https://github.com/pleme-io/akeyless-terraform-resources/blob/main/resources/roles/role.toml) for the shape.
+      render: toml
+
+  - type: checkboxes
+    id: confirms
+    attributes:
+      label: Pre-submission checks
+      options:
+        - label: I confirmed this endpoint isn't already wrapped (checked `plugins/modules/`).
+          required: true
+        - label: I confirmed the endpoint exists in the upstream Akeyless OpenAPI spec.
+          required: true

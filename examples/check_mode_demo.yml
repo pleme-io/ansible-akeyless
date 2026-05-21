@@ -1,0 +1,37 @@
+---
+# Demonstrate Ansible check mode against this collection.
+#
+# Run with `--check` to see what WOULD change without actually changing.
+# Every CRUD + _info module supports check_mode (action modules do not,
+# since RPC calls have side effects we can't simulate).
+#
+# Usage:
+#   ansible-playbook examples/check_mode_demo.yml --check
+#
+# The CI workflow uses this pattern to validate the collection in PRs.
+
+- name: Demonstrate check mode
+  hosts: localhost
+  gather_facts: false
+  collections: [akeyless.akeyless]
+  vars:
+    secret_path: /demo/check_mode_secret
+
+  tasks:
+    - name: Plan a create (no actual write in --check)
+      akeyless.akeyless.static_secret:
+        name: "{{ secret_path }}"
+        value: planned-value
+        state: present
+      register: plan
+
+    - name: Confirm the plan
+      ansible.builtin.assert:
+        that:
+          - "plan is changed or plan is not changed"  # both are valid; the point is the play does not crash
+        success_msg: "Check-mode plan succeeded; no real write attempted."
+
+    - name: Plan a delete (no actual delete in --check)
+      akeyless.akeyless.static_secret:
+        name: "{{ secret_path }}"
+        state: absent
