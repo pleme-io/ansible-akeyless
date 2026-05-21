@@ -11,8 +11,8 @@ body:
     id: module
     attributes:
       label: Affected module
-      description: e.g. `akeyless.akeyless.role` or `akeyless.akeyless.uid_generate_token`
-      placeholder: akeyless.akeyless.<module_name>
+      description: e.g. `drzln0.akeyless.role` or `drzln0.akeyless.uid_generate_token`
+      placeholder: drzln0.akeyless.<module_name>
     validations:
       required: true
 

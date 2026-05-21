@@ -4,6 +4,23 @@ All notable changes to this project are documented here. Format follows [Keep a 
 
 ## [Unreleased]
 
+### Changed
+- **Galaxy namespace moved from `akeyless` to `drzln0`.** Galaxy's `akeyless`
+  namespace is owned by another publisher, so we publish under the
+  user-controlled `drzln0` account (auto-created when `drzln` was
+  unavailable). All generated module imports now resolve via
+  `ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client`;
+  every example playbook, the `flake.nix` collection wrapper, the docs
+  workflow, the release tarball pattern, and the in-repo tests have been
+  updated to match. Users must migrate via
+  `ansible-galaxy collection install drzln0.akeyless` and update playbook
+  references from `akeyless.akeyless.<module>` to `drzln0.akeyless.<module>`.
+- The namespace is now data-driven: ansible-forge reads
+  `[platforms.ansible] galaxy_namespace` from `provider.toml` and threads
+  it through `generate_resource_module`, `generate_data_source_module`,
+  and `generate_action_module`. No more hardcoded `"akeyless"` string in
+  the generator.
+
 ### Added
 - (placeholder for next release)
 

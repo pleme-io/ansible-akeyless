@@ -30,7 +30,7 @@ RETURN = r'''
 '''
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.akeyless.akeyless.plugins.module_utils.akeyless_client import (
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
     get_client, call_api, build_body,
 )
 
