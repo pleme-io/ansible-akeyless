@@ -1,0 +1,25 @@
+# CODEOWNERS — auto-assign reviewers for the routed paths.
+# https://docs.github.com/en/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner — every file unless overridden below.
+*                                @drzln
+
+# Generator output: don't accept PRs that edit these by hand.
+# Changes belong in the upstream spec/generator repos.
+/plugins/modules/                @drzln
+/plugins/module_utils/           @drzln
+/galaxy.yml                      @drzln
+/meta/runtime.yml                @drzln
+
+# Hand-maintained surface — PRs welcome.
+/plugins/lookup/                 @drzln
+/tests/                          @drzln
+/examples/                       @drzln
+/docs/                           @drzln
+/README.md                       @drzln
+/CONTRIBUTING.md                 @drzln
+/CHANGELOG.md                    @drzln
+
+# Pipeline / governance — restricted.
+/.github/                        @drzln
+/flake.nix                       @drzln
