@@ -93,6 +93,11 @@ def call_api(module, client, method_name, body, swallow_404=False):
 
     If swallow_404 is true, a 404 ApiException returns None instead of
     failing the module -- used by read_resource to detect absence.
+
+    Per-call timeout is read from AKEYLESS_REQUEST_TIMEOUT env (seconds,
+    float). Unset/0 means no SDK-level timeout (akeyless default).
+    Useful for `live-coverage-gateway` runs where a local gateway tries
+    to validate stub data against the real internet and hangs.
     """
     method = getattr(client, method_name, None)
     if method is None:
@@ -120,11 +125,18 @@ def _invoke_sdk_method(method, method_name, body):
     (`method(<method_name>=body)`). We try positional first and fall
     back to the kwarg form on the exact TypeError that signals the
     second shape, so callers don't need to know which SDK style applies."""
+    timeout_env = os.environ.get("AKEYLESS_REQUEST_TIMEOUT")
+    kwargs = {}
+    if timeout_env:
+        try:
+            kwargs["_request_timeout"] = float(timeout_env)
+        except ValueError:
+            pass
     try:
-        return method(body)
+        return method(body, **kwargs) if kwargs else method(body)
     except TypeError as exc:
         if "takes 1 positional argument but 2 were given" in str(exc):
-            return method(**{method_name: body})
+            return method(**{method_name: body}, **kwargs)
         raise
 
 
