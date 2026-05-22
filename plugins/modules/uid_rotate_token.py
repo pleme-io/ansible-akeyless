@@ -68,10 +68,10 @@ def main():
 
     client, token = get_client(module)
     result = run_action(module, client, token)
-    # Mask sensitive response fields before echoing back to the user.
-    _sensitive = {'token'}
-    masked = { k: ('***' if k in _sensitive else v) for k, v in (result or {}).items() }
-    module.exit_json(changed=True, result=masked)
+    # Return token value as-is; playbook author may add no_log: yes
+    # to the task to keep it out of the log. Masking here would
+    # destroy the value subsequent tasks need.
+    module.exit_json(changed=True, result=result)
 
 
 if __name__ == '__main__':
