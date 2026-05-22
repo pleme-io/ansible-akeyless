@@ -28,7 +28,7 @@
         state: present
 
     - name: Associate the auth method with the role
-      drzln0.akeyless.role_assoc:
+      drzln0.akeyless.role_auth_method_assoc:
         role_name: "{{ role_name }}"
         am_name: "{{ am_name }}"
         sub_claims: { "env": ["ci"] }
