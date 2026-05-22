@@ -36,6 +36,7 @@ import io
 import json
 import os
 import re
+import socket
 import sys
 import time
 import types
@@ -44,6 +45,15 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
+
+# Cap any single SDK request at 20s. When pointed at a local gateway
+# (AKEYLESS_GATEWAY_URL=http://localhost:8081), the gateway does real
+# network checks against the stub URLs/hosts/passwords we send -- each
+# can hang for ~30s on DNS / TCP connect failures. We want a fail-fast
+# classification, not a 90-minute matrix run. Public api.akeyless.io
+# responds in well under 20s for every op, so this only kicks in on
+# gateway-bound ops with bad stub data.
+socket.setdefaulttimeout(20)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODULES_DIR = REPO_ROOT / "plugins" / "modules"
@@ -188,6 +198,11 @@ def _classify(outcome):
     msg = (outcome.get("msg") or "").lower()
     if outcome.get("failed", False) is False and not msg:
         return "WORKS"
+    # Timeout = network/connection didn't return within socket timeout.
+    # Common when pointing at a local gateway that's actually trying
+    # to validate stub data against the real internet.
+    if "timed out" in msg or "timeout" in msg or "read timed out" in msg:
+        return "TIMEOUT"
     # API drift signatures
     if "missing required parameter" in msg:
         return "ARGSPEC_DRIFT"
@@ -347,19 +362,27 @@ def test_module_live_dispatch(module_file, run_id):
     kwargs, code = _run_module_against_real_api(module_file, params)
     category = _classify(kwargs) if code == 0 else (code if isinstance(code, str) else _classify(kwargs))
 
-    # Record in the matrix
+    # Record in the matrix. With pytest-xdist multiple workers may write
+    # concurrently — use fcntl.flock on a sibling lockfile + atomic
+    # rename so partial writes can't corrupt the JSON.
+    import fcntl
     matrix_path = REPO_ROOT / "tests" / "live" / "MATRIX.json"
+    lock_path = matrix_path.with_suffix(".lock")
     matrix_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        matrix = json.loads(matrix_path.read_text()) if matrix_path.exists() else {}
-    except Exception:
-        matrix = {}
-    matrix[module_file] = {
-        "category": category,
-        "msg": (kwargs.get("msg") or "")[:300],
-        "run_id": run_id,
-    }
-    matrix_path.write_text(json.dumps(matrix, indent=2, sort_keys=True))
+    with open(lock_path, "w") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        try:
+            matrix = json.loads(matrix_path.read_text()) if matrix_path.exists() else {}
+        except Exception:
+            matrix = {}
+        matrix[module_file] = {
+            "category": category,
+            "msg": (kwargs.get("msg") or "")[:300],
+            "run_id": run_id,
+        }
+        tmp_path = matrix_path.with_suffix(".json.tmp")
+        tmp_path.write_text(json.dumps(matrix, indent=2, sort_keys=True))
+        tmp_path.replace(matrix_path)
 
     # Only DISPATCH_FAIL (real bug) fails the test. Others are reported.
     if category == "DISPATCH_FAIL":
