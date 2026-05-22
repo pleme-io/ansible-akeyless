@@ -68,7 +68,7 @@ def main():
     argument_spec = {
         'display_id': {'type': 'str'},
         'item_id': {'type': 'int'},
-        'key_name': {'type': 'str'},
+        'key_name': {'type': 'str', 'required': True},
         'message': {'type': 'str', 'required': True},
         'prehashed': {'type': 'bool'},
         'signature': {'type': 'str', 'required': True},

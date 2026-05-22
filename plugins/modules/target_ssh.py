@@ -108,7 +108,7 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'description': {'type': 'str'},
-        'host': {'type': 'str'},
+        'host': {'type': 'str', 'required': True},
         'key': {'type': 'str'},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
@@ -116,7 +116,7 @@ def main():
         'private_key': {'type': 'str', 'no_log': True},
         'private_key_password': {'type': 'str', 'no_log': True},
         'ssh_password': {'type': 'str', 'no_log': True},
-        'ssh_username': {'type': 'str'},
+        'ssh_username': {'type': 'str', 'required': True},
         'gateway_url': {'type': 'str'},
         'access_id': {'type': 'str'},
         'access_key': {'type': 'str', 'no_log': True},
@@ -126,6 +126,9 @@ def main():
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
+        required_if=[
+            ('state', 'present', ['private_key', 'ssh_password'], True),
+        ],
     )
 
     client, token = get_client(module)

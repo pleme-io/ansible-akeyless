@@ -143,7 +143,8 @@ def main():
         'token_reviewer_jwt': {'type': 'str'},
         'use_gw_service_account': {'type': 'bool'},
         'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
+        # NOTE: no auth-side `access_id` here -- the resource field above
+        # shadows it. Auth `access_id` comes from AKEYLESS_ACCESS_ID env.
         'access_key': {'type': 'str', 'no_log': True},
         'access_type': {'type': 'str', 'default': 'access_key'},
     }

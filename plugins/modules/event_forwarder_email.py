@@ -122,7 +122,7 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
         'description': {'type': 'str'},
-        'email_to': {'type': 'str'},
+        'email_to': {'type': 'str', 'required': True},
         'event_types': {'type': 'list', 'elements': 'str'},
         'every': {'type': 'str'},
         'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},

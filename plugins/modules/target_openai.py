@@ -101,7 +101,7 @@ def read_resource(module, client, token):
 def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'api_key': {'type': 'str'},
+        'api_key': {'type': 'str', 'no_log': True, 'required': True},
         'api_key_id': {'type': 'str'},
         'description': {'type': 'str'},
         'key': {'type': 'str'},

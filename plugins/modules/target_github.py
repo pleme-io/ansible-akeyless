@@ -97,8 +97,8 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'description': {'type': 'str'},
-        'github_app_id': {'type': 'int'},
-        'github_app_private_key': {'type': 'str', 'no_log': True},
+        'github_app_id': {'type': 'int', 'required': True},
+        'github_app_private_key': {'type': 'str', 'no_log': True, 'required': True},
         'github_base_url': {'type': 'str'},
         'key': {'type': 'str'},
         'max_versions': {'type': 'str'},

@@ -92,7 +92,7 @@ def read_resource(module, client, token):
 def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'api_key': {'type': 'str'},
+        'api_key': {'type': 'str', 'no_log': True, 'required': True},
         'description': {'type': 'str'},
         'gemini_url': {'type': 'str'},
         'key': {'type': 'str'},

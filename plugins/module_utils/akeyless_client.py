@@ -98,7 +98,7 @@ def call_api(module, client, method_name, body, swallow_404=False):
     if method is None:
         module.fail_json(msg="Akeyless V2Api has no method '%s'" % method_name)
     try:
-        result = method(body)
+        result = _invoke_sdk_method(method, method_name, body)
     except ApiException as exc:
         status = getattr(exc, "status", None)
         if swallow_404 and status == 404:
@@ -108,6 +108,24 @@ def call_api(module, client, method_name, body, swallow_404=False):
             status=status,
         )
     return _to_dict(result)
+
+
+def _invoke_sdk_method(method, method_name, body):
+    """Call an akeyless V2Api method with a body, tolerating both
+    positional-body and kwargs-only SDK shapes.
+
+    Most generated SDK methods take the body positionally
+    (`method(body)`). A handful are declared as `def m(self, **kwargs)`
+    and expect the body keyword-named after the snake_case method name
+    (`method(<method_name>=body)`). We try positional first and fall
+    back to the kwarg form on the exact TypeError that signals the
+    second shape, so callers don't need to know which SDK style applies."""
+    try:
+        return method(body)
+    except TypeError as exc:
+        if "takes 1 positional argument but 2 were given" in str(exc):
+            return method(**{method_name: body})
+        raise
 
 
 def _to_dict(result):

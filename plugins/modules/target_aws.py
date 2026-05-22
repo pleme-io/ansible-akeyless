@@ -125,7 +125,9 @@ def main():
         'use_gw_cloud_identity': {'type': 'bool'},
         'gateway_url': {'type': 'str'},
         'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
+        # NOTE: no auth-side `access_key` here -- the resource field above
+        # shadows it (resource `access_key` is the AWS secret access key).
+        # Auth `access_key` comes from AKEYLESS_ACCESS_KEY env.
         'access_type': {'type': 'str', 'default': 'access_key'},
     }
 
