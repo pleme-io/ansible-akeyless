@@ -135,8 +135,8 @@ def read_resource(module, client, token):
 def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'admin_name': {'type': 'str'},
-        'admin_pwd': {'type': 'str'},
+        'admin_name': {'type': 'str', 'required': True},
+        'admin_pwd': {'type': 'str', 'no_log': True, 'required': True},
         'app_private_key_base64': {'type': 'str'},
         'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
         'auth_type': {'type': 'str'},
@@ -146,7 +146,7 @@ def main():
         'event_types': {'type': 'list', 'elements': 'str'},
         'every': {'type': 'str'},
         'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
-        'host': {'type': 'str'},
+        'host': {'type': 'str', 'required': True},
         'items_event_source_locations': {'type': 'list', 'elements': 'str'},
         'key': {'type': 'str'},
         'name': {'type': 'str', 'required': True},

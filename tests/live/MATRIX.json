@@ -1,967 +1,947 @@
 {
-  "account_custom_field.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: ValueError: Invalid value for `id`, must not be `None`",
-    "run_id": "20260522-193119"
-  },
   "account_custom_fields_info.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_api_key.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_aws_iam.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_azure_ad.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_cert.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call auth_method_create_cert failed: {\"error\":\"invalid request body: certificate data not provided\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_email.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call auth_method_create_email failed: {\"error\":\"invalid request body: Email address is not valid\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_gcp.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call auth_method_create_gcp failed: {\"error\":\"invalid request body: either service-account-creds or bound-projects are required\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_huawei.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call create_auth_method_huawei failed: {\"error\":\"unknown command 'create-auth-method-huawei'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_info.py": {
     "category": "NEEDS_PREREQ",
-    "msg": "Akeyless API call get_auth_method failed: {\"error\":\"failed to obtain auth method information: Desc: Failed to get auth method. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain auth method /test-live/20260522-193119/auth_metho",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call get_auth_method failed: {\"error\":\"failed to obtain auth method information: Desc: Failed to get auth method. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain auth method /test-live/20260522-201225/auth_metho",
+    "run_id": "20260522-201225"
   },
   "auth_method_k8s.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_kerberos.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call auth_method_create_kerberos failed: {\"error\":\"invalid request body: must provide --keytab-path or --keytab-data\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_ldap.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_oauth2.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call auth_method_create_oauth2 failed: {\"error\":\"invalid request body: failed to create oAuth2 Auth Method: jwks-uri, jwks-json-data or jwks-json-file is required\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_oci.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_oidc.py": {
     "category": "API_REJECTED",
-    "msg": "Akeyless API call auth_method_create_oidc failed: {\"error\":\"failed to create OIDC Auth Method: issuer url is required\"}\n",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call auth_method_create_oidc failed: {\"error\":\"failed to create OIDC Auth Method: client id is required\"}\n",
+    "run_id": "20260522-201225"
   },
   "auth_method_saml.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call auth_method_create_saml failed: {\"error\":\"invalid request body: failed to create SAML Auth Method: idp-metadata-xml-file-path, idp-metadata-xml-data or idp-metadata-url is required\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_method_universal_identity.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "auth_methods_info.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "certificate.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call create_certificate failed: {\"error\":\"invalid request body: must provide either --certificate or --certificate-data\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "classic_key.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call create_classic_key failed: {\"error\":\"invalid request body: invalid algorithm stub; valid options are: [AES256GCM AES128GCM AES256CBC AES128CBC AES256SIV AES128SIV RSA1024 RSA2048 RSA3072 RSA4096 EC224 EC256 EC384 EC521 GPG]\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "decrypt_batch.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call decrypt_batch failed: {\"error\":\"invalid request body: empty batch data\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "derive_key.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call derive_key failed: {\"error\":\"invalid request body: invalid algorithm name stub\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dfc_key.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call create_dfc_key failed: {\"error\":\"invalid request body: invalid algorithm stub; valid options are: [AES128GCM AES256GCM AES128SIV AES256SIV AES128CBC AES256CBC RSA1024 RSA2048 RSA3072 RSA4096]\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_artifactory.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_artifactory failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-artifactory'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_aws.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_aws failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-aws'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_azure.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_azure failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-azure'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_cassandra.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_cassandra failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-cassandra'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_custom.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: TypeError: V2Api.dynamic_secret_create_custom() takes 1 positional argument but 2 were given",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call dynamic_secret_create_custom failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-custom'\"}\n",
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_dockerhub.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_dockerhub failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-dockerhub'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_eks.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_eks failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-eks'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_gcp.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_gcp failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-gcp'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_github.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_github failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-github'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_gitlab.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_gitlab failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-gitlab'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_gke.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_gke failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-gke'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_google_workspace.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_google_workspace failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-google-workspace'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_hanadb.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_hana_db failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-hanadb'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_k8s.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_k8s failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-k8s'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_ldap.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_ldap failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-ldap'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_mongodb.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_mongo_db failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-mongodb'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_mssql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_ms_sql failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-mssql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_mysql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_my_sql failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-mysql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_openai.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_open_ai failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-openai'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_oracle.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_oracle_db failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-oracledb'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_ping.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_ping failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-ping'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_postgresql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_postgre_sql failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-postgresql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_rabbitmq.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_rabbit_mq failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-rabbitmq'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_rdp.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_rdp failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-rdp'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_redis.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_redis failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-redis'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_redshift.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_redshift failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-redshift'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_snowflake.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_snowflake failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-snowflake'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secret_venafi.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_create_venafi failed: {\"error\":\"command is not available on public gateway 'dynamic-secret-create-venafi'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "dynamic_secrets_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call dynamic_secret_list failed: {\"error\":\"failed to list dynamic secrets: Desc: Failed to get available producers. Status 401 Unauthorized, Error: NotAllowedForThisGateway. Message: Invalid client credentials - AccessId p-nn5huxl36myiam isn't authorized to perform actions on this route",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "encrypt_batch.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call encrypt_batch failed: {\"error\":\"invalid request body: empty batch data\"}\n",
-    "run_id": "20260522-193119"
-  },
-  "esm.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: ValueError: Invalid value for `esm_name`, must not be `None`",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "esm_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call esm_list failed: {\"error\":\"command is not available on public gateway 'esm-list'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "event_forwarder_email.py": {
-    "category": "ARGSPEC_DRIFT",
-    "msg": "Akeyless API call event_forwarder_create_email failed: {\"error\":\"invalid request body: Missing required parameter - EmailTo\"}\n",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call event_forwarder_create_email failed: {\"error\":\"can't set soruce stub. please check cluster existenace, permissions or configuration\"}\n",
+    "run_id": "20260522-201225"
   },
   "event_forwarder_info.py": {
     "category": "NEEDS_PREREQ",
-    "msg": "Akeyless API call get_event_forwarder failed: {\"error\":\"failed to get event forwarder: Desc: Failed to get noti-forwarder. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain NotiForwarder /test-live/20260522-193119/event_forwar",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call get_event_forwarder failed: {\"error\":\"failed to get event forwarder: Desc: Failed to get noti-forwarder. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain NotiForwarder /test-live/20260522-201225/event_forwar",
+    "run_id": "20260522-201225"
   },
   "event_forwarder_servicenow.py": {
-    "category": "ARGSPEC_DRIFT",
-    "msg": "Akeyless API call event_forwarder_create_service_now failed: {\"error\":\"invalid request body: Missing required parameter - Host\"}\n",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call event_forwarder_create_service_now failed: {\"error\":\"can't set soruce stub. please check cluster existenace, permissions or configuration\"}\n",
+    "run_id": "20260522-201225"
   },
   "event_forwarder_slack.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call event_forwarder_create_slack failed: {\"error\":\"can't set soruce stub. please check cluster existenace, permissions or configuration\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "event_forwarder_teams.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call event_forwarder_create_teams failed: {\"error\":\"can't set soruce stub. please check cluster existenace, permissions or configuration\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "event_forwarder_webhook.py": {
-    "category": "ARGSPEC_DRIFT",
-    "msg": "Akeyless API call event_forwarder_create_webhook failed: {\"error\":\"invalid request body: Missing required parameter - EndpointURL\"}\n",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call event_forwarder_create_webhook failed: {\"error\":\"can't set soruce stub. please check cluster existenace, permissions or configuration\"}\n",
+    "run_id": "20260522-201225"
   },
   "folder.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_allowed_access.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: ValueError: Invalid value for `access_id`, must not be `None`",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call gateway_create_allowed_access failed: {\"error\":\"command is not available on public gateway 'gateway-create-allowed-access'\"}\n",
+    "run_id": "20260522-201225"
   },
   "gateway_customer_fragments_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_list_customer_fragments failed: {\"error\":\"command is not available on public gateway 'gateway-list-customer-fragments'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_k8s_auth_config.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: ValueError: Invalid value for `access_id`, must not be `None`",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call gateway_create_k8_s_auth_config failed: {\"error\":\"command is not available on public gateway 'gateway-create-k8s-auth-config'\"}\n",
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_aws_s3.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_aws_s3 failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-aws-s3'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_azure_analytics.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_azure_analytics failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-azure-analytics'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_datadog.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_datadog failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-datadog'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_elasticsearch.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_elasticsearch failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-elasticsearch'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_google_chronicle.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_google_chronicle failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-google-chronicle'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_logstash.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_logstash failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-logstash'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_logz_io.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_logz_io failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-logz-io'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_splunk.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_splunk failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-splunk'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_stdout.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_stdout failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-stdout'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_sumologic.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_sumologic failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-sumologic'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_log_forwarding_syslog.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_update_log_forwarding_syslog failed: {\"error\":\"command is not available on public gateway 'gateway-update-log-forwarding-syslog'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_migration.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_migration failed: {\"error\":\"command is not available on public gateway 'gateway-create-migration'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_migrations_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_list_migration failed: {\"error\":\"command is not available on public gateway 'gateway-list-migration'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_artifactory.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_artifactory failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-artifactory'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_aws.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_aws failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-aws'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_azure.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_azure failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-azure'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_cassandra.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_cassandra failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-cassandra'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_custom.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: TypeError: V2Api.gateway_create_producer_custom() takes 1 positional argument but 2 were given",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call gateway_create_producer_custom failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-custom'\"}\n",
+    "run_id": "20260522-201225"
   },
   "gateway_producer_dockerhub.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_dockerhub failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-dockerhub'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_eks.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_eks failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-eks'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_gcp.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_gcp failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-gcp'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_github.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_github failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-github'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_gke.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_gke failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-gke'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_hanadb.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_hana_db failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-hanadb'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_k8s.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_native_k8_s failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-k8s'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_ldap.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_ldap failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-ldap'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_mongo.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_mongo failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-mongo'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_mssql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_mssql failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-mssql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_mysql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_my_sql failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-mysql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_oracle.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_oracle_db failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-oracle'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_ping.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_ping failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-ping'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_postgresql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_postgre_sql failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-postgresql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_rabbitmq.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_rabbit_mq failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-rabbitmq'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_rdp.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_rdp failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-rdp'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_redis.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_redis failed: {\"error\":\"unknown command 'gateway-create-producer-Redis'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_redshift.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_redshift failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-redshift'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_snowflake.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_snowflake failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-snowflake'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producer_venafi.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_create_producer_venafi failed: {\"error\":\"command is not available on public gateway 'gateway-create-producer-certificate-automation'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_producers_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_list_producers failed: {\"error\":\"command is not available on public gateway 'gateway-list-producers'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateway_rotated_secrets_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call gateway_list_rotated_secrets failed: {\"error\":\"command is not available on public gateway 'gateway-list-rotated-secrets'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "gateways_info.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "generate_ca.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call generate_ca failed: {\"error\":\"invalid request body: invalid key type \"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "generate_csr.py": {
     "category": "NEEDS_PREREQ",
-    "msg": "Akeyless API call generate_csr failed: {\"error\":\"cannot get key /test-live/20260522-193119/generate_csr: Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain item /test-live/20260522-193119/generate_csr\"",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call generate_csr failed: {\"error\":\"cannot get key /test-live/20260522-201225/generate_csr: Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain item /test-live/20260522-201225/generate_csr\"",
+    "run_id": "20260522-201225"
   },
   "get_cert_challenge.py": {
     "category": "API_REJECTED",
-    "msg": "Akeyless API call get_cert_challenge failed: {\"error\":\"invalid request body: access-id is required\"}\n",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call get_cert_challenge failed: {\"error\":\"invalid request body: either cert-data or cert-file-name must be provided\"}\n",
+    "run_id": "20260522-201225"
   },
   "group.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call create_group failed: {\"error\":\"invalid request body: cannot parse access-user-assignment: unexpected end of JSON input\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "group_info.py": {
     "category": "NEEDS_PREREQ",
-    "msg": "Akeyless API call get_group failed: {\"error\":\"failed to get group. Error: Desc: Failed to get group. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain group /test-live/20260522-193119/group_info from account acc-x1m0223zo1Tm\"}",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call get_group failed: {\"error\":\"failed to get group. Error: Desc: Failed to get group. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain group /test-live/20260522-201225/group_info from account acc-x1m0223zo1Tm\"}",
+    "run_id": "20260522-201225"
   },
   "groups_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call list_groups failed: {\"error\":\"unknown command 'list-group'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "hmac.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call hmac failed: {\"error\":\"invalid request body: must provide either --in or --plaintext\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "kmip_client.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: TypeError: V2Api.kmip_describe_client() takes 1 positional argument but 2 were given",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call kmip_create_client failed: {\"error\":\"command is not available on public gateway 'kmip-create-client'\"}\n",
+    "run_id": "20260522-201225"
   },
   "kmip_client_v2.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: TypeError: V2Api.kmip_describe_client() takes 1 positional argument but 2 were given",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call kmip_create_client failed: {\"error\":\"command is not available on public gateway 'kmip-create-client'\"}\n",
+    "run_id": "20260522-201225"
   },
   "kmip_environment.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: TypeError: V2Api.kmip_describe_server() takes 1 positional argument but 2 were given",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call kmip_server_setup failed: {\"error\":\"unknown command 'kmip-create-environment'\"}\n",
+    "run_id": "20260522-201225"
   },
   "kmip_environment_v2.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: TypeError: V2Api.kmip_describe_server() takes 1 positional argument but 2 were given",
-    "run_id": "20260522-193119"
+    "category": "API_REJECTED",
+    "msg": "Akeyless API call kmip_server_setup failed: {\"error\":\"unknown command 'kmip-create-environment'\"}\n",
+    "run_id": "20260522-201225"
   },
   "oidc_app.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call create_oidc_app failed: {\"error\":\"invalid request body: cannot parse permission-assignment: unexpected end of JSON input\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "pki_cert_issuer.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call create_pki_cert_issuer failed: {\"error\":\"invalid request body: failed to parse max ttl param\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "policies_info.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
-  },
-  "policy.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: ValueError: Invalid value for `id`, must not be `None`",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "provision_certificate.py": {
     "category": "NEEDS_PREREQ",
-    "msg": "Akeyless API call provision_certificate failed: {\"error\":\"failed to read certificate details: Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain item /test-live/20260522-193119/provision_certificate\"}\n",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call provision_certificate failed: {\"error\":\"failed to read certificate details: Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain item /test-live/20260522-201225/provision_certificate\"}\n",
+    "run_id": "20260522-201225"
   },
   "renew_certificate.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call renew_certificate failed: {\"error\":\"invalid request body: either name or item id should be provided\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "revoke_certificate.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call revoke_certificate failed: {\"error\":\"invalid request body: certificate name, item id or certificate serial number are required\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "role.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "role_auth_method_assoc.py": {
     "category": "NEEDS_PREREQ",
-    "msg": "Akeyless API call assoc_role_auth_method failed: {\"error\":\"failed to create an association between role '/test-live/20260522-193119/role_auth_method_assoc' and auth method 'stub': Desc: Failed to create role auth method association. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call assoc_role_auth_method failed: {\"error\":\"failed to create an association between role '/test-live/20260522-201225/role_auth_method_assoc' and auth method 'stub': Desc: Failed to create role auth method association. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m",
+    "run_id": "20260522-201225"
   },
   "role_rule.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call set_role_rule failed: {\"error\":\"invalid request body: invalid capability 'stub'; valid options are: [deny create read update delete list]\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_aws.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_aws failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-aws'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_azure.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_azure failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-azure'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_cassandra.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_cassandra failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-cassandra'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_custom.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_custom failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-custom'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_delete_sync.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_delete_sync failed: {\"error\":\"delete sync failed: Desc: Failed to delete secret sync. Status 401 Unauthorized, Error: NotAllowedForThisGateway. Message: Invalid client credentials - AccessId p-nn5huxl36myiam isn't authorized to perform actions on this route\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_dockerhub.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_dockerhub failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-dockerhub'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_gcp.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_gcp failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-gcp'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_hanadb.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_hanadb failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-hanadb'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_ldap.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_ldap failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-ldap'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_mongodb.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_mongodb failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-mongodb'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_mssql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_mssql failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-mssql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_mysql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_mysql failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-mysql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_openai.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_open_ai failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-openai'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_oracledb.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_oracledb failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-oracledb'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_postgresql.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_postgresql failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-postgresql'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_redis.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_redis failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-redis'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_redshift.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_redshift failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-redshift'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_snowflake.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_snowflake failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-snowflake'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_splunk.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_splunk failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-splunk'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_ssh.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_ssh failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-ssh'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_sync.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_sync failed: {\"error\":\"sync operation failed: Desc: Failed to sync all attached USCs with rotated secret value. Status 401 Unauthorized, Error: NotAllowedForThisGateway. Message: Invalid client credentials - AccessId p-nn5huxl36myiam isn't authorized to perform actio",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secret_windows.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_create_windows failed: {\"error\":\"command is not available on public gateway 'rotated-secret-create-windows'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "rotated_secrets_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call rotated_secret_list failed: {\"error\":\"command is not available on public gateway 'rotated-secret-list'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "sign_data_with_classic_key.py": {
     "category": "NEEDS_PREREQ",
-    "msg": "Akeyless API call sign_data_with_classic_key failed: {\"error\":\"failed to find classic key /test-live/20260522-193119/sign_data_with_classic_key . err : Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtai",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call sign_data_with_classic_key failed: {\"error\":\"failed to find classic key /test-live/20260522-201225/sign_data_with_classic_key . err : Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtai",
+    "run_id": "20260522-201225"
   },
   "sign_ecdsa.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call sign_ec_dsa failed: {\"error\":\"invalid request body: key-name or display-id or item-id must be supplied\"}\n",
-    "run_id": "20260522-193119"
+    "category": "NEEDS_PREREQ",
+    "msg": "Akeyless API call sign_ec_dsa failed: {\"error\":\"the signing process failed: Desc: failed to get item stub, Error: Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain item /stub\"}\n",
+    "run_id": "20260522-201225"
   },
   "sign_pkcs1.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call sign_pkcs1 failed: {\"error\":\"invalid request body: key-name or display-id or item-id must be supplied\"}\n",
-    "run_id": "20260522-193119"
+    "category": "NEEDS_PREREQ",
+    "msg": "Akeyless API call sign_pkcs1 failed: {\"error\":\"the signing process failed: Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain item /stub\"}\n",
+    "run_id": "20260522-201225"
   },
   "ssh_cert_issuer.py": {
     "category": "NEEDS_PREREQ",
     "msg": "Akeyless API call create_ssh_cert_issuer failed: {\"error\":\"failed to create ssh certificate issuer: Desc: Failed to create item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain item /stub\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "static_secret.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: ValueError: Invalid value for `value`, must not be `None`",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_artifactory.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_aws.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: ValueError: Invalid value for `access_key`, must not be `None`",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_azure.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_azure failed: {\"error\":\"invalid request body: azure client id must not be empty\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_db.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_db failed: {\"error\":\"invalid request body: invalid connection type: stub\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_dockerhub.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call target_create_dockerhub failed: {\"error\":\"missing DockerHub User name\"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_eks.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call target_create_eks failed: {\"error\":\"Cluster Endpoint must be a valid URL\"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_gcp.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call target_create_gcp failed: {\"error\":\"invalid request body: Missing service account key\"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_gemini.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call target_create_gemini failed: {\"error\":\"invalid request body: api-key must not be empty\"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_github.py": {
-    "category": "ARGSPEC_DRIFT",
-    "msg": "Akeyless API call target_create_github failed: {\"error\":\"invalid request body: Missing required parameter - application id\"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_gitlab.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_gitlab failed: {\"error\":\"gitlab target token must be non-empty\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_gke.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_gke failed: {\"error\":\"invalid request body: gke-account-key must not be empty\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_globalsign.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_globalsign_atlas.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_global_sign_atlas failed: {\"error\":\"invalid request body: either mtls-key-file-path or mtls-key-data-base64 must be provided\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_godaddy.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_hashi_vault.py": {
-    "category": "ARGSPEC_DRIFT",
-    "msg": "Akeyless API call target_create_hashi_vault failed: {\"error\":\"invalid request body: missing required parameter - hashi-url\"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_info.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_k8s.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_k8s failed: {\"error\":\"K8S bearer token cannot be empty\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_ldap.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_lets_encrypt.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_linked.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_linked failed: {\"error\":\"invalid request body: hosts must not be empty\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_openai.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call target_create_open_ai failed: {\"error\":\"invalid request body: api-key must not be empty\"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_ping.py": {
     "category": "API_REJECTED",
-    "msg": "Akeyless API call target_create_ping failed: {\"error\":\"invalid request body: password must not be empty, Error: \"}\n",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call target_create_ping failed: {\"error\":\"invalid request body: invalid PingFederate URL\"}\n",
+    "run_id": "20260522-201225"
   },
   "target_rabbitmq.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_rabbit_mq failed: {\"error\":\"invalid request body: rabbitmq server password must not be empty\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_salesforce.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call target_create_salesforce failed: {\"error\":\"invalid request body: auth-flow must be either 'jwt' or 'user-password'\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_sectigo.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_splunk.py": {
     "category": "API_REJECTED",
-    "msg": "Akeyless API call target_create_splunk failed: {\"error\":\"invalid splunk url: parse \\\"stub\\\": invalid URI for request\"}\n",
-    "run_id": "20260522-193119"
+    "msg": "Akeyless API call target_create_splunk failed: {\"error\":\"missing username for splunk target\"}\n",
+    "run_id": "20260522-201225"
   },
   "target_ssh.py": {
-    "category": "ARGSPEC_DRIFT",
-    "msg": "Akeyless API call target_create_ssh failed: {\"error\":\"invalid request body: Missing required parameter - private-key/ssh-password\"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_web.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "target_windows.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call target_create_windows failed: {\"error\":\"invalid request body: password must not be empty, Error: \"}\n",
-    "run_id": "20260522-193119"
+    "category": "WORKS",
+    "msg": "",
+    "run_id": "20260522-201225"
   },
   "target_zerossl.py": {
     "category": "WORKS",
     "msg": "",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "tokenizer.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call create_tokenizer failed: {\"error\":\"invalid request body: tokenizer type stub not supported\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "uid_generate_token.py": {
     "category": "NEEDS_PREREQ",
     "msg": "Akeyless API call uid_generate_token failed: {\"error\":\"failed to generate universal identity token: Desc: universal identity token generation failed, Error: Desc: Failed to generate universal identity token. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "uid_rotate_token.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call uid_rotate_token failed: {\"error\":\"failed to load UID token : Empty UID token\"}\n",
-    "run_id": "20260522-193119"
-  },
-  "usc.py": {
-    "category": "DISPATCH_FAIL",
-    "msg": "unhandled exception: ValueError: Invalid value for `secret_id`, must not be `None`",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "usc_info.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call usc_list failed: {\"error\":\"failed to list universal secrets: Desc: Failed to list universal secrets. Status 401 Unauthorized, Error: ListUniversalSecretFailed. Message: failed to get item details for stub. error: Desc: Failed to get item. Status 401 Unauthorized, Error: Unauthorize",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "validate_certificate_challenge.py": {
     "category": "API_REJECTED",
     "msg": "Akeyless API call validate_certificate_challenge failed: {\"error\":\"invalid request body: either --name or --cert-display-id is required\"}\n",
-    "run_id": "20260522-193119"
+    "run_id": "20260522-201225"
   },
   "verify_ecdsa.py": {
-    "category": "API_REJECTED",
-    "msg": "Akeyless API call verify_ec_dsa failed: {\"error\":\"invalid request body: key-name or display-id or item-id must be supplied\"}\n",
-    "run_id": "20260522-193119"
+    "category": "NEEDS_PREREQ",
+    "msg": "Akeyless API call verify_ec_dsa failed: {\"error\":\"verification process failed: Desc: failed to get item stub, Error: Desc: Failed to get item. Status 404 Not Found, Error: NotFound. Message: account id: acc-x1m0223zo1Tm, access id: p-nn5huxl36myiam. failed to obtain item /stub\"}\n",
+    "run_id": "20260522-201225"
   }
 }

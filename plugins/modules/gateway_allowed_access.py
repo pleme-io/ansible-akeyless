@@ -104,7 +104,8 @@ def main():
         'permissions': {'type': 'str'},
         'sub_claims': {'type': 'dict'},
         'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
+        # NOTE: no auth-side `access_id` here -- the resource field above
+        # shadows it. Auth `access_id` comes from AKEYLESS_ACCESS_ID env.
         'access_key': {'type': 'str', 'no_log': True},
         'access_type': {'type': 'str', 'default': 'access_key'},
     }

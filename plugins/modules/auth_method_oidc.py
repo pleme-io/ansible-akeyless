@@ -161,7 +161,7 @@ def main():
         'expiration_event_in': {'type': 'list', 'elements': 'str'},
         'force_sub_claims': {'type': 'bool'},
         'gw_bound_ips': {'type': 'list', 'elements': 'str'},
-        'issuer': {'type': 'str'},
+        'issuer': {'type': 'str', 'required': True},
         'jwt_ttl': {'type': 'int'},
         'name': {'type': 'str', 'required': True},
         'product_type': {'type': 'list', 'elements': 'str'},

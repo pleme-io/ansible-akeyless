@@ -94,7 +94,7 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'description': {'type': 'str'},
-        'gcp_key': {'type': 'str', 'no_log': True},
+        'gcp_key': {'type': 'str', 'no_log': True, 'required': True},
         'key': {'type': 'str'},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},

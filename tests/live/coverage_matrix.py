@@ -69,6 +69,17 @@ _SKIP_MODULES = {
     "uid_list_children.py":  "needs uid_token_id from a generated parent",
     "uid_revoke_token.py":   "needs revoke_token",
     "uid_create_child_token.py": "needs uid_token_id from parent",
+    # id-based CRUD (SDK Get/Update/Delete take `id`, not `name`).
+    # Idempotent dispatch would need a list-by-name fallback — not in
+    # the current generator. Module dispatches fine when caller passes
+    # an explicit `id`; the auto-stub can't synthesize a valid id.
+    "account_custom_field.py": "SDK Get/Update/Delete use `id`, not `name` — needs explicit id from list",
+    "policy.py":               "SDK PoliciesGet/Update/Delete use `id`, not path — needs id discovery",
+    # esm read_resource currently uses `name`, but SDK's EsmGet requires
+    # esm_name + secret_id — secret_id needs list-discovery from
+    # secret_name. Module dispatches fine when caller pre-orchestrates.
+    "esm.py": "EsmGet needs secret_id — needs list-then-find from secret_name",
+    "usc.py": "UscGet/Update/Delete use secret_id, UscCreate uses secret_name — split CRUD",
 }
 
 
@@ -89,6 +100,27 @@ def _parse_argspec(module_path):
     return None
 
 
+def _parse_required_if(module_path):
+    """Extract field names that become required when state=present from
+    the AnsibleModule(..., required_if=[...]) call. Lets the stub fill
+    them so the SDK model constructor doesn't reject None on dispatch."""
+    fields = []
+    tree = ast.parse(module_path.read_text())
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            for kw in node.keywords:
+                if kw.arg == "required_if" and isinstance(kw.value, ast.List):
+                    for cond in kw.value.elts:
+                        if isinstance(cond, ast.Tuple) and len(cond.elts) >= 3:
+                            try:
+                                key, val, required = ast.literal_eval(cond)[:3]
+                            except (ValueError, SyntaxError):
+                                continue
+                            if key == "state" and val == "present" and isinstance(required, (list, tuple)):
+                                fields.extend(required)
+    return fields
+
+
 # Type-aware stubs. Tweak by module-specific heuristic for fields that
 # carry semantic constraints (name conventions, etc.).
 _STUBS = {
@@ -103,14 +135,41 @@ _STUBS = {
 }
 
 
-def _minimal_params(argspec, run_id, module_name):
+def _smart_stub(field_name):
+    """Per-field semantic stubs so the API doesn't reject obvious junk.
+    Matches by substring on the field name; ordered from most specific
+    to least specific."""
+    n = field_name.lower()
+    if "url" in n or "endpoint" in n:
+        return "https://example.invalid/akeyless-coverage-stub"
+    if "email" in n:
+        return "akeyless-coverage-stub@example.invalid"
+    if n.endswith("_arn") or n == "role_arn":
+        return "arn:aws:iam::000000000000:role/stub"
+    if "region" in n:
+        return "us-east-1"
+    if "algorithm" in n or n.endswith("_algo"):
+        return "RSA2048"
+    if "host" in n or "address" in n:
+        return "stub.example.invalid"
+    if "port" in n:
+        return "443"
+    if n in {"private_key", "ssh_password", "password"}:
+        return "stub-credential"
+    return "stub"
+
+
+def _minimal_params(argspec, run_id, module_name, required_if_fields=()):
     params = {}
     for name, opts in (argspec or {}).items():
         if not isinstance(opts, dict):
             continue
-        if opts.get("required"):
+        if opts.get("required") or name in required_if_fields:
             t = opts.get("type", "str")
-            params[name] = _STUBS.get(t, "stub")
+            if t == "str":
+                params[name] = _smart_stub(name)
+            else:
+                params[name] = _STUBS.get(t, "stub")
     # Identity fields → unique cleanup-friendly path
     test_path = f"/test-live/{run_id}/{module_name}"
     for key in ("name", "role_name", "am_name"):
@@ -119,8 +178,8 @@ def _minimal_params(argspec, run_id, module_name):
             break
     # Sensible elements for list-of-strings
     for k, opts in (argspec or {}).items():
-        if isinstance(opts, dict) and opts.get("type") == "list" and opts.get("required") and opts.get("elements") == "str":
-            params[k] = ["stub"]
+        if isinstance(opts, dict) and opts.get("type") == "list" and (opts.get("required") or k in required_if_fields) and opts.get("elements") == "str":
+            params[k] = [_smart_stub(k)]
     return params
 
 
@@ -180,10 +239,22 @@ def _run_module_against_real_api(module_filename, params):
             else:
                 resolved[key] = None
         resolved.update(params or {})
-        # Inject auth from env so the SDK can authenticate
-        resolved.setdefault("access_id", os.environ.get("AKEYLESS_ACCESS_ID", ""))
-        resolved.setdefault("access_key", os.environ.get("AKEYLESS_ACCESS_KEY", ""))
-        resolved.setdefault("gateway_url", os.environ.get("AKEYLESS_GATEWAY_URL", "https://api.akeyless.io"))
+        # Inject auth from env so the SDK can authenticate. Three of
+        # the auto-generated modules (gateway_allowed_access,
+        # gateway_k8s_auth_config, target_aws) have resource fields
+        # whose names collide with auth fields (`access_id` /
+        # `access_key`). In real use, the user passes one or the other
+        # — in this stub run we always want env-based auth to win, so
+        # we overwrite (not setdefault) when env is present.
+        for env_key, param_key in (
+            ("AKEYLESS_ACCESS_ID", "access_id"),
+            ("AKEYLESS_ACCESS_KEY", "access_key"),
+            ("AKEYLESS_GATEWAY_URL", "gateway_url"),
+        ):
+            env_val = os.environ.get(env_key)
+            if env_val:
+                resolved[param_key] = env_val
+        resolved.setdefault("gateway_url", "https://api.akeyless.io")
         module.params = resolved
         module.check_mode = False
         module.argument_spec = argument_spec
@@ -271,7 +342,8 @@ def test_module_live_dispatch(module_file, run_id):
     if argspec is None:
         pytest.skip("could not parse argspec")
 
-    params = _minimal_params(argspec, run_id, module_file[:-3])
+    required_if_fields = _parse_required_if(MODULES_DIR / module_file)
+    params = _minimal_params(argspec, run_id, module_file[:-3], required_if_fields)
     kwargs, code = _run_module_against_real_api(module_file, params)
     category = _classify(kwargs) if code == 0 else (code if isinstance(code, str) else _classify(kwargs))
 

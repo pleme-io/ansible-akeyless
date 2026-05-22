@@ -94,8 +94,8 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'description': {'type': 'str'},
-        'dockerhub_password': {'type': 'str', 'no_log': True},
-        'dockerhub_username': {'type': 'str'},
+        'dockerhub_password': {'type': 'str', 'no_log': True, 'required': True},
+        'dockerhub_username': {'type': 'str', 'required': True},
         'key': {'type': 'str'},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
