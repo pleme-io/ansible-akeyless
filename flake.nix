@@ -122,6 +122,18 @@
                   exit 1
                 fi
 
+                # Set up an isolated venv with ansible + akeyless SDK
+                # (akeyless isn't in nixpkgs). Cached at $XDG_CACHE_HOME
+                # so re-runs are fast.
+                cache="''${XDG_CACHE_HOME:-$HOME/.cache}/ansible-akeyless-livetest"
+                if [ ! -x "$cache/bin/ansible-playbook" ]; then
+                  echo "[live-test] bootstrapping venv at $cache (one-time)"
+                  ${pkgs.python3}/bin/python3 -m venv "$cache"
+                  "$cache/bin/pip" install --quiet --upgrade pip
+                  "$cache/bin/pip" install --quiet ansible 'akeyless>=5.0.22' pyyaml
+                fi
+                export PATH="$cache/bin:$PATH"
+
                 # Decrypt to a tmpfile, extract, then shred. The decrypted
                 # plaintext never crosses a logged boundary.
                 dec="$(mktemp)"
@@ -135,9 +147,9 @@
                 export AKEYLESS_GATEWAY_URL="''${AKEYLESS_GATEWAY_URL:-https://api.akeyless.io}"
 
                 # Build + install the collection so playbooks resolve modules.
-                ${pkgs.nix}/bin/nix run .#build
-                tarball=$(ls -1 ./*.tar.gz | head -n1)
-                ${pkgs.ansible}/bin/ansible-galaxy collection install "$tarball" --force
+                ansible-galaxy collection build --force --output-path .build
+                tarball=$(ls -1 .build/*.tar.gz | head -n1)
+                ansible-galaxy collection install "$tarball" --force
 
                 # Run every live example. Any failure fails the app.
                 shopt -s nullglob
@@ -148,7 +160,7 @@
                 failures=0
                 for p in "''${plays[@]}"; do
                   echo "::group::ansible-playbook $p"
-                  if ${pkgs.ansible}/bin/ansible-playbook "$p"; then
+                  if ansible-playbook "$p"; then
                     echo "ok: $p"
                   else
                     failures=$((failures + 1))
