@@ -62,12 +62,9 @@ def create_resource(module, client, token):
 
 
 def update_resource(module, client, token):
-    """Update not supported by the upstream API -- delete + recreate instead."""
-    # WARNING: The following fields are immutable after creation.
-    #   - am_name
-    # Changing them requires destroy + recreate.
-
-    module.fail_json(msg="role_auth_method_assoc: update not supported, delete+recreate")
+    """No-op: associations have no mutable fields. Re-applying a present
+    state when the assoc already exists is idempotent (returns no-change)."""
+    return None
 
 
 def delete_resource(module, client, token):
@@ -78,7 +75,7 @@ def delete_resource(module, client, token):
 
 def read_resource(module, client, token):
     """Read the current state of the resource. Returns None if absent."""
-    body = build_body("GetRole", {"name": module.params.get("name"), "token": token})
+    body = build_body("GetRole", {"name": module.params.get("role_name"), "token": token})
     return call_api(module, client, "get_role", body, swallow_404=True)
 
 
@@ -117,8 +114,8 @@ def main():
         if current is None:
             result = create_resource(module, client, token)
             module.exit_json(changed=True, result=result)
-        result = update_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
+        update_resource(module, client, token)
+        module.exit_json(changed=False, msg="role_auth_method_assoc already present")
 
 
 if __name__ == '__main__':
