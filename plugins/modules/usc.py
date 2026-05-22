@@ -74,7 +74,8 @@ RETURN = r'''
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body,
+    get_client, call_api, build_body, compute_diff, drift_to_diff,
+    IDEMPOTENCY_IGNORE_KEYS,
 )
 
 
@@ -132,21 +133,32 @@ def main():
     state = module.params.get('state', 'present')
     current = read_resource(module, client, token)
 
-    if module.check_mode:
-        changed = (current is None and state == 'present') or (current is not None and state == 'absent')
-        module.exit_json(changed=changed)
-
     if state == 'absent':
-        if current is not None:
-            result = delete_resource(module, client, token)
-            module.exit_json(changed=True, result=result)
-        module.exit_json(changed=False, msg="usc already absent")
-    else:
         if current is None:
-            result = create_resource(module, client, token)
-            module.exit_json(changed=True, result=result)
-        result = update_resource(module, client, token)
+            module.exit_json(changed=False, msg="usc already absent")
+        if module.check_mode:
+            module.exit_json(changed=True)
+        result = delete_resource(module, client, token)
         module.exit_json(changed=True, result=result)
+
+    # state == 'present'
+    if current is None:
+        if module.check_mode:
+            module.exit_json(changed=True)
+        result = create_resource(module, client, token)
+        module.exit_json(changed=True, result=result)
+
+    # Resource exists -- only update if any desired field differs
+    # from what's in the SDK Get response. Honest convergence:
+    # no drift => no API call => changed=False.
+    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
+    if not drift:
+        module.exit_json(changed=False, msg="usc already in desired state")
+    diff = drift_to_diff(drift)
+    if module.check_mode:
+        module.exit_json(changed=True, diff=diff)
+    result = update_resource(module, client, token)
+    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':
