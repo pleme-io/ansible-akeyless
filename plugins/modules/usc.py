@@ -112,7 +112,7 @@ def main():
         'object_type': {'type': 'str'},
         'pfx_password': {'type': 'str'},
         'region': {'type': 'str'},
-        'secret_name': {'type': 'str', 'required': True},
+        'secret_id': {'type': 'str', 'required': True},
         'tags': {'type': 'dict'},
         'usc_encryption_key': {'type': 'str'},
         'usc_name': {'type': 'str', 'required': True},

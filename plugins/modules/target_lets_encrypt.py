@@ -113,7 +113,7 @@ def main():
         'acme_challenge': {'type': 'str'},
         'description': {'type': 'str'},
         'dns_target_creds': {'type': 'str'},
-        'email': {'type': 'str'},
+        'email': {'required': True, 'type': 'str'},
         'gcp_project': {'type': 'str'},
         'hosted_zone': {'type': 'str'},
         'key': {'type': 'str'},

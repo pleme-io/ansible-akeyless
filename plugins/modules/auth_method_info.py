@@ -43,7 +43,7 @@ def read_resource(module, client, token):
 
 def main():
     argument_spec = {
-        'name': {'type': 'str'},
+        'name': {'required': True, 'type': 'str'},
         'gateway_url': {'type': 'str'},
         'access_id': {'type': 'str'},
         'access_key': {'type': 'str', 'no_log': True},
