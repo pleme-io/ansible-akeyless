@@ -120,11 +120,11 @@ def read_resource(module, client, token):
 def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'artifactory_admin_name': {'type': 'str'},
-        'artifactory_admin_pwd': {'type': 'str', 'no_log': True},
+        'artifactory_admin_name': {'type': 'str', 'required': True},
+        'artifactory_admin_pwd': {'type': 'str', 'no_log': True, 'required': True},
         'artifactory_token_audience': {'type': 'str', 'required': True},
         'artifactory_token_scope': {'type': 'str', 'required': True},
-        'base_url': {'type': 'str'},
+        'base_url': {'type': 'str', 'required': True},
         'custom_username_template': {'type': 'str'},
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},

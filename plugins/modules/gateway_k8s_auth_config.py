@@ -130,7 +130,7 @@ def main():
         'cluster_api_type': {'type': 'str'},
         'disable_issuer_validation': {'type': 'str'},
         'k8s_auth_type': {'type': 'str'},
-        'k8s_ca_cert': {'type': 'str'},
+        'k8s_ca_cert': {'type': 'str', 'required': True},
         'k8s_client_certificate': {'type': 'str'},
         'k8s_client_key': {'type': 'str'},
         'k8s_host': {'type': 'str', 'required': True},
@@ -140,7 +140,7 @@ def main():
         'rancher_cluster_id': {'type': 'str'},
         'signing_key': {'type': 'str', 'required': True},
         'token_exp': {'type': 'int'},
-        'token_reviewer_jwt': {'type': 'str'},
+        'token_reviewer_jwt': {'type': 'str', 'required': True},
         'use_gw_service_account': {'type': 'bool'},
         'gateway_url': {'type': 'str'},
         # NOTE: no auth-side `access_id` here -- the resource field above
