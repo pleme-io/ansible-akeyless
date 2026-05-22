@@ -1,0 +1,152 @@
+;;; live-coverage-gateway.tlisp
+;;;
+;;; Spin up an Akeyless Gateway (akeyless/base) in a rootless podman
+;;; container, register it against the dev account, then run the
+;;; coverage matrix against http://localhost:8081. The gateway unlocks
+;;; the ~90 "command is not available on public gateway" modules so
+;;; their dispatch + SDK-shape can be validated end-to-end.
+;;;
+;;; Driven by `nix run .#live-coverage-gateway`. The caller has already
+;;; materialized the uv-managed .venv (PATH is on it) and provides
+;;; PODMAN_BIN (resolved at flake-eval time so we never PATH-shop).
+;;;
+;;; Required env:
+;;;   NIX_REPO_PATH — pleme-io/nix checkout (defaults to <PWD>/../nix)
+;;;   PODMAN_BIN    — absolute path to a podman binary
+;;;   CURL_BIN      — absolute path to a curl binary
+
+(define repo-path
+  (env-get "NIX_REPO_PATH"
+           (string-append (env-required "PWD") "/../nix")))
+(define secrets-yaml (string-append repo-path "/secrets.yaml"))
+(define podman (env-required "PODMAN_BIN"))
+(define curl   (env-required "CURL_BIN"))
+
+(define access-id  (sops-extract secrets-yaml "[\"akeyless\"][\"access-id\"]"))
+(define access-key (sops-extract secrets-yaml "[\"akeyless\"][\"access-key\"]"))
+
+(define container "akeyless-gw-coverage")
+(define cluster   (string-format "cov-{}" (now)))
+(define image     "docker.io/akeyless/base:latest")
+
+;; ── helpers ───────────────────────────────────────────────────────
+
+(define (require-zero rc label)
+  (when (not (= rc 0))
+    (eprint-line (string-format "[gateway] {} failed (rc={})" label rc))
+    (exit rc)))
+
+(define (run-podman &rest args)
+  ;; Apply podman to the arg list, returning the exit code.
+  (apply exec-check (cons podman args)))
+
+(define (probe-auth)
+  ;; Hit /auth with our creds. Return #t iff the response contains a
+  ;; "token" key (gateway booted + creds valid).
+  (let ((body (exec-capture
+                curl "-sS" "--max-time" "3" "-X" "POST"
+                "http://localhost:8081/auth"
+                "-H" "Content-Type: application/json"
+                "-d" (string-format
+                       "{\"access-id\":\"{}\",\"access-key\":\"{}\",\"access-type\":\"access_key\"}"
+                       access-id access-key))))
+    ;; exec-capture returns ((:status N) (:stdout "...") (:stderr "..."))
+    (let ((stdout (alist-get body :stdout "")))
+      (string-contains? stdout "\"token\""))))
+
+(define (wait-for-auth attempts-left)
+  (cond
+    ((probe-auth)
+     (println (string-format "[gateway] /auth ready after ~{}s"
+                             (- 120 attempts-left))))
+    ((= attempts-left 0)
+     (eprint-line "[gateway] never became ready within 120s")
+     (run-podman "logs" "--tail=30" container)
+     (exit 1))
+    (else
+      (sleep 1)
+      (wait-for-auth (- attempts-left 1)))))
+
+;; ── cleanup contract ──────────────────────────────────────────────
+;; defer-on-exit isn't a primitive; we manually wrap with a final
+;; cleanup at every exit path via tail-calling cleanup-then-exit.
+
+(define (cleanup)
+  ;; Best-effort: stop + remove. Failures are non-fatal.
+  (run-podman "stop"  container)
+  (run-podman "rm"    container))
+
+(define (cleanup-then-exit rc)
+  (cleanup)
+  (exit rc))
+
+;; ── boot the gateway ──────────────────────────────────────────────
+
+;; Drop any stale container from a prior run.
+(run-podman "rm" "-f" container)
+
+(println "[gateway] pulling akeyless/base (first run ~2min)…")
+(let ((pull-rc (run-podman "pull" "-q" image)))
+  (when (not (= pull-rc 0))
+    (eprint-line (string-format "[gateway] image pull failed (rc={})" pull-rc))
+    (exit pull-rc)))
+
+(println (string-format "[gateway] starting {} (cluster {})…" container cluster))
+(let ((run-rc (run-podman
+                "run" "-d" "--name" container
+                "-e" (string-append "ADMIN_ACCESS_ID="  access-id)
+                "-e" (string-append "ADMIN_ACCESS_KEY=" access-key)
+                "-e" (string-append "CLUSTER_NAME="     cluster)
+                "-p" "8000:8000" "-p" "8080:8080" "-p" "8081:8081"
+                "-p" "8200:8200" "-p" "18888:18888"
+                image)))
+  (when (not (= run-rc 0))
+    (eprint-line (string-format "[gateway] container start failed (rc={})" run-rc))
+    (exit run-rc)))
+
+(println "[gateway] waiting for /auth…")
+(wait-for-auth 120)
+
+;; /auth responding doesn't mean the gateway's KMIP / producer
+;; sub-services finished booting; a brief warmup avoids a
+;; ConnectionReset burst from the first wave of pytest workers.
+(println "[gateway] warming up (10s)…")
+(sleep 10)
+
+;; ── run the matrix ────────────────────────────────────────────────
+
+(env-set "AKEYLESS_ACCESS_ID"  access-id)
+(env-set "AKEYLESS_ACCESS_KEY" access-key)
+(env-set "AKEYLESS_GATEWAY_URL" "http://localhost:8081")
+;; 15s SDK timeout: gateway-bound ops dial real services to validate
+;; stub data; without this, the matrix takes 60+ min instead of ~5.
+(env-set "AKEYLESS_REQUEST_TIMEOUT"
+         (env-get "AKEYLESS_REQUEST_TIMEOUT" "15"))
+
+(define workers (env-get "PYTEST_WORKERS" "1"))
+(define timeout (env-get "PYTEST_TIMEOUT" "90"))
+
+(define pytest-rc
+  (exec-check "pytest" "tests/live/coverage_matrix.py"
+              "-q" "--tb=line" "-p" "no:cacheprovider"
+              "-n" workers
+              "--timeout" timeout))
+
+(println "")
+(println "=== coverage matrix summary (LOCAL GATEWAY) ===")
+(define matrix (json-parse (read-file "tests/live/MATRIX.json")))
+(println (string-format "total modules: {}" (length matrix)))
+
+(define (entry-cat e) (alist-get (second e) "category"))
+(define (count-cat cat)
+  (count-if (lambda (e) (equal? (entry-cat e) cat)) matrix))
+
+(for-each
+  (lambda (cat)
+    (let ((n (count-cat cat)))
+      (when (> n 0)
+        (println (string-format "  {} {}" cat n)))))
+  (list "WORKS" "API_REJECTED" "NEEDS_PREREQ" "ARGSPEC_DRIFT"
+        "DISPATCH_FAIL" "TIMEOUT" "OTHER"))
+
+(cleanup-then-exit pytest-rc)

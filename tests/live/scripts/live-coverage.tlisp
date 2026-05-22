@@ -1,0 +1,66 @@
+;;; live-coverage.tlisp
+;;;
+;;; Run the per-module coverage matrix against api.akeyless.io (the
+;;; public Akeyless API). Replaces the shell body that used to live in
+;;; flake.nix. Driven by `nix run .#live-coverage`.
+;;;
+;;; Required env from the nix-app caller:
+;;;   NIX_REPO_PATH — path to the pleme-io/nix checkout (defaults to
+;;;                   <PWD>/../nix)
+;;; PATH is expected to already point at the uv-managed .venv (set by
+;;; the caller via uvSyncSnippet); we don't bootstrap python here.
+
+(define repo-path
+  (env-get "NIX_REPO_PATH"
+           (string-append (env-required "PWD") "/../nix")))
+(define secrets-yaml (string-append repo-path "/secrets.yaml"))
+
+;; sops-extract: in-process sops -d --extract. No tmpfile, no yq pipe.
+;; The plaintext never crosses a shell boundary that could log it.
+;; sops --extract uses pure bracket notation, including the top-level
+;; key (`["a"]["b"]`, not `.a.b`).
+(env-set "AKEYLESS_ACCESS_ID"
+         (sops-extract secrets-yaml "[\"akeyless\"][\"access-id\"]"))
+(env-set "AKEYLESS_ACCESS_KEY"
+         (sops-extract secrets-yaml "[\"akeyless\"][\"access-key\"]"))
+(env-set "AKEYLESS_GATEWAY_URL"
+         (env-get "AKEYLESS_GATEWAY_URL" "https://api.akeyless.io"))
+
+(define workers (env-get "PYTEST_WORKERS" "8"))
+(define timeout (env-get "PYTEST_TIMEOUT" "60"))
+
+;; pytest inherits the AKEYLESS_* env we just set.
+(define pytest-rc
+  (exec-check "pytest" "tests/live/coverage_matrix.py"
+              "-q" "--tb=no" "-p" "no:cacheprovider"
+              "-n" workers
+              "--timeout" timeout))
+
+;; Render the matrix summary from MATRIX.json. json-parse returns an
+;; alist (((module-name (("category" cat) ("msg" msg) ("run_id" id))) …))
+;; so each top-level entry's cdr is the inner alist of that module.
+(define matrix-path "tests/live/MATRIX.json")
+(define matrix (json-parse (read-file matrix-path)))
+
+(println "")
+(println "=== coverage matrix summary ===")
+(println (string-format "total modules: {}" (length matrix)))
+
+(define (entry-category entry)
+  (alist-get (second entry) "category"))
+
+(define (count-cat cat)
+  (count-if (lambda (e) (equal? (entry-category e) cat)) matrix))
+
+(define categories
+  (list "WORKS" "API_REJECTED" "NEEDS_PREREQ" "ARGSPEC_DRIFT"
+        "DISPATCH_FAIL" "TIMEOUT" "OTHER"))
+
+(for-each
+  (lambda (cat)
+    (let ((n (count-cat cat)))
+      (when (> n 0)
+        (println (string-format "  {} {}" cat n)))))
+  categories)
+
+(exit pytest-rc)

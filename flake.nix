@@ -20,6 +20,18 @@
       let
         pkgs = import nixpkgs { inherit system; };
         ansibleCollection = import "${substrate}/lib/infra/ansible-collection.nix";
+
+        # Wrapper that turns a .tlisp file into something `nix run` can
+        # invoke. The actual logic of each flake app lives in
+        # tests/live/scripts/*.tlisp (read-file-from-disk -> compiled by
+        # tatara-script). The only shell remaining in the apps is the
+        # uvSyncSnippet that materializes the venv path into PATH; the
+        # rest -- sops decrypt, podman lifecycle, pytest invocation,
+        # matrix summary -- runs in typed tatara-lisp.
+        mkTataraScript = import "${substrate}/lib/scripting/mkTataraScript.nix" {
+          inherit pkgs;
+          tataraScript = tatara-lisp.packages.${system}.tatara-script;
+        };
         base = ansibleCollection.mkAnsibleCollection pkgs {
           namespace = "drzln0";
           name = "akeyless";
@@ -139,32 +151,18 @@
             # each outcome (WORKS / ARGSPEC_DRIFT / NEEDS_PREREQ / DISPATCH_FAIL),
             # writes a matrix to tests/live/MATRIX.json. Only DISPATCH_FAIL
             # (real Python-side bug) fails the suite.
+            # The wrapper shell does the bare minimum: tell uv-sync where
+            # to materialize the venv (so PATH points at the lock-pinned
+            # pytest/ansible), then hand off to the typed tatara-lisp
+            # script. All logic -- sops decrypt, env plumbing, pytest
+            # invocation, matrix summary -- runs in .tlisp.
             live-coverage = {
               type = "app";
               program = toString (pkgs.writeShellScript "drzln0-akeyless-live-coverage" ''
                 set -euo pipefail
-                : "''${NIX_REPO_PATH:=$PWD/../nix}"
-                secrets_yaml="$NIX_REPO_PATH/secrets.yaml"
+                : "''${PWD:=$(pwd)}"
                 ${uvSyncSnippet}
-                dec="$(mktemp)"
-                trap 'shred -u "$dec" 2>/dev/null || rm -f "$dec"' EXIT
-                ${pkgs.sops}/bin/sops --decrypt "$secrets_yaml" > "$dec"
-                chmod 600 "$dec"
-                export AKEYLESS_ACCESS_ID="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-id"]'  "$dec")"
-                export AKEYLESS_ACCESS_KEY="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-key"]' "$dec")"
-                export AKEYLESS_GATEWAY_URL="''${AKEYLESS_GATEWAY_URL:-https://api.akeyless.io}"
-                pytest tests/live/coverage_matrix.py -q --tb=no -p no:cacheprovider \
-                  -n ''${PYTEST_WORKERS:-8} --timeout=''${PYTEST_TIMEOUT:-60} 2>&1 | tail -10
-                echo ""
-                echo "=== coverage matrix summary ==="
-                python3 - <<'PY'
-                import json, pathlib, collections
-                m = json.loads(pathlib.Path("tests/live/MATRIX.json").read_text())
-                counts = collections.Counter(v["category"] for v in m.values())
-                print(f"total modules: {len(m)}")
-                for cat, n in counts.most_common():
-                    print(f"  {cat:20s} {n:4d}")
-                PY
+                exec ${mkTataraScript "live-coverage" (builtins.readFile ./tests/live/scripts/live-coverage.tlisp)}
               '');
             };
 
@@ -183,111 +181,29 @@
               type = "app";
               program = toString (pkgs.writeShellScript "drzln0-akeyless-live-coverage-gateway" ''
                 set -euo pipefail
-
-                podman="${pkgs.podman}/bin/podman"
-                : "''${NIX_REPO_PATH:=$PWD/../nix}"
-                secrets_yaml="$NIX_REPO_PATH/secrets.yaml"
-                container_name="akeyless-gw-coverage"
-                cluster_name="cov-$(date +%s)"
-
+                : "''${PWD:=$(pwd)}"
                 # vfs storage so rootless podman can unpack the akeyless
                 # image. (overlay fails because the image chowns to UID
-                # 89939 which exceeds the default subuid mapping.)
-                mkdir -p "$HOME/.config/containers"
+                # 89939 which exceeds the default subuid mapping.) This
+                # is a one-shot config write -- safely re-runnable.
+                ${pkgs.coreutils}/bin/mkdir -p "$HOME/.config/containers"
                 if [ ! -f "$HOME/.config/containers/storage.conf" ]; then
-                  cat > "$HOME/.config/containers/storage.conf" <<EOF
+                  ${pkgs.coreutils}/bin/cat > "$HOME/.config/containers/storage.conf" <<EOF
                 [storage]
                 driver = "vfs"
-                runroot = "/run/user/$(id -u)/containers"
+                runroot = "/run/user/$(${pkgs.coreutils}/bin/id -u)/containers"
                 graphroot = "$HOME/.local/share/containers/storage"
                 [storage.options]
                 ignore_chown_errors = "true"
                 EOF
                 fi
-
-                # Decrypt creds to tmpfile, shred on exit + always remove container.
-                dec="$(mktemp)"
-                cleanup() {
-                  shred -u "$dec" 2>/dev/null || rm -f "$dec"
-                  "$podman" stop "$container_name" >/dev/null 2>&1 || true
-                  "$podman" rm "$container_name" >/dev/null 2>&1 || true
-                }
-                trap cleanup EXIT
-                ${pkgs.sops}/bin/sops --decrypt "$secrets_yaml" > "$dec"
-                chmod 600 "$dec"
-                access_id="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-id"]'  "$dec")"
-                access_key="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-key"]' "$dec")"
-
-                # Remove stale container from prior run.
-                "$podman" rm -f "$container_name" >/dev/null 2>&1 || true
-
-                echo "[gateway] pulling akeyless/base (first run ~2min)…"
-                "$podman" pull -q docker.io/akeyless/base:latest
-
-                echo "[gateway] starting $container_name (cluster $cluster_name)…"
-                "$podman" run -d --name "$container_name" \
-                  -e ADMIN_ACCESS_ID="$access_id" \
-                  -e ADMIN_ACCESS_KEY="$access_key" \
-                  -e CLUSTER_NAME="$cluster_name" \
-                  -p 8000:8000 -p 8080:8080 -p 8081:8081 \
-                  -p 8200:8200 -p 18888:18888 \
-                  docker.io/akeyless/base:latest >/dev/null
-
-                # Wait for the SDK port (8081) to start serving /auth.
-                # Bootstrap takes ~45s on first run.
-                echo -n "[gateway] waiting for /auth…"
-                for i in $(seq 1 120); do
-                  body="$(${pkgs.curl}/bin/curl -sS --max-time 3 -X POST \
-                    http://localhost:8081/auth -H 'Content-Type: application/json' \
-                    -d "{\"access-id\":\"$access_id\",\"access-key\":\"$access_key\",\"access-type\":\"access_key\"}" || true)"
-                  if echo "$body" | grep -q '"token"'; then
-                    echo " ready ($i s)"
-                    break
-                  fi
-                  echo -n .; sleep 1
-                  if [ "$i" -eq 120 ]; then
-                    echo " TIMEOUT after 120s"
-                    "$podman" logs --tail=30 "$container_name" >&2
-                    exit 1
-                  fi
-                done
-
-                # /auth responding doesn't mean the gateway has finished
-                # warming up its sub-services (KMIP, dynamic-secret
-                # validator, etc.). A short warmup avoids the burst of
-                # ConnectionReset errors we get from racing the first
-                # worker against the gateway's still-initializing back end.
-                echo "[gateway] warming up (10s)…"
-                sleep 10
-
                 ${uvSyncSnippet}
-                export AKEYLESS_ACCESS_ID="$access_id"
-                export AKEYLESS_ACCESS_KEY="$access_key"
-                export AKEYLESS_GATEWAY_URL="http://localhost:8081"
-                # 15s per call: gateway-bound ops dial real services to
-                # validate stub data; without this, the matrix takes
-                # 60+ min instead of ~5.
-                export AKEYLESS_REQUEST_TIMEOUT="''${AKEYLESS_REQUEST_TIMEOUT:-15}"
-
-                # Default to 1 worker for the gateway path -- the gateway
-                # serializes most of its expensive ops anyway (dial-out
-                # validation for dynamic-secret-create, KMIP cluster
-                # boot, etc.) and high xdist concurrency just causes
-                # ConnectionReset cascades against a freshly-booted
-                # gateway. Override via PYTEST_WORKERS=4 once you're
-                # confident your gateway+account can handle it.
-                pytest tests/live/coverage_matrix.py -q --tb=line -p no:cacheprovider \
-                  -n ''${PYTEST_WORKERS:-1} --timeout=''${PYTEST_TIMEOUT:-90} 2>&1 | tail -10
-                echo ""
-                echo "=== coverage matrix summary (LOCAL GATEWAY) ==="
-                python3 - <<'PY'
-                import json, pathlib, collections
-                m = json.loads(pathlib.Path("tests/live/MATRIX.json").read_text())
-                counts = collections.Counter(v["category"] for v in m.values())
-                print(f"total modules: {len(m)}")
-                for cat, n in counts.most_common():
-                    print(f"  {cat:20s} {n:4d}")
-                PY
+                # The tlisp script needs absolute paths for the external
+                # tools it shells out to (podman, curl). Resolving them
+                # at Nix-eval time means we never PATH-shop at runtime.
+                export PODMAN_BIN=${pkgs.podman}/bin/podman
+                export CURL_BIN=${pkgs.curl}/bin/curl
+                exec ${mkTataraScript "live-coverage-gateway" (builtins.readFile ./tests/live/scripts/live-coverage-gateway.tlisp)}
               '');
             };
 
@@ -295,55 +211,9 @@
               type = "app";
               program = toString (pkgs.writeShellScript "drzln0-akeyless-live-test" ''
                 set -euo pipefail
-
-                : "''${NIX_REPO_PATH:=$PWD/../nix}"
-                secrets_yaml="$NIX_REPO_PATH/secrets.yaml"
-                if [ ! -f "$secrets_yaml" ]; then
-                  echo "::error::secrets.yaml not found at $secrets_yaml (set NIX_REPO_PATH)" >&2
-                  exit 1
-                fi
-
+                : "''${PWD:=$(pwd)}"
                 ${uvSyncSnippet}
-
-                # Decrypt to a tmpfile, extract, then shred. The decrypted
-                # plaintext never crosses a logged boundary.
-                dec="$(mktemp)"
-                trap 'shred -u "$dec" 2>/dev/null || rm -f "$dec"' EXIT
-                ${pkgs.sops}/bin/sops --decrypt "$secrets_yaml" > "$dec"
-                chmod 600 "$dec"
-
-                AKEYLESS_ACCESS_ID="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-id"]'  "$dec")"
-                AKEYLESS_ACCESS_KEY="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-key"]' "$dec")"
-                export AKEYLESS_ACCESS_ID AKEYLESS_ACCESS_KEY
-                export AKEYLESS_GATEWAY_URL="''${AKEYLESS_GATEWAY_URL:-https://api.akeyless.io}"
-
-                # Build + install the collection so playbooks resolve modules.
-                ansible-galaxy collection build --force --output-path .build
-                tarball=$(ls -1 .build/*.tar.gz | head -n1)
-                ansible-galaxy collection install "$tarball" --force
-
-                # Run every live example. Any failure fails the app.
-                shopt -s nullglob
-                plays=(examples/live/*.yml examples/live/*.yaml)
-                if [ ''${#plays[@]} -eq 0 ]; then
-                  echo "no live example playbooks under examples/live/"; exit 0
-                fi
-                failures=0
-                for p in "''${plays[@]}"; do
-                  echo "::group::ansible-playbook $p"
-                  if ansible-playbook "$p"; then
-                    echo "ok: $p"
-                  else
-                    failures=$((failures + 1))
-                    echo "::error file=$p::live ansible-playbook failed"
-                  fi
-                  echo "::endgroup::"
-                done
-                if [ "$failures" -gt 0 ]; then
-                  echo "::error::$failures live example(s) failed"
-                  exit 1
-                fi
-                echo "all ''${#plays[@]} live example(s) passed against real Akeyless"
+                exec ${mkTataraScript "live-test" (builtins.readFile ./tests/live/scripts/live-test.tlisp)}
               '');
             };
           };

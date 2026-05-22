@@ -1,0 +1,78 @@
+;;; live-test.tlisp
+;;;
+;;; Build the collection tarball, install it into the uv-managed
+;;; ansible env, then run every playbook under examples/live/. Any
+;;; failed playbook fails the whole run. Used as the pre-release
+;;; "does the published collection actually work against the live
+;;; Akeyless API" gate.
+
+(define repo-path
+  (env-get "NIX_REPO_PATH"
+           (string-append (env-required "PWD") "/../nix")))
+(define secrets-yaml (string-append repo-path "/secrets.yaml"))
+
+(when (not (is-file? secrets-yaml))
+  (eprint-line (string-format
+                 "[live-test] secrets.yaml not found at {} (set NIX_REPO_PATH)"
+                 secrets-yaml))
+  (exit 1))
+
+(env-set "AKEYLESS_ACCESS_ID"
+         (sops-extract secrets-yaml "[\"akeyless\"][\"access-id\"]"))
+(env-set "AKEYLESS_ACCESS_KEY"
+         (sops-extract secrets-yaml "[\"akeyless\"][\"access-key\"]"))
+(env-set "AKEYLESS_GATEWAY_URL"
+         (env-get "AKEYLESS_GATEWAY_URL" "https://api.akeyless.io"))
+
+;; Build the collection tarball + install it (force-overwrite any prior
+;; install so we always run the current source).
+(define build-rc
+  (exec-check "ansible-galaxy" "collection" "build"
+              "--force" "--output-path" ".build"))
+(when (not (= build-rc 0))
+  (eprint-line "[live-test] ansible-galaxy collection build failed")
+  (exit build-rc))
+
+(define tarballs (glob ".build/*.tar.gz"))
+(when (null? tarballs)
+  (eprint-line "[live-test] no tarball produced in .build/")
+  (exit 1))
+(define tarball (car tarballs))
+
+(define install-rc
+  (exec-check "ansible-galaxy" "collection" "install" tarball "--force"))
+(when (not (= install-rc 0))
+  (eprint-line (string-format "[live-test] install failed for {}" tarball))
+  (exit install-rc))
+
+;; Discover the playbooks. nullglob equivalent: glob returns ().
+(define plays
+  (append (glob "examples/live/*.yml")
+          (glob "examples/live/*.yaml")))
+
+(when (null? plays)
+  (println "[live-test] no live playbooks under examples/live/")
+  (exit 0))
+
+;; Run each playbook, count failures. Use println both before and after
+;; so the output is parseable when piped through `tail -50` or similar.
+(define failure-count 0)
+
+(define (run-play path)
+  (println (string-format "::group::ansible-playbook {}" path))
+  (let ((rc (exec-check "ansible-playbook" path)))
+    (println "::endgroup::")
+    (if (= rc 0)
+        (println (string-format "ok: {}" path))
+        (begin
+          (eprint-line (string-format "::error file={}::live ansible-playbook failed" path))
+          (set! failure-count (+ failure-count 1))))))
+
+(for-each run-play plays)
+
+(if (> failure-count 0)
+  (begin
+    (eprint-line (string-format "::error::{} live example(s) failed" failure-count))
+    (exit 1))
+  (println (string-format "all {} live example(s) passed against real Akeyless"
+                          (length plays))))
