@@ -116,7 +116,10 @@ def main():
         'protection_key': {'type': 'str'},
         'tags': {'type': 'list', 'elements': 'str'},
         'type': {'type': 'str'},
-        'value': {'type': 'str', 'required': True, 'no_log': True},
+        # value is only required for create/update — not for delete.
+        # required_if below enforces state-aware requirement so delete
+        # tasks don't need a meaningless value placeholder.
+        'value': {'type': 'str', 'no_log': True},
         'gateway_url': {'type': 'str'},
         'access_id': {'type': 'str'},
         'access_key': {'type': 'str', 'no_log': True},
@@ -126,6 +129,9 @@ def main():
     module = AnsibleModule(
         argument_spec=argument_spec,
         supports_check_mode=True,
+        required_if=[
+            ('state', 'present', ['value']),
+        ],
     )
 
     client, token = get_client(module)
