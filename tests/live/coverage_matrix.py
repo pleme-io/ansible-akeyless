@@ -343,8 +343,65 @@ def run_id():
     return _dt.datetime.utcnow().strftime("%Y%m%d-%H%M%S")
 
 
+# Per-module override: {module_file: {argspec_field: fixture_name}}.
+# If the test runs with --no-fixtures (or fixture creation skips), the
+# module falls back to stubbed params and likely lands in NEEDS_PREREQ
+# as before. With fixtures live, the matching argspec field gets the
+# real created-resource path so the module can resolve its dependency
+# and reach WORKS.
+_PREREQ_FIELD_MAP = {
+    'sign_pkcs1.py':                 {'key_name': 'rsa_dfc_key'},
+    'sign_ecdsa.py':                 {'key_name': 'ec_classic_key'},
+    'sign_data_with_classic_key.py': {'name': 'classic_key'},
+    'generate_csr.py':               {'name': 'rsa_dfc_key'},
+    'ssh_cert_issuer.py':            {'signer_key_name': 'rsa_dfc_key'},
+    # group_info -- CreateGroup requires user_assignment with a real
+    #   user, which the dev account doesn't have a stable one of.
+    #   Fixture is defined but not auto-wired; users with a fixed
+    #   user can re-enable it here.
+    # NOT in the map (permission / fixture-failure reasons):
+    # auth_method_info, role_auth_method_assoc, uid_generate_token --
+    #   dev access ID can't create auth methods (403 AccessForbidden);
+    #   needs an admin-tier access ID.
+    # event_forwarder_info -- gateways_event_source_locations "*" is
+    #   rejected by the account ("can't set soruce"); would need a
+    #   real gateway source ID.
+    # verify_ecdsa -- needs a real signature payload to verify, not
+    #   just a key. Future work: sign first, then verify.
+    # provision_certificate -- needs a full certificate item, not a
+    #   bare key. Future work.
+}
+
+
+def _apply_prereqs(module_file, params, request):
+    """If this module has prereqs, ask pytest for the named fixtures and
+    overwrite the corresponding param values with the real fixture
+    paths. Silent no-op when --no-fixtures is set or the module has no
+    declared prereqs."""
+    prereqs = _PREREQ_FIELD_MAP.get(module_file)
+    if not prereqs:
+        return params
+    enabled = request.config.getoption("--no-fixtures") is False
+    if not enabled:
+        return params
+    for field, fixture_name in prereqs.items():
+        try:
+            fixture_value = request.getfixturevalue(fixture_name)
+        except Exception as e:  # noqa: BLE001
+            # Fixture create failed -- leave the stub in place so the
+            # module reaches dispatch and matrix records NEEDS_PREREQ
+            # rather than silently mis-categorizing as DISPATCH_FAIL.
+            import sys
+            sys.stderr.write(
+                f"[prereqs] {module_file}: fixture {fixture_name} unavailable ({e}); "
+                "falling back to stub\n")
+            return params
+        params[field] = fixture_value
+    return params
+
+
 @pytest.mark.parametrize("module_file", _all_module_files())
-def test_module_live_dispatch(module_file, run_id):
+def test_module_live_dispatch(module_file, run_id, request):
     """Smoke-dispatch every module against real Akeyless.
 
     Categorizes the outcome and asserts only DISPATCH_FAIL (real
@@ -365,6 +422,7 @@ def test_module_live_dispatch(module_file, run_id):
 
     required_if_fields = _parse_required_if(MODULES_DIR / module_file)
     params = _minimal_params(argspec, run_id, module_file[:-3], required_if_fields)
+    params = _apply_prereqs(module_file, params, request)
     kwargs, code = _run_module_against_real_api(module_file, params)
     category = _classify(kwargs) if code == 0 else (code if isinstance(code, str) else _classify(kwargs))
 

@@ -37,6 +37,30 @@
           pytest pyyaml jsonschema
         ]);
 
+        # Shared bootstrap for any app that needs the live-test Python
+        # environment (ansible + akeyless SDK + pytest + xdist + timeout).
+        # The single source of truth is the repo's pyproject.toml +
+        # uv.lock; we materialize a hermetic venv via `uv sync --frozen`,
+        # pinning the interpreter to nix's python3 so the resulting
+        # tree is fully reproducible. Cached under XDG_CACHE_HOME so
+        # repeat runs of the same lockfile are near-instant.
+        #
+        # Sets PATH so subsequent commands resolve pytest/ansible/etc.
+        # from the venv. Idempotent: re-running with an unchanged
+        # uv.lock is a noop.
+        uvSyncSnippet = ''
+          cache="''${XDG_CACHE_HOME:-$HOME/.cache}/ansible-akeyless-livetest"
+          lockhash=$(${pkgs.coreutils}/bin/sha256sum uv.lock | ${pkgs.coreutils}/bin/cut -d' ' -f1)
+          if [ ! -f "$cache/.lockhash" ] || [ "$(cat "$cache/.lockhash")" != "$lockhash" ]; then
+            echo "[uv-sync] materializing venv for uv.lock $lockhash"
+            ${pkgs.uv}/bin/uv sync --frozen --python ${pkgs.python3}/bin/python3 \
+              --project "$PWD" --no-progress 2>&1 | ${pkgs.gnugrep}/bin/grep -vE '^(Using|Resolved|Installed|Audited|Built|\s+\+)' || true
+            mkdir -p "$cache"
+            echo "$lockhash" > "$cache/.lockhash"
+          fi
+          export PATH="$PWD/.venv/bin:$PATH"
+        '';
+
         # Three flake checks express the test pyramid as Nix derivations so
         # `nix flake check` runs everything reproducibly — no shell glue in
         # the repo, and CI invokes one command.
@@ -121,13 +145,7 @@
                 set -euo pipefail
                 : "''${NIX_REPO_PATH:=$PWD/../nix}"
                 secrets_yaml="$NIX_REPO_PATH/secrets.yaml"
-                cache="''${XDG_CACHE_HOME:-$HOME/.cache}/ansible-akeyless-livetest"
-                if [ ! -x "$cache/bin/pytest" ]; then
-                  ${pkgs.python3}/bin/python3 -m venv "$cache"
-                  "$cache/bin/pip" install --quiet --upgrade pip
-                  "$cache/bin/pip" install --quiet ansible 'akeyless>=5.0.22' pyyaml pytest
-                fi
-                export PATH="$cache/bin:$PATH"
+                ${uvSyncSnippet}
                 dec="$(mktemp)"
                 trap 'shred -u "$dec" 2>/dev/null || rm -f "$dec"' EXIT
                 ${pkgs.sops}/bin/sops --decrypt "$secrets_yaml" > "$dec"
@@ -135,10 +153,11 @@
                 export AKEYLESS_ACCESS_ID="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-id"]'  "$dec")"
                 export AKEYLESS_ACCESS_KEY="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-key"]' "$dec")"
                 export AKEYLESS_GATEWAY_URL="''${AKEYLESS_GATEWAY_URL:-https://api.akeyless.io}"
-                pytest tests/live/coverage_matrix.py -q --tb=no -p no:cacheprovider 2>&1 | tail -50
+                pytest tests/live/coverage_matrix.py -q --tb=no -p no:cacheprovider \
+                  -n ''${PYTEST_WORKERS:-8} --timeout=''${PYTEST_TIMEOUT:-60} 2>&1 | tail -10
                 echo ""
                 echo "=== coverage matrix summary ==="
-                ${pkgs.python3}/bin/python3 - <<'PY'
+                python3 - <<'PY'
                 import json, pathlib, collections
                 m = json.loads(pathlib.Path("tests/live/MATRIX.json").read_text())
                 counts = collections.Counter(v["category"] for v in m.values())
@@ -233,25 +252,35 @@
                   fi
                 done
 
-                cache="''${XDG_CACHE_HOME:-$HOME/.cache}/ansible-akeyless-livetest"
-                if [ ! -x "$cache/bin/pytest" ]; then
-                  ${pkgs.python3}/bin/python3 -m venv "$cache"
-                  "$cache/bin/pip" install --quiet --upgrade pip
-                  "$cache/bin/pip" install --quiet ansible 'akeyless>=5.0.22' pyyaml pytest
-                fi
-                export PATH="$cache/bin:$PATH"
+                # /auth responding doesn't mean the gateway has finished
+                # warming up its sub-services (KMIP, dynamic-secret
+                # validator, etc.). A short warmup avoids the burst of
+                # ConnectionReset errors we get from racing the first
+                # worker against the gateway's still-initializing back end.
+                echo "[gateway] warming up (10s)…"
+                sleep 10
+
+                ${uvSyncSnippet}
                 export AKEYLESS_ACCESS_ID="$access_id"
                 export AKEYLESS_ACCESS_KEY="$access_key"
                 export AKEYLESS_GATEWAY_URL="http://localhost:8081"
                 # 15s per call: gateway-bound ops dial real services to
                 # validate stub data; without this, the matrix takes
                 # 60+ min instead of ~5.
-                export AKEYLESS_REQUEST_TIMEOUT="15"
+                export AKEYLESS_REQUEST_TIMEOUT="''${AKEYLESS_REQUEST_TIMEOUT:-15}"
 
-                pytest tests/live/coverage_matrix.py -q --tb=no -p no:cacheprovider 2>&1 | tail -10
+                # Default to 1 worker for the gateway path -- the gateway
+                # serializes most of its expensive ops anyway (dial-out
+                # validation for dynamic-secret-create, KMIP cluster
+                # boot, etc.) and high xdist concurrency just causes
+                # ConnectionReset cascades against a freshly-booted
+                # gateway. Override via PYTEST_WORKERS=4 once you're
+                # confident your gateway+account can handle it.
+                pytest tests/live/coverage_matrix.py -q --tb=line -p no:cacheprovider \
+                  -n ''${PYTEST_WORKERS:-1} --timeout=''${PYTEST_TIMEOUT:-90} 2>&1 | tail -10
                 echo ""
                 echo "=== coverage matrix summary (LOCAL GATEWAY) ==="
-                ${pkgs.python3}/bin/python3 - <<'PY'
+                python3 - <<'PY'
                 import json, pathlib, collections
                 m = json.loads(pathlib.Path("tests/live/MATRIX.json").read_text())
                 counts = collections.Counter(v["category"] for v in m.values())
@@ -274,17 +303,7 @@
                   exit 1
                 fi
 
-                # Set up an isolated venv with ansible + akeyless SDK
-                # (akeyless isn't in nixpkgs). Cached at $XDG_CACHE_HOME
-                # so re-runs are fast.
-                cache="''${XDG_CACHE_HOME:-$HOME/.cache}/ansible-akeyless-livetest"
-                if [ ! -x "$cache/bin/ansible-playbook" ]; then
-                  echo "[live-test] bootstrapping venv at $cache (one-time)"
-                  ${pkgs.python3}/bin/python3 -m venv "$cache"
-                  "$cache/bin/pip" install --quiet --upgrade pip
-                  "$cache/bin/pip" install --quiet ansible 'akeyless>=5.0.22' pyyaml
-                fi
-                export PATH="$cache/bin:$PATH"
+                ${uvSyncSnippet}
 
                 # Decrypt to a tmpfile, extract, then shred. The decrypted
                 # plaintext never crosses a logged boundary.
