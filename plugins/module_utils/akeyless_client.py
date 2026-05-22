@@ -153,3 +153,98 @@ def _to_dict(result):
 def _ensure_sdk_loaded():
     if not HAS_AKEYLESS:
         raise RuntimeError("akeyless SDK not importable: %s" % AKEYLESS_IMPORT_ERROR)
+
+
+# Keys present on every module's argspec for auth/meta plumbing -- never
+# part of the desired resource state and so always excluded from drift
+# detection. Includes `state` (Ansible directive), `token`/`uid_token`
+# (per-call auth), and the AKEYLESS_* shim params.
+IDEMPOTENCY_IGNORE_KEYS = frozenset({
+    "state",
+    "token", "uid_token",
+    "gateway_url", "access_id", "access_key", "access_type",
+    # SDK pagination/format flags that shouldn't drive convergence
+    "json",
+})
+
+
+# Common nested paths an Akeyless Get response uses to wrap the actual
+# resource fields. Tried in order when a desired param isn't found at
+# the top level of the read dict.
+_NESTED_PATHS = (
+    "target_details",
+    "item_details",
+    "auth_method_details",
+    "secret_details",
+    "rules",            # role_get
+    "value",            # generic SDK envelope
+)
+
+
+def _snake_to_camel(s):
+    parts = s.split("_")
+    return parts[0] + "".join(p.title() for p in parts[1:])
+
+
+def _lookup(current, key):
+    """Find `key` in a possibly-nested SDK Get response dict.
+
+    Tries snake_case at the top level, then each common nested path,
+    then a camelCase fallback. Returns None if nowhere."""
+    if not isinstance(current, dict):
+        return None
+    if key in current:
+        return current[key]
+    camel = _snake_to_camel(key)
+    if camel in current:
+        return current[camel]
+    for nest in _NESTED_PATHS:
+        sub = current.get(nest)
+        if isinstance(sub, dict):
+            if key in sub:
+                return sub[key]
+            if camel in sub:
+                return sub[camel]
+    return None
+
+
+def compute_diff(current, params, ignore=None):
+    """Drift detection for idempotent update: return [(key, before, after)]
+    for each `params` field whose non-None value disagrees with what's
+    in the SDK Get response.
+
+    Skips params with value None (the user hasn't asked to set them),
+    keys in `ignore` (defaults to IDEMPOTENCY_IGNORE_KEYS), and any
+    fields that don't appear in `current` at all (we can't honestly
+    say they drifted if the SDK never echoes them back). This is
+    conservative on purpose -- a false "in-sync" verdict surfaces as
+    a no-op that the user can correct, while a false drift verdict
+    would call update() unnecessarily and report changed=True every
+    run, defeating the point.
+    """
+    if not isinstance(current, dict) or not params:
+        return []
+    ignore = ignore or IDEMPOTENCY_IGNORE_KEYS
+    drift = []
+    for key, desired in params.items():
+        if desired is None or key in ignore:
+            continue
+        cur = _lookup(current, key)
+        if cur is None:
+            # Field absent from the read response -- skip rather than
+            # treat as drift. The SDK may not echo write-only fields
+            # (passwords, tokens, etc.) so missing != different.
+            continue
+        if cur != desired:
+            drift.append((key, cur, desired))
+    return drift
+
+
+def drift_to_diff(drift):
+    """Convert the (key, before, after) tuples from compute_diff into
+    the {"before": {...}, "after": {...}} shape Ansible's diff mode
+    expects in exit_json(diff=...)."""
+    return {
+        "before": {k: b for k, b, _ in drift},
+        "after":  {k: a for k, _, a in drift},
+    }

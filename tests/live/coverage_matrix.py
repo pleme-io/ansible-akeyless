@@ -196,8 +196,14 @@ def _minimal_params(argspec, run_id, module_name, required_if_fields=()):
 def _classify(outcome):
     """Categorize an exit_json/fail_json kwargs dict."""
     msg = (outcome.get("msg") or "").lower()
-    if outcome.get("failed", False) is False and not msg:
-        return "WORKS"
+    failed = outcome.get("failed", False)
+    if not failed:
+        # No msg = create or update happened cleanly.
+        # "already in desired state" = the new idempotency path returning
+        # changed=False because compute_diff found no drift. Honest
+        # convergence is the *goal*, not a failure — count both as WORKS.
+        if not msg or "already in desired state" in msg or "already absent" in msg:
+            return "WORKS"
     # Timeout = network/connection didn't return within socket timeout.
     # Common when pointing at a local gateway that's actually trying
     # to validate stub data against the real internet.
