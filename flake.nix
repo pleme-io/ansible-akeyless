@@ -49,29 +49,20 @@
           pytest pyyaml jsonschema
         ]);
 
-        # Shared bootstrap for any app that needs the live-test Python
-        # environment (ansible + akeyless SDK + pytest + xdist + timeout).
-        # The single source of truth is the repo's pyproject.toml +
-        # uv.lock; we materialize a hermetic venv via `uv sync --frozen`,
-        # pinning the interpreter to nix's python3 so the resulting
-        # tree is fully reproducible. Cached under XDG_CACHE_HOME so
-        # repeat runs of the same lockfile are near-instant.
+        # Shared bootstrap for any flake app whose body wants to invoke
+        # uv-locked Python tools (pytest/ansible/akeyless SDK). The
+        # single source of truth is the repo's pyproject.toml + uv.lock;
+        # the snippet materializes a hermetic .venv via `uv sync
+        # --frozen`, pins nix python3, caches by lockhash so re-runs
+        # are noops, and exports `.venv/bin` to PATH.
         #
-        # Sets PATH so subsequent commands resolve pytest/ansible/etc.
-        # from the venv. Idempotent: re-running with an unchanged
-        # uv.lock is a noop.
-        uvSyncSnippet = ''
-          cache="''${XDG_CACHE_HOME:-$HOME/.cache}/ansible-akeyless-livetest"
-          lockhash=$(${pkgs.coreutils}/bin/sha256sum uv.lock | ${pkgs.coreutils}/bin/cut -d' ' -f1)
-          if [ ! -f "$cache/.lockhash" ] || [ "$(cat "$cache/.lockhash")" != "$lockhash" ]; then
-            echo "[uv-sync] materializing venv for uv.lock $lockhash"
-            ${pkgs.uv}/bin/uv sync --frozen --python ${pkgs.python3}/bin/python3 \
-              --project "$PWD" --no-progress 2>&1 | ${pkgs.gnugrep}/bin/grep -vE '^(Using|Resolved|Installed|Audited|Built|\s+\+)' || true
-            mkdir -p "$cache"
-            echo "$lockhash" > "$cache/.lockhash"
-          fi
-          export PATH="$PWD/.venv/bin:$PATH"
-        '';
+        # Pulled from substrate so any other ansible-collection (or
+        # python-test) repo gets the exact same behavior just by
+        # importing substrateLib.mkUvSyncSnippet.
+        uvSyncSnippet = (import "${substrate}/lib/build/python/uv-test-runner.nix").mkUvSyncSnippet {
+          inherit pkgs;
+          cacheSubdir = "ansible-akeyless-livetest";
+        };
 
         # Three flake checks express the test pyramid as Nix derivations so
         # `nix flake check` runs everything reproducibly — no shell glue in
