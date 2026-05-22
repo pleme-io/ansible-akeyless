@@ -1,0 +1,294 @@
+# Copyright: (c) 2026, pleme-io
+# MIT License
+#
+# Per-module live-API coverage matrix.
+#
+# Runs every plugins/modules/*.py against the real Akeyless API with
+# minimal auto-derived required args + a unique cleanup-friendly name,
+# captures the outcome per module, and writes a markdown report.
+#
+# Categories:
+#   - WORKS         : exit_json with no error (api 2xx, module returned ok)
+#   - ARGSPEC_DRIFT : api responded 4xx "Missing required parameter X"
+#                     (module sent shape upstream rejects)
+#   - API_404       : api responded 404 on the operation itself (path drift)
+#   - NEEDS_PREREQ  : api returned 404 on a *referenced* item the test
+#                     stub didn't pre-create (e.g. target_db needs a real
+#                     target name). The module dispatched fine; the test
+#                     just doesn't have the supporting state.
+#   - DISPATCH_FAIL : Python-level crash before reaching the API (real
+#                     module bug — argspec/body construction broken)
+#   - SKIP          : opted out (auth/info modules with no clean stub flow)
+#
+# Run:
+#   nix run .#live-coverage
+#
+# Or: pytest tests/live/coverage_matrix.py (pytest mode emits one test
+# per module so CI can show per-module pass/fail).
+
+from __future__ import absolute_import, division, print_function
+__metaclass__ = type
+
+import ast
+import datetime as _dt
+import importlib.util
+import io
+import json
+import os
+import re
+import sys
+import time
+import types
+from contextlib import redirect_stdout, redirect_stderr
+from pathlib import Path
+from unittest.mock import MagicMock
+
+import pytest
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+MODULES_DIR = REPO_ROOT / "plugins" / "modules"
+HELPER_PATH = REPO_ROOT / "plugins" / "module_utils" / "akeyless_client.py"
+
+# Globally skip modules that need orchestration we can't auto-stub.
+_SKIP_MODULES = {
+    # info-only that needs a known existing item (no stub will satisfy)
+    "secret_value_info.py": "reads existing secret; needs setup",
+    "role_info.py":         "reads existing role",
+    "roles_info.py":        "list — no required args triggers full list",
+    "items_info.py":        "list",
+    "item_info.py":         "needs existing item",
+    "kmip_clients_info.py": "list",
+    "sra_bastions_info.py": "list",
+    "targets_info.py":      "list",
+    # cryptographic actions need real keys
+    "decrypt.py":           "needs existing key + ciphertext",
+    "encrypt.py":           "needs existing key",
+    "sign_jwt_with_classic_key.py": "needs existing classic key",
+    "verify_pkcs1.py":      "needs key + signature",
+    # token-flow modules need orchestrated parent
+    "uid_list_children.py":  "needs uid_token_id from a generated parent",
+    "uid_revoke_token.py":   "needs revoke_token",
+    "uid_create_child_token.py": "needs uid_token_id from parent",
+}
+
+
+def _all_module_files():
+    return sorted(p.name for p in MODULES_DIR.glob("*.py") if p.name != "__init__.py")
+
+
+def _parse_argspec(module_path):
+    tree = ast.parse(module_path.read_text())
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "argument_spec":
+                    try:
+                        return ast.literal_eval(node.value)
+                    except (ValueError, SyntaxError):
+                        return None
+    return None
+
+
+# Type-aware stubs. Tweak by module-specific heuristic for fields that
+# carry semantic constraints (name conventions, etc.).
+_STUBS = {
+    'str':   "stub",
+    'int':   1,
+    'bool':  False,  # safer default (some `delete_protection: True` would prevent cleanup)
+    'list':  [],
+    'dict':  {},
+    'path':  "/tmp/stub",
+    'raw':   "stub",
+    'float': 1.0,
+}
+
+
+def _minimal_params(argspec, run_id, module_name):
+    params = {}
+    for name, opts in (argspec or {}).items():
+        if not isinstance(opts, dict):
+            continue
+        if opts.get("required"):
+            t = opts.get("type", "str")
+            params[name] = _STUBS.get(t, "stub")
+    # Identity fields → unique cleanup-friendly path
+    test_path = f"/test-live/{run_id}/{module_name}"
+    for key in ("name", "role_name", "am_name"):
+        if key in params and isinstance(params[key], str):
+            params[key] = test_path
+            break
+    # Sensible elements for list-of-strings
+    for k, opts in (argspec or {}).items():
+        if isinstance(opts, dict) and opts.get("type") == "list" and opts.get("required") and opts.get("elements") == "str":
+            params[k] = ["stub"]
+    return params
+
+
+def _classify(outcome):
+    """Categorize an exit_json/fail_json kwargs dict."""
+    msg = (outcome.get("msg") or "").lower()
+    if outcome.get("failed", False) is False and not msg:
+        return "WORKS"
+    # API drift signatures
+    if "missing required parameter" in msg:
+        return "ARGSPEC_DRIFT"
+    if "status 404" in msg and "endpoint" in msg.lower():
+        return "API_404"
+    if "status 404" in msg:
+        # Most 404s are missing-prereq (e.g., target_name references nothing)
+        return "NEEDS_PREREQ"
+    if "failed to obtain item" in msg or "not found" in msg:
+        return "NEEDS_PREREQ"
+    if "akeyless api call" in msg and "failed" in msg:
+        return "API_REJECTED"
+    return "OTHER"
+
+
+# Reuse the mock conftest's module-loading machinery, but route SDK
+# calls to a *real* akeyless client instead of a stub.
+def _run_module_against_real_api(module_filename, params):
+    """Load plugins/modules/<file>, run main() against the real
+    akeyless SDK, capture exit_json/fail_json kwargs. Returns the
+    kwargs dict and exit code."""
+
+    # Install a real-ansible-shaped AnsibleModule that doesn't sys.exit.
+    class _ExitJson(SystemExit):
+        def __init__(self, **kw):
+            super().__init__(0)
+            self.kwargs = kw
+
+    class _FailJson(SystemExit):
+        def __init__(self, **kw):
+            super().__init__(1)
+            self.kwargs = kw
+
+    ansible_mod = sys.modules.get("ansible") or types.ModuleType("ansible")
+    util_mod = sys.modules.get("ansible.module_utils") or types.ModuleType("ansible.module_utils")
+    basic_mod = types.ModuleType("ansible.module_utils.basic")
+    sys.modules["ansible"] = ansible_mod
+    sys.modules["ansible.module_utils"] = util_mod
+    sys.modules["ansible.module_utils.basic"] = basic_mod
+    ansible_mod.module_utils = util_mod
+    util_mod.basic = basic_mod
+
+    def factory(argument_spec=None, supports_check_mode=False, required_if=None, **_kw):
+        module = MagicMock(name="AnsibleModule")
+        resolved = {}
+        for key, opts in (argument_spec or {}).items():
+            if isinstance(opts, dict) and "default" in opts:
+                resolved[key] = opts["default"]
+            else:
+                resolved[key] = None
+        resolved.update(params or {})
+        # Inject auth from env so the SDK can authenticate
+        resolved.setdefault("access_id", os.environ.get("AKEYLESS_ACCESS_ID", ""))
+        resolved.setdefault("access_key", os.environ.get("AKEYLESS_ACCESS_KEY", ""))
+        resolved.setdefault("gateway_url", os.environ.get("AKEYLESS_GATEWAY_URL", "https://api.akeyless.io"))
+        module.params = resolved
+        module.check_mode = False
+        module.argument_spec = argument_spec
+
+        def _exit_json(**kw):
+            raise _ExitJson(**kw)
+
+        def _fail_json(**kw):
+            raise _FailJson(failed=True, **kw)
+
+        module.exit_json.side_effect = _exit_json
+        module.fail_json.side_effect = _fail_json
+        return module
+
+    basic_mod.AnsibleModule = factory
+
+    # Map ansible_collections.drzln0.akeyless.* → the on-disk helper
+    namespace = "drzln0"
+    name = "akeyless"
+    for n in (
+        "ansible_collections",
+        f"ansible_collections.{namespace}",
+        f"ansible_collections.{namespace}.{name}",
+        f"ansible_collections.{namespace}.{name}.plugins",
+        f"ansible_collections.{namespace}.{name}.plugins.module_utils",
+    ):
+        if n not in sys.modules:
+            sys.modules[n] = types.ModuleType(n)
+    spec = importlib.util.spec_from_file_location(
+        f"ansible_collections.{namespace}.{name}.plugins.module_utils.akeyless_client",
+        HELPER_PATH,
+    )
+    helper = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = helper
+    spec.loader.exec_module(helper)
+
+    # Load the target module fresh
+    mod_spec = importlib.util.spec_from_file_location(
+        f"akeyless_live_target_{module_filename[:-3]}",
+        MODULES_DIR / module_filename,
+    )
+    target = importlib.util.module_from_spec(mod_spec)
+    sys.modules[mod_spec.name] = target
+    try:
+        mod_spec.loader.exec_module(target)
+    except Exception as e:
+        return {"msg": f"module import failed: {type(e).__name__}: {e}"}, "DISPATCH_FAIL"
+
+    try:
+        target.main()
+    except SystemExit as e:
+        kw = getattr(e, "kwargs", {})
+        code = getattr(e, "code", None)
+        return kw, code
+    except Exception as e:
+        return {"msg": f"unhandled exception: {type(e).__name__}: {e}"}, "DISPATCH_FAIL"
+    return {"msg": "main() returned without exit"}, "DISPATCH_FAIL"
+
+
+# --- pytest entry: parametrize over every module ---
+
+
+@pytest.fixture(scope="session")
+def run_id():
+    return _dt.datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+
+
+@pytest.mark.parametrize("module_file", _all_module_files())
+def test_module_live_dispatch(module_file, run_id):
+    """Smoke-dispatch every module against real Akeyless.
+
+    Categorizes the outcome and asserts only DISPATCH_FAIL (real
+    module-side crashes) fail the test. ARGSPEC_DRIFT and other
+    API-side disagreements are reported via the matrix but don't
+    fail the suite (those need iac-forge regen, not in-place
+    patches)."""
+
+    if not os.environ.get("AKEYLESS_ACCESS_ID"):
+        pytest.skip("AKEYLESS_ACCESS_ID not in env (run via nix run .#live-coverage)")
+
+    if module_file in _SKIP_MODULES:
+        pytest.skip(_SKIP_MODULES[module_file])
+
+    argspec = _parse_argspec(MODULES_DIR / module_file)
+    if argspec is None:
+        pytest.skip("could not parse argspec")
+
+    params = _minimal_params(argspec, run_id, module_file[:-3])
+    kwargs, code = _run_module_against_real_api(module_file, params)
+    category = _classify(kwargs) if code == 0 else (code if isinstance(code, str) else _classify(kwargs))
+
+    # Record in the matrix
+    matrix_path = REPO_ROOT / "tests" / "live" / "MATRIX.json"
+    matrix_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        matrix = json.loads(matrix_path.read_text()) if matrix_path.exists() else {}
+    except Exception:
+        matrix = {}
+    matrix[module_file] = {
+        "category": category,
+        "msg": (kwargs.get("msg") or "")[:300],
+        "run_id": run_id,
+    }
+    matrix_path.write_text(json.dumps(matrix, indent=2, sort_keys=True))
+
+    # Only DISPATCH_FAIL (real bug) fails the test. Others are reported.
+    if category == "DISPATCH_FAIL":
+        pytest.fail(f"{module_file}: {category} — {kwargs.get('msg')}")

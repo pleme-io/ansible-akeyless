@@ -110,6 +110,45 @@
             #
             # Usage:
             #   nix run .#live-test
+            # Per-module live coverage matrix. Runs every plugins/modules/*.py
+            # against real Akeyless with auto-derived minimal args, classifies
+            # each outcome (WORKS / ARGSPEC_DRIFT / NEEDS_PREREQ / DISPATCH_FAIL),
+            # writes a matrix to tests/live/MATRIX.json. Only DISPATCH_FAIL
+            # (real Python-side bug) fails the suite.
+            live-coverage = {
+              type = "app";
+              program = toString (pkgs.writeShellScript "drzln0-akeyless-live-coverage" ''
+                set -euo pipefail
+                : "''${NIX_REPO_PATH:=$PWD/../nix}"
+                secrets_yaml="$NIX_REPO_PATH/secrets.yaml"
+                cache="''${XDG_CACHE_HOME:-$HOME/.cache}/ansible-akeyless-livetest"
+                if [ ! -x "$cache/bin/pytest" ]; then
+                  ${pkgs.python3}/bin/python3 -m venv "$cache"
+                  "$cache/bin/pip" install --quiet --upgrade pip
+                  "$cache/bin/pip" install --quiet ansible 'akeyless>=5.0.22' pyyaml pytest
+                fi
+                export PATH="$cache/bin:$PATH"
+                dec="$(mktemp)"
+                trap 'shred -u "$dec" 2>/dev/null || rm -f "$dec"' EXIT
+                ${pkgs.sops}/bin/sops --decrypt "$secrets_yaml" > "$dec"
+                chmod 600 "$dec"
+                export AKEYLESS_ACCESS_ID="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-id"]'  "$dec")"
+                export AKEYLESS_ACCESS_KEY="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-key"]' "$dec")"
+                export AKEYLESS_GATEWAY_URL="''${AKEYLESS_GATEWAY_URL:-https://api.akeyless.io}"
+                pytest tests/live/coverage_matrix.py -q --tb=no -p no:cacheprovider 2>&1 | tail -50
+                echo ""
+                echo "=== coverage matrix summary ==="
+                ${pkgs.python3}/bin/python3 - <<'PY'
+                import json, pathlib, collections
+                m = json.loads(pathlib.Path("tests/live/MATRIX.json").read_text())
+                counts = collections.Counter(v["category"] for v in m.values())
+                print(f"total modules: {len(m)}")
+                for cat, n in counts.most_common():
+                    print(f"  {cat:20s} {n:4d}")
+                PY
+              '');
+            };
+
             live-test = {
               type = "app";
               program = toString (pkgs.writeShellScript "drzln0-akeyless-live-test" ''
