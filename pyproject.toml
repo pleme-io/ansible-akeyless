@@ -1,0 +1,17 @@
+[project]
+name = "drzln0-akeyless-tests"
+version = "0.0.0"
+description = "Test-runner dependencies for the drzln0.akeyless Ansible collection. The collection itself is shipped via galaxy.yml / ansible-galaxy; this pyproject exists only to give `uv sync` a deterministic, lock-pinned test environment."
+requires-python = ">=3.11"
+dependencies = [
+    "ansible-core>=2.14",
+    "akeyless>=5.0.22",
+    "pyyaml",
+    "jsonschema",
+    "pytest>=8.0",
+    "pytest-xdist>=3.0",
+    "pytest-timeout>=2.0",
+]
+
+[tool.uv]
+package = false
