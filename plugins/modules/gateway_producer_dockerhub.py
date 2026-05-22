@@ -107,9 +107,9 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'delete_protection': {'type': 'str'},
-        'dockerhub_password': {'type': 'str'},
+        'dockerhub_password': {'type': 'str', 'required': True},
         'dockerhub_token_scopes': {'type': 'str'},
-        'dockerhub_username': {'type': 'str'},
+        'dockerhub_username': {'type': 'str', 'required': True},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
         'producer_encryption_key_name': {'type': 'str'},
