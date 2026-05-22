@@ -93,6 +93,76 @@
                 fi
               '');
             };
+
+            # Local-only live-test: decrypts pleme-io/nix's SOPS-managed
+            # akeyless dev creds, exports as env, runs examples/live/*.yml
+            # against the real Akeyless cloud API.
+            #
+            # This is what we run BEFORE every release to know the modules
+            # work end-to-end. Open-source CI runs only the cred-free
+            # tests (mock --check, openapi coverage); this app is the
+            # local attestation that the things requiring auth also pass.
+            #
+            # Requires:
+            #   - sops + age installed (default in our dev shell)
+            #   - age key at ~/.config/sops/age/keys.txt (or SOPS_AGE_KEY_FILE)
+            #   - pleme-io/nix cloned at ../nix (or NIX_REPO_PATH set)
+            #
+            # Usage:
+            #   nix run .#live-test
+            live-test = {
+              type = "app";
+              program = toString (pkgs.writeShellScript "drzln0-akeyless-live-test" ''
+                set -euo pipefail
+
+                : "''${NIX_REPO_PATH:=$PWD/../nix}"
+                secrets_yaml="$NIX_REPO_PATH/secrets.yaml"
+                if [ ! -f "$secrets_yaml" ]; then
+                  echo "::error::secrets.yaml not found at $secrets_yaml (set NIX_REPO_PATH)" >&2
+                  exit 1
+                fi
+
+                # Decrypt to a tmpfile, extract, then shred. The decrypted
+                # plaintext never crosses a logged boundary.
+                dec="$(mktemp)"
+                trap 'shred -u "$dec" 2>/dev/null || rm -f "$dec"' EXIT
+                ${pkgs.sops}/bin/sops --decrypt "$secrets_yaml" > "$dec"
+                chmod 600 "$dec"
+
+                AKEYLESS_ACCESS_ID="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-id"]'  "$dec")"
+                AKEYLESS_ACCESS_KEY="$(${pkgs.yq-go}/bin/yq -r '.akeyless["access-key"]' "$dec")"
+                export AKEYLESS_ACCESS_ID AKEYLESS_ACCESS_KEY
+                export AKEYLESS_GATEWAY_URL="''${AKEYLESS_GATEWAY_URL:-https://api.akeyless.io}"
+
+                # Build + install the collection so playbooks resolve modules.
+                ${pkgs.nix}/bin/nix run .#build
+                tarball=$(ls -1 ./*.tar.gz | head -n1)
+                ${pkgs.ansible}/bin/ansible-galaxy collection install "$tarball" --force
+
+                # Run every live example. Any failure fails the app.
+                shopt -s nullglob
+                plays=(examples/live/*.yml examples/live/*.yaml)
+                if [ ''${#plays[@]} -eq 0 ]; then
+                  echo "no live example playbooks under examples/live/"; exit 0
+                fi
+                failures=0
+                for p in "''${plays[@]}"; do
+                  echo "::group::ansible-playbook $p"
+                  if ${pkgs.ansible}/bin/ansible-playbook "$p"; then
+                    echo "ok: $p"
+                  else
+                    failures=$((failures + 1))
+                    echo "::error file=$p::live ansible-playbook failed"
+                  fi
+                  echo "::endgroup::"
+                done
+                if [ "$failures" -gt 0 ]; then
+                  echo "::error::$failures live example(s) failed"
+                  exit 1
+                fi
+                echo "all ''${#plays[@]} live example(s) passed against real Akeyless"
+              '');
+            };
           };
         }
     );
