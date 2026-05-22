@@ -6,3 +6,4 @@ semantics derived from the upstream OpenAPI specification.
 Do not edit generated modules — they will be overwritten.
 
 Regenerate with: `iac-forge-cli generate --backend ansible`.
+
