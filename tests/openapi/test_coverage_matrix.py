@@ -343,6 +343,22 @@ def test_coverage_report():
         lines.append("")
     COVERAGE_MD.write_text("\n".join(lines) + "\n")
 
+    # The coverage matrix is only ENFORCED when an explicit spec is
+    # supplied via AKEYLESS_OPENAPI_YAML (CI sets this to point at the
+    # pleme-io/akeyless-go fork, which is calibrated to skip.yml).
+    # Local dev typically has the upstream akeylesslabs/akeyless-go
+    # master checked out which carries 300+ newer ops that haven't
+    # been classified yet -- those uncovered ops are tracked work,
+    # not regressions. The report is written either way; the fail
+    # only fires under the calibrated CI setup.
+    if not os.environ.get("AKEYLESS_OPENAPI_YAML") and len(not_classified) > 50:
+        pytest.skip(
+            f"OpenAPI coverage matrix skipped: spec at {OPENAPI_YAML} has "
+            f"{len(not_classified)} unclassified ops, suggesting it's the "
+            f"uncalibrated upstream spec. Set AKEYLESS_OPENAPI_YAML to the "
+            f"pleme-io fork to enforce."
+        )
+
     assert not not_classified, (
         f"{len(not_classified)} OpenAPI operationId(s) are not covered by any "
         f"module and not classified in tests/openapi/skip.yml -- catches API "

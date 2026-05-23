@@ -35,12 +35,13 @@ def _install_ansible_action_stubs():
             pass
         errors_mod.AnsibleActionFail = _StubActionFail
 
-    if "ansible.plugins.action" in sys.modules:
-        return
-
-    plugins_mod = types.ModuleType("ansible.plugins")
-    action_mod = types.ModuleType("ansible.plugins.action")
-    loader_mod = types.ModuleType("ansible.plugins.loader")
+    # UNCONDITIONAL install: another test file (e.g.
+    # tests/mock/test_every_plugin_loads.py) may have installed a
+    # simpler ActionBase stub that doesn't set _last_module_name.
+    # We always overwrite with the richer stub this test file needs.
+    plugins_mod = sys.modules.get("ansible.plugins") or types.ModuleType("ansible.plugins")
+    action_mod = sys.modules.get("ansible.plugins.action") or types.ModuleType("ansible.plugins.action")
+    loader_mod = sys.modules.get("ansible.plugins.loader") or types.ModuleType("ansible.plugins.loader")
 
     class _StubActionBase:
         def __init__(self):
