@@ -56,6 +56,24 @@ def _install_ansible_lookup_stubs():
         sys.modules["ansible.plugins.lookup"] = lookup_mod
         ansible_pkg.plugins = plugins_mod
 
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        if name not in sys.modules:
+            sys.modules[name] = types.ModuleType(name)
+    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
+            ".akeyless_lookup_auth")
+    sys.modules.pop(full, None)
+    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
+
 
 def _load(fake_akeyless):
     _install_ansible_lookup_stubs()

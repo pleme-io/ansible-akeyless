@@ -24,43 +24,75 @@ def _install_ansible_lookup_stubs():
     """Stub ansible.plugins.lookup.LookupBase + ansible.errors.* so the
     secret lookup imports without a real Ansible install. We replace
     LookupBase with a minimal class that captures set_options() args
-    and exposes get_option() against an internal dict."""
-    if "ansible.plugins.lookup" in sys.modules:
-        return  # already installed
+    and exposes get_option() against an internal dict.
 
+    Also installs the shared lookup_auth helper at its
+    ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_lookup_auth
+    import path so the lookup's `from ansible_collections.<...>
+    import authenticated_client` resolves under test."""
     ansible_pkg = sys.modules.setdefault("ansible", types.ModuleType("ansible"))
-    errors_mod = types.ModuleType("ansible.errors")
+    errors_mod = sys.modules.get("ansible.errors")
+    if errors_mod is None:
+        errors_mod = types.ModuleType("ansible.errors")
+        sys.modules["ansible.errors"] = errors_mod
+        ansible_pkg.errors = errors_mod
+    if not hasattr(errors_mod, "AnsibleError"):
+        class _StubAnsibleError(Exception):
+            pass
+        errors_mod.AnsibleError = _StubAnsibleError
+    if not hasattr(errors_mod, "AnsibleLookupError"):
+        class _StubAnsibleLookupError(Exception):
+            pass
+        errors_mod.AnsibleLookupError = _StubAnsibleLookupError
 
-    class _StubAnsibleError(Exception):
-        pass
+    if "ansible.plugins.lookup" not in sys.modules:
+        plugins_mod = types.ModuleType("ansible.plugins")
+        lookup_mod = types.ModuleType("ansible.plugins.lookup")
 
-    class _StubAnsibleLookupError(Exception):
-        pass
+        class _StubLookupBase:
+            def __init__(self):
+                self._opts: dict = {}
 
-    errors_mod.AnsibleError = _StubAnsibleError
-    errors_mod.AnsibleLookupError = _StubAnsibleLookupError
-    sys.modules["ansible.errors"] = errors_mod
-    ansible_pkg.errors = errors_mod
+            def set_options(self, var_options=None, direct=None):
+                self._opts = dict(direct or {})
+                for k, v in (var_options or {}).items():
+                    self._opts.setdefault(k, v)
 
-    plugins_mod = types.ModuleType("ansible.plugins")
-    lookup_mod = types.ModuleType("ansible.plugins.lookup")
+            def get_option(self, name):
+                return self._opts.get(name)
 
-    class _StubLookupBase:
-        def __init__(self):
-            self._opts: dict = {}
+        lookup_mod.LookupBase = _StubLookupBase
+        sys.modules["ansible.plugins"] = plugins_mod
+        sys.modules["ansible.plugins.lookup"] = lookup_mod
+        ansible_pkg.plugins = plugins_mod
 
-        def set_options(self, var_options=None, direct=None):
-            self._opts = dict(direct or {})
-            for k, v in (var_options or {}).items():
-                self._opts.setdefault(k, v)
+    # Register the lookup_auth helper at its ansible_collections.<...>
+    # import path so the production lookups' `from ansible_collections
+    # ...akeyless_lookup_auth import authenticated_client` resolves
+    # under test. Re-uses _install_collection_helper_path's parent-
+    # package setup pattern.
+    parents = [
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ]
+    for name in parents:
+        if name not in sys.modules:
+            sys.modules[name] = types.ModuleType(name)
 
-        def get_option(self, name):
-            return self._opts.get(name)
-
-    lookup_mod.LookupBase = _StubLookupBase
-    sys.modules["ansible.plugins"] = plugins_mod
-    sys.modules["ansible.plugins.lookup"] = lookup_mod
-    ansible_pkg.plugins = plugins_mod
+    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
+    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
+            ".akeyless_lookup_auth")
+    # Force fresh load so the helper's `import akeyless` rebinds to
+    # whatever fake_akeyless installed for THIS test (otherwise the
+    # first test wins and subsequent tests see a stale akeyless ref).
+    sys.modules.pop(full, None)
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
 
 
 def _load_lookup(fake_akeyless):

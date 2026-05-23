@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create auth_method_k8s
-      auth_method_k8s:
+      drzln0.akeyless.auth_method_k8s:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create auth_method_k8s (idempotent)
-      auth_method_k8s:
+      drzln0.akeyless.auth_method_k8s:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete auth_method_k8s
-      auth_method_k8s:
+      drzln0.akeyless.auth_method_k8s:
         state: absent
         name: "test_value"
       register: delete_result

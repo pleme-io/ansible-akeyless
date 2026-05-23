@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create gateway_allowed_access
-      gateway_allowed_access:
+      drzln0.akeyless.gateway_allowed_access:
         state: present
         access_id: "test_value"
         name: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create gateway_allowed_access (idempotent)
-      gateway_allowed_access:
+      drzln0.akeyless.gateway_allowed_access:
         state: present
         access_id: "test_value"
         name: "test_value"
       register: idempotent_result
 
     - name: Delete gateway_allowed_access
-      gateway_allowed_access:
+      drzln0.akeyless.gateway_allowed_access:
         state: absent
         access_id: "test_value"
         name: "test_value"

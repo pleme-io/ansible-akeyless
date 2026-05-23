@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create dynamic_secret_aws
-      dynamic_secret_aws:
+      drzln0.akeyless.dynamic_secret_aws:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create dynamic_secret_aws (idempotent)
-      dynamic_secret_aws:
+      drzln0.akeyless.dynamic_secret_aws:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete dynamic_secret_aws
-      dynamic_secret_aws:
+      drzln0.akeyless.dynamic_secret_aws:
         state: absent
         name: "test_value"
       register: delete_result

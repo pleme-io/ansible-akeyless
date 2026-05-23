@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_godaddy
-      target_godaddy:
+      drzln0.akeyless.target_godaddy:
         state: present
         api_key: "test_value"
         imap_fqdn: "test_value"
@@ -24,7 +24,7 @@
           - create_result.changed
 
     - name: Create target_godaddy (idempotent)
-      target_godaddy:
+      drzln0.akeyless.target_godaddy:
         state: present
         api_key: "test_value"
         imap_fqdn: "test_value"
@@ -35,7 +35,7 @@
       register: idempotent_result
 
     - name: Delete target_godaddy
-      target_godaddy:
+      drzln0.akeyless.target_godaddy:
         state: absent
         api_key: "test_value"
         imap_fqdn: "test_value"

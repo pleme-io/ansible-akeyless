@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create auth_method_huawei
-      auth_method_huawei:
+      drzln0.akeyless.auth_method_huawei:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create auth_method_huawei (idempotent)
-      auth_method_huawei:
+      drzln0.akeyless.auth_method_huawei:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete auth_method_huawei
-      auth_method_huawei:
+      drzln0.akeyless.auth_method_huawei:
         state: absent
         name: "test_value"
       register: delete_result

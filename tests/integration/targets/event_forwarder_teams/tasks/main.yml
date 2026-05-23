@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create event_forwarder_teams
-      event_forwarder_teams:
+      drzln0.akeyless.event_forwarder_teams:
         state: present
         gateways_event_source_locations: "test_value"
         name: "test_value"
@@ -22,7 +22,7 @@
           - create_result.changed
 
     - name: Create event_forwarder_teams (idempotent)
-      event_forwarder_teams:
+      drzln0.akeyless.event_forwarder_teams:
         state: present
         gateways_event_source_locations: "test_value"
         name: "test_value"
@@ -31,7 +31,7 @@
       register: idempotent_result
 
     - name: Delete event_forwarder_teams
-      event_forwarder_teams:
+      drzln0.akeyless.event_forwarder_teams:
         state: absent
         gateways_event_source_locations: "test_value"
         name: "test_value"

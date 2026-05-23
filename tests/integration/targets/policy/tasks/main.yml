@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create policy
-      policy:
+      drzln0.akeyless.policy:
         state: present
         path: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create policy (idempotent)
-      policy:
+      drzln0.akeyless.policy:
         state: present
         path: "test_value"
       register: idempotent_result
 
     - name: Delete policy
-      policy:
+      drzln0.akeyless.policy:
         state: absent
         path: "test_value"
       register: delete_result

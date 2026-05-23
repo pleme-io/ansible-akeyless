@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_gitlab
-      target_gitlab:
+      drzln0.akeyless.target_gitlab:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create target_gitlab (idempotent)
-      target_gitlab:
+      drzln0.akeyless.target_gitlab:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete target_gitlab
-      target_gitlab:
+      drzln0.akeyless.target_gitlab:
         state: absent
         name: "test_value"
       register: delete_result

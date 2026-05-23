@@ -78,67 +78,23 @@ _raw:
   elements: dict
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from ansible.errors import AnsibleError, AnsibleLookupError
 from ansible.plugins.lookup import LookupBase
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_lookup_auth import (
+    DEFAULT_ACCESS_TYPE,
+    DEFAULT_GATEWAY_URL,
+    HAS_AKEYLESS,
+    AKEYLESS_IMPORT_ERROR,
+    authenticated_client as _authenticated_client,
+)
 
 try:
     import akeyless
     from akeyless.exceptions import ApiException
-    HAS_AKEYLESS = True
-    AKEYLESS_IMPORT_ERROR: Optional[ImportError] = None
-except ImportError as exc:
-    HAS_AKEYLESS = False
-    AKEYLESS_IMPORT_ERROR = exc
-
-DEFAULT_GATEWAY_URL = "https://api.akeyless.io"
-DEFAULT_ACCESS_TYPE = "access_key"
-
-
-def _authenticated_client(opts: Dict[str, Any]) -> Tuple[Any, str]:
-    """Build a V2Api client + token from lookup options. Mirrors the
-    secret lookup's auth path so behaviour is identical between
-    static + dynamic lookups."""
-    if not HAS_AKEYLESS:
-        raise AnsibleError(
-            "The 'akeyless' Python package is required. "
-            "Install with: pip install 'akeyless>=5.0.22'. "
-            f"Original error: {AKEYLESS_IMPORT_ERROR}"
-        )
-
-    gateway_url = opts.get("gateway_url") or DEFAULT_GATEWAY_URL
-    config = akeyless.Configuration(host=gateway_url)
-    client = akeyless.V2Api(akeyless.ApiClient(config))
-
-    pre_issued = opts.get("token")
-    if pre_issued:
-        return client, pre_issued
-
-    access_id = opts.get("access_id")
-    if not access_id:
-        raise AnsibleError(
-            "access_id is required when no pre-issued token is provided "
-            "(set the access_id option, AKEYLESS_ACCESS_ID env var, or pass token=...)"
-        )
-
-    auth_body = akeyless.Auth(
-        access_id=access_id,
-        access_key=opts.get("access_key"),
-        access_type=opts.get("access_type") or DEFAULT_ACCESS_TYPE,
-    )
-    try:
-        auth_res = client.auth(auth_body)
-    except ApiException as exc:
-        status = getattr(exc, "status", "?")
-        raise AnsibleError(
-            f"Akeyless auth failed ({status}): {exc.body or exc.reason}"
-        ) from exc
-
-    token = getattr(auth_res, "token", None)
-    if not token:
-        raise AnsibleError("Akeyless auth succeeded but returned no token")
-    return client, token
+except ImportError:  # pragma: no cover - HAS_AKEYLESS handles this
+    pass
 
 
 class LookupModule(LookupBase):

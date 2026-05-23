@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create dfc_key
-      dfc_key:
+      drzln0.akeyless.dfc_key:
         state: present
         alg: "test_value"
         name: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create dfc_key (idempotent)
-      dfc_key:
+      drzln0.akeyless.dfc_key:
         state: present
         alg: "test_value"
         name: "test_value"
       register: idempotent_result
 
     - name: Delete dfc_key
-      dfc_key:
+      drzln0.akeyless.dfc_key:
         state: absent
         alg: "test_value"
         name: "test_value"

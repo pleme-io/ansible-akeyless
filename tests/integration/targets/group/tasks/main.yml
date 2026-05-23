@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create group
-      group:
+      drzln0.akeyless.group:
         state: present
         group_alias: "test_value"
         name: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create group (idempotent)
-      group:
+      drzln0.akeyless.group:
         state: present
         group_alias: "test_value"
         name: "test_value"
       register: idempotent_result
 
     - name: Delete group
-      group:
+      drzln0.akeyless.group:
         state: absent
         group_alias: "test_value"
         name: "test_value"

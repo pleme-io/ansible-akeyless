@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_splunk
-      target_splunk:
+      drzln0.akeyless.target_splunk:
         state: present
         name: "test_value"
         url: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create target_splunk (idempotent)
-      target_splunk:
+      drzln0.akeyless.target_splunk:
         state: present
         name: "test_value"
         url: "test_value"
       register: idempotent_result
 
     - name: Delete target_splunk
-      target_splunk:
+      drzln0.akeyless.target_splunk:
         state: absent
         name: "test_value"
         url: "test_value"

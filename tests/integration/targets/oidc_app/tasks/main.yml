@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create oidc_app
-      oidc_app:
+      drzln0.akeyless.oidc_app:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create oidc_app (idempotent)
-      oidc_app:
+      drzln0.akeyless.oidc_app:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete oidc_app
-      oidc_app:
+      drzln0.akeyless.oidc_app:
         state: absent
         name: "test_value"
       register: delete_result

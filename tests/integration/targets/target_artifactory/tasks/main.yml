@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_artifactory
-      target_artifactory:
+      drzln0.akeyless.target_artifactory:
         state: present
         artifactory_admin_name: "test_value"
         artifactory_admin_pwd: "test_value"
@@ -22,7 +22,7 @@
           - create_result.changed
 
     - name: Create target_artifactory (idempotent)
-      target_artifactory:
+      drzln0.akeyless.target_artifactory:
         state: present
         artifactory_admin_name: "test_value"
         artifactory_admin_pwd: "test_value"
@@ -31,7 +31,7 @@
       register: idempotent_result
 
     - name: Delete target_artifactory
-      target_artifactory:
+      drzln0.akeyless.target_artifactory:
         state: absent
         artifactory_admin_name: "test_value"
         artifactory_admin_pwd: "test_value"

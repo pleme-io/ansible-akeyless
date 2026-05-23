@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_web
-      target_web:
+      drzln0.akeyless.target_web:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create target_web (idempotent)
-      target_web:
+      drzln0.akeyless.target_web:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete target_web
-      target_web:
+      drzln0.akeyless.target_web:
         state: absent
         name: "test_value"
       register: delete_result

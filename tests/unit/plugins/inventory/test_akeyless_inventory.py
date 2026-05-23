@@ -21,51 +21,66 @@ INVENTORY_PATH = REPO_ROOT / "plugins" / "inventory" / "akeyless.py"
 
 
 def _install_ansible_inventory_stubs():
-    """Install minimal ansible.plugins.inventory stubs so the inventory
-    plugin imports without a real Ansible install. The
-    BaseInventoryPlugin + Constructable mixin we stub here cover
-    the surface our InventoryModule actually uses (verify_file,
-    _read_config_data, get_option, super().parse)."""
-    if "ansible.plugins.inventory" in sys.modules:
-        return
-
+    """Idempotent stubs for ansible.errors + ansible.plugins.inventory
+    + the shared lookup_auth helper under its ansible_collections.<...>
+    import path."""
     ansible_pkg = sys.modules.setdefault("ansible", types.ModuleType("ansible"))
-    errors_mod = types.ModuleType("ansible.errors")
+    errors_mod = sys.modules.get("ansible.errors")
+    if errors_mod is None:
+        errors_mod = types.ModuleType("ansible.errors")
+        sys.modules["ansible.errors"] = errors_mod
+        ansible_pkg.errors = errors_mod
+    if not hasattr(errors_mod, "AnsibleError"):
+        class _StubAnsibleError(Exception):
+            pass
+        errors_mod.AnsibleError = _StubAnsibleError
 
-    class _StubAnsibleError(Exception):
-        pass
+    if "ansible.plugins.inventory" not in sys.modules:
+        plugins_mod = types.ModuleType("ansible.plugins")
+        inv_mod = types.ModuleType("ansible.plugins.inventory")
 
-    errors_mod.AnsibleError = _StubAnsibleError
-    sys.modules["ansible.errors"] = errors_mod
-    ansible_pkg.errors = errors_mod
+        class _StubBaseInventoryPlugin:
+            def __init__(self):
+                self._opts: dict = {}
 
-    plugins_mod = types.ModuleType("ansible.plugins")
-    inv_mod = types.ModuleType("ansible.plugins.inventory")
+            def verify_file(self, path):
+                return True
 
-    class _StubBaseInventoryPlugin:
-        def __init__(self):
-            self._opts: dict = {}
+            def _read_config_data(self, path):
+                pass
 
-        def verify_file(self, path):
-            return True  # always accept; subclasses filter further
+            def get_option(self, name):
+                return self._opts.get(name)
 
-        def _read_config_data(self, path):
-            pass  # tests inject options via _opts directly
+            def parse(self, inventory, loader, path, *args, **kwargs):
+                pass
 
-        def get_option(self, name):
-            return self._opts.get(name)
-
-        def parse(self, inventory, loader, path, *args, **kwargs):
+        class _StubConstructable:
             pass
 
-    class _StubConstructable:
-        pass
+        inv_mod.BaseInventoryPlugin = _StubBaseInventoryPlugin
+        inv_mod.Constructable = _StubConstructable
+        sys.modules["ansible.plugins"] = plugins_mod
+        sys.modules["ansible.plugins.inventory"] = inv_mod
+        ansible_pkg.plugins = plugins_mod
 
-    inv_mod.BaseInventoryPlugin = _StubBaseInventoryPlugin
-    inv_mod.Constructable = _StubConstructable
-    sys.modules["ansible.plugins"] = plugins_mod
-    sys.modules["ansible.plugins.inventory"] = inv_mod
-    ansible_pkg.plugins = plugins_mod
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        if name not in sys.modules:
+            sys.modules[name] = types.ModuleType(name)
+    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
+            ".akeyless_lookup_auth")
+    sys.modules.pop(full, None)
+    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
 
 
 def _load_inventory(fake_akeyless):

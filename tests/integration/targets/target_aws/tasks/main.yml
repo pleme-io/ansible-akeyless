@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_aws
-      target_aws:
+      drzln0.akeyless.target_aws:
         state: present
         access_key: "test_value"
         access_key_id: "test_value"
@@ -21,7 +21,7 @@
           - create_result.changed
 
     - name: Create target_aws (idempotent)
-      target_aws:
+      drzln0.akeyless.target_aws:
         state: present
         access_key: "test_value"
         access_key_id: "test_value"
@@ -29,7 +29,7 @@
       register: idempotent_result
 
     - name: Delete target_aws
-      target_aws:
+      drzln0.akeyless.target_aws:
         state: absent
         access_key: "test_value"
         access_key_id: "test_value"

@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create static_secret
-      static_secret:
+      drzln0.akeyless.static_secret:
         state: present
         name: "test_value"
         value: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create static_secret (idempotent)
-      static_secret:
+      drzln0.akeyless.static_secret:
         state: present
         name: "test_value"
         value: "test_value"
       register: idempotent_result
 
     - name: Delete static_secret
-      static_secret:
+      drzln0.akeyless.static_secret:
         state: absent
         name: "test_value"
         value: "test_value"

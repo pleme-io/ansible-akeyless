@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_eks
-      target_eks:
+      drzln0.akeyless.target_eks:
         state: present
         eks_access_key_id: "test_value"
         eks_cluster_ca_cert: "test_value"
@@ -24,7 +24,7 @@
           - create_result.changed
 
     - name: Create target_eks (idempotent)
-      target_eks:
+      drzln0.akeyless.target_eks:
         state: present
         eks_access_key_id: "test_value"
         eks_cluster_ca_cert: "test_value"
@@ -35,7 +35,7 @@
       register: idempotent_result
 
     - name: Delete target_eks
-      target_eks:
+      drzln0.akeyless.target_eks:
         state: absent
         eks_access_key_id: "test_value"
         eks_cluster_ca_cert: "test_value"

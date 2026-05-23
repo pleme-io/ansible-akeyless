@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create auth_method_gcp
-      auth_method_gcp:
+      drzln0.akeyless.auth_method_gcp:
         state: present
         audience: "test_value"
         name: "test_value"
@@ -21,7 +21,7 @@
           - create_result.changed
 
     - name: Create auth_method_gcp (idempotent)
-      auth_method_gcp:
+      drzln0.akeyless.auth_method_gcp:
         state: present
         audience: "test_value"
         name: "test_value"
@@ -29,7 +29,7 @@
       register: idempotent_result
 
     - name: Delete auth_method_gcp
-      auth_method_gcp:
+      drzln0.akeyless.auth_method_gcp:
         state: absent
         audience: "test_value"
         name: "test_value"

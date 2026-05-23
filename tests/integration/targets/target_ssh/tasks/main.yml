@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_ssh
-      target_ssh:
+      drzln0.akeyless.target_ssh:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create target_ssh (idempotent)
-      target_ssh:
+      drzln0.akeyless.target_ssh:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete target_ssh
-      target_ssh:
+      drzln0.akeyless.target_ssh:
         state: absent
         name: "test_value"
       register: delete_result

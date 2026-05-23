@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_k8s
-      target_k8s:
+      drzln0.akeyless.target_k8s:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create target_k8s (idempotent)
-      target_k8s:
+      drzln0.akeyless.target_k8s:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete target_k8s
-      target_k8s:
+      drzln0.akeyless.target_k8s:
         state: absent
         name: "test_value"
       register: delete_result

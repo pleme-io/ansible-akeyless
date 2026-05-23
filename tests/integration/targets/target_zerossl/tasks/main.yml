@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_zerossl
-      target_zerossl:
+      drzln0.akeyless.target_zerossl:
         state: present
         api_key: "test_value"
         imap_fqdn: "test_value"
@@ -23,7 +23,7 @@
           - create_result.changed
 
     - name: Create target_zerossl (idempotent)
-      target_zerossl:
+      drzln0.akeyless.target_zerossl:
         state: present
         api_key: "test_value"
         imap_fqdn: "test_value"
@@ -33,7 +33,7 @@
       register: idempotent_result
 
     - name: Delete target_zerossl
-      target_zerossl:
+      drzln0.akeyless.target_zerossl:
         state: absent
         api_key: "test_value"
         imap_fqdn: "test_value"

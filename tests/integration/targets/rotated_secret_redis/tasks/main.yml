@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create rotated_secret_redis
-      rotated_secret_redis:
+      drzln0.akeyless.rotated_secret_redis:
         state: present
         name: "test_value"
         rotator_type: "test_value"
@@ -21,7 +21,7 @@
           - create_result.changed
 
     - name: Create rotated_secret_redis (idempotent)
-      rotated_secret_redis:
+      drzln0.akeyless.rotated_secret_redis:
         state: present
         name: "test_value"
         rotator_type: "test_value"
@@ -29,7 +29,7 @@
       register: idempotent_result
 
     - name: Delete rotated_secret_redis
-      rotated_secret_redis:
+      drzln0.akeyless.rotated_secret_redis:
         state: absent
         name: "test_value"
         rotator_type: "test_value"
