@@ -101,12 +101,23 @@ except ImportError as exc:
     HAS_AKEYLESS = False
     AKEYLESS_IMPORT_ERROR = exc
 
+# Defaults mirror the helper module's exports so behaviour is identical
+# between lookup-style and module-task usage. Importing the helper here
+# isn't possible (we'd need the ansible_collections.* path resolved,
+# which only happens once the collection is installed), so the values
+# are duplicated and pinned by tests/unit/plugins/lookup/test_secret.py.
 DEFAULT_GATEWAY_URL = "https://api.akeyless.io"
 DEFAULT_ACCESS_TYPE = "access_key"
 
 
 def _authenticated_client(opts: Dict[str, Any]) -> Tuple[Any, str]:
-    """Build a V2Api client + token from lookup options."""
+    """Build a V2Api client + token from lookup options.
+
+    Raises AnsibleError on configuration / auth failures so the lookup
+    surfaces cleanly through Ansible's error machinery. Exception
+    chaining is preserved via `raise X from exc` -- run with -vvv to
+    see the original SDK ApiException in the traceback.
+    """
     if not HAS_AKEYLESS:
         raise AnsibleError(
             "The 'akeyless' Python package is required. "
@@ -140,7 +151,7 @@ def _authenticated_client(opts: Dict[str, Any]) -> Tuple[Any, str]:
         status = getattr(exc, "status", "?")
         raise AnsibleError(
             f"Akeyless auth failed ({status}): {exc.body or exc.reason}"
-        )
+        ) from exc
 
     token = getattr(auth_res, "token", None)
     if not token:
@@ -170,7 +181,7 @@ class LookupModule(LookupBase):
             raise AnsibleLookupError(
                 f"Akeyless get_secret_value failed ({status}): "
                 f"{exc.body or exc.reason}"
-            )
+            ) from exc
 
         # The SDK returns a model with `.to_dict()` or a plain dict
         # depending on version; normalise.
