@@ -49,6 +49,8 @@ The fastest path from "I just installed this" to "production playbook":
 | [Skip per-task auth](walkthroughs/token-caching.md) | Wire the cache plugin so auth runs ONCE per playbook |
 | [Dynamic + rotated secrets](walkthroughs/dynamic-secrets.md) | Mint ephemeral DB creds + rotation policies |
 | [AWX / AAP integration](walkthroughs/awx-aap-integration.md) | Run this collection inside Tower with credential delegation |
+| [Migrate from another secrets manager](walkthroughs/migration.md) | Search-and-replace patterns from Vault / AWS / Azure |
+| [Troubleshooting](walkthroughs/troubleshooting.md) | Common errors + exact fixes |
 
 ## Reference
 

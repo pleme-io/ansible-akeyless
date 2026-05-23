@@ -89,6 +89,8 @@ REQUIRED_WALKTHROUGHS = [
     "token-caching.md",
     "dynamic-secrets.md",
     "awx-aap-integration.md",
+    "migration.md",
+    "troubleshooting.md",
 ]
 
 
