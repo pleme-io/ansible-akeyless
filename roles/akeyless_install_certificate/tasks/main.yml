@@ -1,0 +1,93 @@
+---
+- name: Validate akeyless_install_certificate inputs
+  ansible.builtin.assert:
+    that:
+      - akeyless_install_certificate_cert_secret | length > 0
+      - akeyless_install_certificate_cert_path | length > 0
+    fail_msg: >-
+      akeyless_install_certificate_cert_secret AND
+      akeyless_install_certificate_cert_path are both required.
+  tags: [akeyless, certificate, always]
+
+- name: Fetch certificate from Akeyless
+  ansible.builtin.set_fact:
+    _akeyless_cert: "{{ lookup('drzln0.akeyless.secret',
+                       akeyless_install_certificate_cert_secret,
+                       gateway_url=akeyless_install_certificate_gateway_url,
+                       access_id=akeyless_install_certificate_access_id,
+                       access_key=akeyless_install_certificate_access_key,
+                       access_type=akeyless_install_certificate_access_type,
+                       token=akeyless_install_certificate_token) }}"
+  no_log: "{{ akeyless_install_certificate_no_log }}"
+  tags: [akeyless, certificate]
+
+- name: Verify fetched value looks like a PEM block
+  ansible.builtin.assert:
+    that:
+      - _akeyless_cert is drzln0.akeyless.is_pem_block
+    fail_msg: >-
+      Secret at {{ akeyless_install_certificate_cert_secret }} doesn't
+      look like a PEM block. Expected -----BEGIN/END----- markers.
+  no_log: "{{ akeyless_install_certificate_no_log }}"
+  tags: [akeyless, certificate]
+
+- name: Ensure certificate directory exists
+  ansible.builtin.file:
+    path: "{{ akeyless_install_certificate_cert_path | dirname }}"
+    state: directory
+    owner: "{{ akeyless_install_certificate_cert_owner }}"
+    group: "{{ akeyless_install_certificate_cert_group }}"
+    mode: "0755"
+  tags: [akeyless, certificate]
+
+- name: Install certificate on target
+  ansible.builtin.copy:
+    dest: "{{ akeyless_install_certificate_cert_path }}"
+    content: "{{ _akeyless_cert }}"
+    owner: "{{ akeyless_install_certificate_cert_owner }}"
+    group: "{{ akeyless_install_certificate_cert_group }}"
+    mode: "{{ akeyless_install_certificate_cert_mode }}"
+  notify: "{{ akeyless_install_certificate_notify | default(omit, true) }}"
+  no_log: "{{ akeyless_install_certificate_no_log }}"
+  tags: [akeyless, certificate]
+
+- name: Fetch private key from Akeyless when configured
+  ansible.builtin.set_fact:
+    _akeyless_key: "{{ lookup('drzln0.akeyless.secret',
+                      akeyless_install_certificate_key_secret,
+                      gateway_url=akeyless_install_certificate_gateway_url,
+                      access_id=akeyless_install_certificate_access_id,
+                      access_key=akeyless_install_certificate_access_key,
+                      access_type=akeyless_install_certificate_access_type,
+                      token=akeyless_install_certificate_token) }}"
+  when: akeyless_install_certificate_key_secret | length > 0
+  no_log: "{{ akeyless_install_certificate_no_log }}"
+  tags: [akeyless, certificate]
+
+- name: Ensure key directory exists with restrictive perms when key present
+  ansible.builtin.file:
+    path: "{{ akeyless_install_certificate_key_path | dirname }}"
+    state: directory
+    owner: "{{ akeyless_install_certificate_key_owner }}"
+    group: "{{ akeyless_install_certificate_key_group }}"
+    mode: "0710"
+  when: akeyless_install_certificate_key_secret | length > 0
+  tags: [akeyless, certificate]
+
+- name: Install private key on target
+  ansible.builtin.copy:
+    dest: "{{ akeyless_install_certificate_key_path }}"
+    content: "{{ _akeyless_key }}"
+    owner: "{{ akeyless_install_certificate_key_owner }}"
+    group: "{{ akeyless_install_certificate_key_group }}"
+    mode: "{{ akeyless_install_certificate_key_mode }}"
+  when: akeyless_install_certificate_key_secret | length > 0
+  notify: "{{ akeyless_install_certificate_notify | default(omit, true) }}"
+  no_log: "{{ akeyless_install_certificate_no_log }}"
+  tags: [akeyless, certificate]
+
+- name: Clear cert/key facts (only the file should persist)
+  ansible.builtin.set_fact:
+    _akeyless_cert: null
+    _akeyless_key: null
+  tags: [akeyless, certificate]
