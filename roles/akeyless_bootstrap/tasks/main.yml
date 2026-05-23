@@ -1,0 +1,55 @@
+---
+# roles/akeyless_bootstrap/tasks/main.yml
+#
+# Fetches every path in `akeyless_bootstrap_secrets` via the
+# drzln0.akeyless.secret lookup, then exposes the result as the
+# `akeyless_bootstrap_var_name` host_var keyed by secret basename.
+#
+# Single batched lookup call -- the secret lookup plugin already
+# multiplexes terms into a single API request, so iterating the list
+# stays O(1) HTTP calls regardless of secret count.
+
+- name: Validate akeyless_bootstrap inputs
+  ansible.builtin.assert:
+    that:
+      - akeyless_bootstrap_secrets | length > 0
+      - akeyless_bootstrap_secrets is iterable
+    fail_msg: >-
+      akeyless_bootstrap_secrets must be a non-empty list of secret paths
+      (e.g. ['/app/db/password', '/app/api/key']).
+  tags: [akeyless, bootstrap, always]
+
+- name: Fetch akeyless secrets in a single batched lookup
+  ansible.builtin.set_fact:
+    _akeyless_bootstrap_raw: >-
+      {{
+        query(
+          'drzln0.akeyless.secret',
+          *akeyless_bootstrap_secrets,
+          gateway_url=akeyless_bootstrap_gateway_url,
+          access_id=akeyless_bootstrap_access_id,
+          access_key=akeyless_bootstrap_access_key,
+          access_type=akeyless_bootstrap_access_type,
+          token=akeyless_bootstrap_token,
+        )
+      }}
+  no_log: "{{ akeyless_bootstrap_no_log }}"
+  tags: [akeyless, bootstrap]
+
+- name: Expose secrets as host_var keyed by basename
+  ansible.builtin.set_fact:
+    "{{ akeyless_bootstrap_var_name }}": >-
+      {{
+        dict(
+          akeyless_bootstrap_secrets
+          | map('regex_replace', '^.*/', '')
+          | zip(_akeyless_bootstrap_raw)
+        )
+      }}
+  no_log: "{{ akeyless_bootstrap_no_log }}"
+  tags: [akeyless, bootstrap]
+
+- name: Clear the raw fact (only the keyed dict should persist)
+  ansible.builtin.set_fact:
+    _akeyless_bootstrap_raw: null
+  tags: [akeyless, bootstrap]

@@ -1,0 +1,24 @@
+---
+galaxy_info:
+  role_name: akeyless_bootstrap
+  namespace: drzln0
+  author: pleme-io
+  description: >-
+    Bootstraps Akeyless authentication for a play, fetches a configurable
+    list of static secrets, and exposes them as `akeyless_secrets` host_vars
+    so subsequent tasks can reference them without per-task lookup
+    boilerplate. Pairs with the drzln0.akeyless.akeyless inventory plugin
+    or stands alone.
+  license: GPL-3.0-or-later
+  min_ansible_version: '2.14'
+  platforms:
+    - name: Any
+      versions: ['all']
+  galaxy_tags:
+    - security
+    - secrets
+    - akeyless
+    - vault
+    - bootstrap
+
+dependencies: []

@@ -3,14 +3,14 @@ name: akeyless
 version: 0.2.4
 readme: README.md
 authors: [pleme-io]
-description: "Auto-generated Ansible modules for Akeyless Vault — managed by iac-forge."
+description: "Full-service Ansible integration for Akeyless Vault: 208 generated modules covering the V2 API, plus lookup + filter + inventory plugins and a bootstrap role."
 license: [MIT]
 repository: https://github.com/pleme-io/ansible-akeyless
 documentation: https://github.com/pleme-io/ansible-akeyless
 homepage: https://github.com/pleme-io/ansible-akeyless
 issues: https://github.com/pleme-io/ansible-akeyless/issues
 dependencies: {}
-tags: [security, secrets, akeyless]
+tags: [security, secrets, akeyless, vault, inventory, lookup, filter]
 
 # trigger e2e CD test 2026-05-21 (tatara-lisp migration)
 # trigger 0.1.3 e2e CD test 2026-05-21 (post action-release migration)
