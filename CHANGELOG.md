@@ -21,8 +21,79 @@ All notable changes to this project are documented here. Format follows [Keep a 
   and `generate_action_module`. No more hardcoded `"akeyless"` string in
   the generator.
 
-### Added
-- (placeholder for next release)
+## [0.2.x] — 2026-05-23 (in-flight)
+
+Substantial expansion of the non-module Ansible Galaxy surface and
+generator-side hardening. Galaxy publishes catching up across tags
+v0.2.6+ as CI blockers clear.
+
+### Added — non-module Galaxy plugin types
+
+- **Inventory plugin** `drzln0.akeyless.akeyless` — loads hosts from
+  JSON-shaped static secrets. Addresses PRM-1767 (Pepsico's
+  "we don't want to rewrite every play with lookup calls" request):
+  teams add Akeyless as an inventory source in AWX/AAP, then
+  playbooks reference values via standard `host_vars` / `group_vars`.
+- **Lookup plugins** (+2): `dynamic_secret`, `pki_certificate`. Both
+  follow the existing `secret` lookup's auth + exception-chaining
+  patterns.
+- **Filter plugins** (7 total): `b64decode_secret` (strict-validate),
+  `parse_dotenv_secret`, `secret_to_json`, `split_pem_bundle`,
+  `secret_keys_to_env`, `mask_secret`, `secret_strength`
+  (Shannon entropy + classification).
+- **Test plugins** (4): `is_akeyless_path`, `is_akeyless_access_id`,
+  `is_pem_block`, `is_base64` — one file per test for ansible-doc
+  compatibility.
+- **Callback plugin** `akeyless_redactor` — defensive secondary-pass
+  secret redaction in task result rendering.
+- **Action plugin** `secret_to_file` — atomically fetches a secret
+  and writes it to a remote file. Secret value never appears in
+  task-arg rendering.
+- **Cache plugin** `akeyless_token` — file-backed token cache
+  (0600 perms, atomic writes, TTL, self-healing) to skip per-play
+  re-auth.
+- **Roles** (2): `akeyless_bootstrap`, `akeyless_install_certificate`.
+- **Playbooks** (2): `fetch_secrets_into_env_file.yml`,
+  `install_certificate_with_defaults.yml`.
+
+### Added — collection metadata
+
+- `meta/runtime.yml` `action_groups.all` with all 209 module names.
+  Users can now set Akeyless auth ONCE via
+  `module_defaults: group/drzln0.akeyless.all:` instead of repeating
+  on every task.
+- `plugins/module_utils/akeyless_lookup_auth.py` — shared auth
+  helper (DRY -150 LOC across 4 callers).
+
+### Added — Python craft on the helper
+
+- Typed exception hierarchy: `AkeylessError` + `AkeylessConfigError` /
+  `AkeylessSdkError` / `AkeylessAuthError` / `AkeylessApiError`
+  carrying `status` + `details`.
+- `AkeylessConfig` frozen dataclass, `HttpStatus(IntEnum)`,
+  `AnsibleModuleLike` Protocol, `@requires_sdk` decorator,
+  `functools.cache` modernization, `Final[str]` constants, full type
+  annotations.
+- `_did_you_mean` difflib suggestions on unknown-model / unknown-method
+  paths.
+
+### Added — tests + CI
+
+- **+4000 unit/mock/sanity test cases** (1541 → 5890): module-load
+  sweeps, license-header sweeps, YAML-block validation, import-
+  discipline, action-shadow coherence, coverage threshold, FQCN
+  convention, plugin-load sweep, cache property tests.
+- Hypothesis property tests: 17 classes, ~1500 random examples.
+- New CI workflows: `coverage-matrix.yml` (Py 3.10–3.13 fan-out
+  with pytest-cov), `ansible-lint.yml`.
+- Cross-repo prime-directive backstop now byte-exact checks
+  `meta/runtime.yml` + helper + every module.
+
+### Resolved
+
+- 471 integration playbooks rewritten from bare → FQCN.
+- Generator-side `\"...\"` escape bug in OpenAPI descriptions.
+- Lookup auth duplication consolidated.
 
 ## [0.2.0] — 2026-05-21
 
