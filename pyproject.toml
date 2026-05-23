@@ -17,5 +17,42 @@ dependencies = [
     "hypothesis>=6.0",
 ]
 
+[project.optional-dependencies]
+# `uv sync --extra mutation` installs the mutation-test toolchain.
+# Kept out of the default `dependencies` because mutmut pulls a heavy
+# tree (junitparser, click, etc.) we only need in the nightly workflow.
+mutation = [
+    "mutmut>=2.5",
+    "coverage>=7.0",
+]
+
 [tool.uv]
 package = false
+
+# ---------------------------------------------------------------------------
+# Mutation testing
+# ---------------------------------------------------------------------------
+# Drives `mutmut run` in the nightly mutation-test workflow.
+#
+# We deliberately target ONLY the critical security/correctness paths
+# -- mutating the 209 generated modules would explode runtime without
+# surfacing useful information (those modules delegate to the helper,
+# so any kill/survivor signal would show on the helper anyway).
+#
+# Files targeted:
+#   - the helper (auth, exception hierarchy, lifecycle helpers)
+#   - the lookup auth helper
+#   - the plugin decorator suite
+#   - the redactor callback (last-line secret defense)
+#   - all hand-written non-module plugins (filter / lookup / inventory
+#     / action / test plugins)
+#
+# To reproduce locally:
+#   uv sync --extra mutation
+#   .venv/bin/mutmut run --paths-to-mutate plugins/callback/akeyless_redactor.py
+#   .venv/bin/mutmut results
+#   .venv/bin/mutmut show <id>   # inspect a surviving mutation
+[tool.mutmut]
+paths_to_mutate = "plugins/module_utils/akeyless_client.py,plugins/module_utils/akeyless_lookup_auth.py,plugins/module_utils/akeyless_plugin_helpers.py,plugins/callback/akeyless_redactor.py,plugins/filter/akeyless.py,plugins/lookup/secret.py,plugins/lookup/dynamic_secret.py,plugins/lookup/pki_certificate.py,plugins/inventory/akeyless.py,plugins/action/secret_to_file.py,plugins/test/is_akeyless_path.py,plugins/test/is_akeyless_access_id.py,plugins/test/is_pem_block.py,plugins/test/is_base64.py"
+tests_dir = "tests/unit tests/sanity"
+runner = "python -m pytest -x --timeout=30 -q tests/unit tests/sanity"

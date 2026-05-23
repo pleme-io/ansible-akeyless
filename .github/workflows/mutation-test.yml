@@ -1,0 +1,111 @@
+name: mutation-test
+
+# Runs mutmut against the critical security/correctness paths once a
+# night + on-demand via workflow_dispatch. Mutation testing is much
+# heavier than line coverage (each mutated line re-runs the suite),
+# so we deliberately:
+#   - target ONLY the helper / lookup / inventory / callback / filter /
+#     test / action plugins (the 209 generated modules delegate to
+#     the helper, so the signal lives on the helper)
+#   - allow up to 4h runtime (free-tier limit is 6h)
+#   - upload the surviving-mutations report as an artifact AND surface
+#     a score in the run summary
+#
+# A surviving mutation is a code change the test suite did NOT catch
+# -- a gap in test depth. Surviving mutations are NOT auto-failures;
+# the workflow surfaces them as a quality signal for the maintainer
+# to triage. To force a hard fail when survivors exceed a threshold,
+# uncomment the score-floor step.
+
+on:
+  schedule:
+    - cron: '17 4 * * *'  # 04:17 UTC daily (off-peak runner contention)
+  workflow_dispatch:
+    inputs:
+      paths:
+        description: 'Optional --paths-to-mutate override (comma list)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  mutate:
+    name: mutmut nightly sweep
+    runs-on: ubuntu-latest
+    timeout-minutes: 240  # 4h ceiling; mutmut is the long pole.
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies (incl. mutmut extras)
+        run: |
+          uv sync --frozen --extra mutation
+
+      - name: Confirm test suite is green BEFORE mutating
+        run: |
+          # Mutation testing is meaningless if the baseline is red --
+          # any test failure shows as a false-positive "surviving"
+          # mutation. Verify green first.
+          .venv/bin/python -m pytest tests/unit tests/sanity -q --no-header
+
+      - name: Run mutmut sweep
+        id: mutmut
+        run: |
+          PATHS_OVERRIDE="${{ inputs.paths }}"
+          if [ -n "$PATHS_OVERRIDE" ]; then
+            echo "Overriding paths_to_mutate: $PATHS_OVERRIDE"
+            .venv/bin/mutmut run --paths-to-mutate "$PATHS_OVERRIDE" || true
+          else
+            # Use the paths_to_mutate from pyproject.toml [tool.mutmut].
+            .venv/bin/mutmut run || true
+          fi
+          # mutmut exits non-zero on surviving mutations; we capture
+          # the result rather than fail the workflow so the report
+          # uploads.
+
+      - name: Generate mutation report
+        if: always()
+        run: |
+          # Score table for the run summary.
+          {
+            echo "## Mutation testing report"
+            echo ""
+            .venv/bin/mutmut results || true
+            echo ""
+            echo "Inspect a specific surviving mutation with:"
+            echo '  `mutmut show <id>`'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Export full mutmut state as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutmut-state
+          path: |
+            .mutmut-cache
+            html
+          retention-days: 14
+          if-no-files-found: ignore
+
+      # Uncomment to enforce a survivor ceiling. Pick a number after
+      # the first nightly run gives you a baseline.
+      #
+      # - name: Enforce survivor ceiling
+      #   if: always()
+      #   run: |
+      #     SURVIVORS=$(.venv/bin/mutmut results | grep -c '^survived' || true)
+      #     CEILING=50
+      #     echo "Surviving mutations: $SURVIVORS (ceiling: $CEILING)"
+      #     [ "$SURVIVORS" -le "$CEILING" ]
