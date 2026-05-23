@@ -126,9 +126,16 @@ def test_dunder_all_matches_pinned_surface(helper):
         # Idempotency helpers
         "compute_diff", "drift_to_diff", "IDEMPOTENCY_IGNORE_KEYS",
         # Typed value objects
-        "SdkCall",
-        # Decorator + registry sets
-        "lifecycle_helper", "LIFECYCLE_HELPERS", "PRIMITIVES",
+        "SdkCall", "AkeylessConfig", "HttpStatus",
+        # Structural protocols
+        "AnsibleModuleLike",
+        # Typed exception hierarchy
+        "AkeylessError", "AkeylessConfigError", "AkeylessSdkError",
+        "AkeylessAuthError", "AkeylessApiError",
+        # Decorators
+        "lifecycle_helper", "requires_sdk",
+        # Registry sets
+        "LIFECYCLE_HELPERS", "PRIMITIVES",
         # Constants
         "DEFAULT_GATEWAY_URL", "DEFAULT_ACCESS_TYPE",
         "HAS_AKEYLESS", "AKEYLESS_IMPORT_ERROR",
@@ -145,8 +152,11 @@ def test_dunder_all_matches_pinned_surface(helper):
         "run_standard_crud", "run_action_module", "run_info_module",
         "get_client", "call_api", "build_body",
         "compute_diff", "drift_to_diff", "IDEMPOTENCY_IGNORE_KEYS",
-        "SdkCall",
-        "lifecycle_helper", "LIFECYCLE_HELPERS", "PRIMITIVES",
+        "SdkCall", "AkeylessConfig", "HttpStatus", "AnsibleModuleLike",
+        "AkeylessError", "AkeylessConfigError", "AkeylessSdkError",
+        "AkeylessAuthError", "AkeylessApiError",
+        "lifecycle_helper", "requires_sdk",
+        "LIFECYCLE_HELPERS", "PRIMITIVES",
         "DEFAULT_GATEWAY_URL", "DEFAULT_ACCESS_TYPE",
         "HAS_AKEYLESS", "AKEYLESS_IMPORT_ERROR",
     })
