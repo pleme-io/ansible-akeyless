@@ -18,7 +18,7 @@ import types
 from pathlib import Path
 
 import pytest
-from hypothesis import given, settings, strategies as st
+from hypothesis import HealthCheck, given, settings, strategies as st
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -280,21 +280,31 @@ class TestBuildBodyProperties:
         model=st.text(
             alphabet=st.characters(whitelist_categories=("Lu",)), min_size=3, max_size=20),
     )
-    @settings(max_examples=50, deadline=None)
-    def test_unknown_model_raises_value_error(self, helper, model):
+    @settings(max_examples=50, deadline=None,
+              suppress_health_check=[HealthCheck.function_scoped_fixture])
+    def test_unknown_model_raises_value_error(self, helper, model, monkeypatch):
         """Unknown model names are a generator-side bug (the spec evolved
         without a regen); the helper must surface them loudly via
         ValueError so the failure can be traced back to the codegen,
-        not buried as a runtime AttributeError mid-stack."""
-        akeyless_mod = sys.modules["akeyless"]
-        # Reset any prior installed model attrs to ensure the random
-        # name truly isn't present.
-        if hasattr(akeyless_mod, model):
-            delattr(akeyless_mod, model)
-        # Verbatim __getattr__ on MagicMock returns a MagicMock, so we
-        # need the akeyless stub to actually NOT have the attribute.
-        # The fixture installs a real ModuleType which doesn't define
-        # __getattr__; getattr() will fall through to AttributeError.
+        not buried as a runtime AttributeError mid-stack.
+
+        Tests against a clean stub akeyless module (the conftest's
+        fake_akeyless has a MagicMock catch-all __getattr__ that
+        would mask the missing-model path)."""
+
+        class _CleanAkeyless:
+            pass
+
+        # Clear the @functools.cache BEFORE monkeypatching it -- the
+        # patched lambda has no cache_clear attribute, so subsequent
+        # hypothesis iterations would AttributeError trying to call
+        # cache_clear on it.
+        if hasattr(helper._model_accepted_kwargs, "cache_clear"):
+            helper._model_accepted_kwargs.cache_clear()
+        monkeypatch.setattr(helper, "akeyless", _CleanAkeyless)
+        monkeypatch.setattr(
+            helper, "_model_accepted_kwargs", lambda name: None
+        )
         with pytest.raises(ValueError, match="Unknown Akeyless model"):
             helper.build_body(model, {"x": 1})
 
