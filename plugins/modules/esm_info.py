@@ -18,11 +18,9 @@ extends_documentation_fragment:
 description:
   - Retrieve information about esm_info.
 options:
-
     esm_name:
       description: "Name of the External Secrets Manager item"
       type: str
-      required: true
 '''
 
 EXAMPLES = r'''
@@ -40,7 +38,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 )
 
 argument_spec = {
-    'esm_name': {'required': True, 'type': 'str'},
+    'esm_name': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -51,7 +49,7 @@ argument_spec = {
 def main():
     run_info_module(
         argument_spec=argument_spec,
-        sdk_call=('EsmList', 'esm_list'),
+        sdk_call=("EsmList", "esm_list"),
     )
 
 

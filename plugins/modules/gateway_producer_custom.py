@@ -26,11 +26,8 @@ options:
     admin_rotation_interval_days:
       description: "Define rotation interval in days"
       type: int
-
     create_sync_url:
       description: "URL of an endpoint that implements /sync/create method, for example
-      type: str
-      required: true
 https://webhook.example.com/sync/create"
       type: str
       required: true
@@ -53,17 +50,13 @@ https://webhook.example.com/sync/create"
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
-
     revoke_sync_url:
       description: "URL of an endpoint that implements /sync/revoke method, for example
-      type: str
-      required: true
 https://webhook.example.com/sync/revoke"
       type: str
       required: true
     rotate_sync_url:
       description: "URL of an endpoint that implements /sync/rotate method, for example
-      type: str
 https://webhook.example.com/sync/rotate"
       type: str
     tags:
@@ -121,11 +114,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_custom',
-        sdk_create=('GatewayCreateProducerCustom', 'gateway_create_producer_custom'),
-        sdk_update=('GatewayUpdateProducerCustom', 'gateway_update_producer_custom'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_custom",
+        sdk_create=("GatewayCreateProducerCustom", "gateway_create_producer_custom"),
+        sdk_update=("GatewayUpdateProducerCustom", "gateway_update_producer_custom"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

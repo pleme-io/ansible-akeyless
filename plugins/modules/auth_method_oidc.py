@@ -51,6 +51,7 @@ options:
     client_secret:
       description: "OIDC client secret"
       type: str
+      no_log: true
     delete_protection:
       description: "Enable delete protection"
       type: bool
@@ -68,11 +69,9 @@ options:
       description: "Gateway CIDR whitelist"
       type: list
       elements: str
-
     issuer:
       description: "OIDC issuer URL"
       type: str
-      required: true
     jwt_ttl:
       description: "JWT TTL in seconds"
       type: int
@@ -134,7 +133,7 @@ argument_spec = {
     'expiration_event_in': {'type': 'list', 'elements': 'str'},
     'force_sub_claims': {'type': 'bool'},
     'gw_bound_ips': {'type': 'list', 'elements': 'str'},
-    'issuer': {'type': 'str', 'required': True},
+    'issuer': {'type': 'str'},
     'jwt_ttl': {'type': 'int'},
     'name': {'type': 'str', 'required': True},
     'product_type': {'type': 'list', 'elements': 'str'},
@@ -152,11 +151,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_oidc',
-        sdk_create=('AuthMethodCreateOIDC', 'auth_method_create_oidc'),
-        sdk_update=('AuthMethodUpdateOIDC', 'auth_method_update_oidc'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_oidc",
+        sdk_create=("AuthMethodCreateOIDC", "auth_method_create_oidc"),
+        sdk_update=("AuthMethodUpdateOIDC", "auth_method_update_oidc"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

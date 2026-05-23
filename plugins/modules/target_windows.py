@@ -26,6 +26,7 @@ options:
     certificate:
       description: "Client certificate (PEM)"
       type: str
+      no_log: true
     connection_type:
       description: "Type of connection to Windows Server [credentials/parent-target]"
       type: str
@@ -58,15 +59,6 @@ options:
     use_tls:
       description: "Use TLS for WinRM connection"
       type: bool
-    password:
-      description: "Password."
-      type: str
-      required: true
-    username:
-      description: "Username."
-      type: str
-      required: true
-
 '''
 
 EXAMPLES = r'''
@@ -94,14 +86,12 @@ argument_spec = {
     'description': {'type': 'str'},
     'domain': {'type': 'str'},
     'hostname': {'type': 'str', 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'parent_target_name': {'type': 'str'},
-    'password': {'type': 'str', 'no_log': True, 'required': True},
     'port': {'type': 'str'},
     'use_tls': {'type': 'bool'},
-    'username': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -112,11 +102,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_windows',
-        sdk_create=('TargetCreateWindows', 'target_create_windows'),
-        sdk_update=('TargetUpdateWindows', 'target_update_windows'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_windows",
+        sdk_create=("TargetCreateWindows", "target_create_windows"),
+        sdk_update=("TargetUpdateWindows", "target_update_windows"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

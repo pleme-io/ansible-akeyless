@@ -27,6 +27,7 @@ options:
       description: "ZeroSSL API key"
       type: str
       required: true
+      no_log: true
     description:
       description: "Target description"
       type: str
@@ -38,6 +39,7 @@ options:
       description: "IMAP password"
       type: str
       required: true
+      no_log: true
     imap_port:
       description: "IMAP server port"
       type: str
@@ -90,7 +92,7 @@ argument_spec = {
     'imap_port': {'type': 'str'},
     'imap_target_email': {'type': 'str'},
     'imap_username': {'type': 'str', 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'timeout': {'type': 'str'},
@@ -104,11 +106,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_zerossl',
-        sdk_create=('TargetCreateZeroSSL', 'target_create_zero_ssl'),
-        sdk_update=('TargetUpdateZeroSSL', 'target_update_zero_ssl'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_zerossl",
+        sdk_create=("TargetCreateZeroSSL", "target_create_zero_ssl"),
+        sdk_update=("TargetUpdateZeroSSL", "target_update_zero_ssl"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

@@ -32,6 +32,7 @@ options:
     client_secret:
       description: "Azure client secret"
       type: str
+      no_log: true
     connection_type:
       description: "Type of connection [credentials/cloud-identity]"
       type: str
@@ -90,7 +91,7 @@ argument_spec = {
     'client_secret': {'type': 'str', 'no_log': True},
     'connection_type': {'type': 'str'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'resource_group_name': {'type': 'str'},
@@ -108,11 +109,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_azure',
-        sdk_create=('TargetCreateAzure', 'target_create_azure'),
-        sdk_update=('TargetUpdateAzure', 'target_update_azure'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_azure",
+        sdk_create=("TargetCreateAzure", "target_create_azure"),
+        sdk_update=("TargetUpdateAzure", "target_update_azure"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

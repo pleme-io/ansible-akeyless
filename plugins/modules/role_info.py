@@ -49,7 +49,7 @@ argument_spec = {
 def main():
     run_info_module(
         argument_spec=argument_spec,
-        sdk_call=('GetRole', 'get_role'),
+        sdk_call=("GetRole", "get_role"),
     )
 
 

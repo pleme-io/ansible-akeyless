@@ -32,6 +32,7 @@ options:
     custom_payload:
       description: "Secret payload to be sent with rotation request"
       type: str
+      no_log: true
     delete_protection:
       description: "Enable delete protection"
       type: bool
@@ -43,6 +44,9 @@ options:
       type: str
     key:
       description: "Encryption key name for the secret value"
+      type: str
+    lock_during_sra_session:
+      description: "Lock this secret for read/update while an SRA session is active"
       type: str
     max_versions:
       description: "Maximum number of versions"
@@ -117,11 +121,12 @@ argument_spec = {
     'custom_payload': {'type': 'str', 'no_log': True},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'enable_password_policy': {'type': 'str', 'no_log': False},
-    'key': {'type': 'str', 'no_log': False},
+    'enable_password_policy': {'type': 'str'},
+    'key': {'type': 'str'},
+    'lock_during_sra_session': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'rotate_after_disconnect': {'type': 'str'},
     'rotation_event_in': {'type': 'list', 'elements': 'str'},
     'rotation_hour': {'type': 'int'},
@@ -143,11 +148,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='rotated_secret_custom',
-        sdk_create=('RotatedSecretCreateCustom', 'rotated_secret_create_custom'),
-        sdk_update=('RotatedSecretUpdateCustom', 'rotated_secret_update_custom'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="rotated_secret_custom",
+        sdk_create=("RotatedSecretCreateCustom", "rotated_secret_create_custom"),
+        sdk_update=("RotatedSecretUpdateCustom", "rotated_secret_update_custom"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

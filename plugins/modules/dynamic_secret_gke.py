@@ -32,9 +32,11 @@ options:
     gke_account_key:
       description: "GCP service account key JSON (base64)"
       type: str
+      no_log: true
     gke_cluster_cert:
       description: "GKE cluster CA certificate (PEM)"
       type: str
+      no_log: true
     gke_cluster_endpoint:
       description: "GKE cluster API server URL"
       type: str
@@ -121,11 +123,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_gke',
-        sdk_create=('DynamicSecretCreateGke', 'dynamic_secret_create_gke'),
-        sdk_update=('DynamicSecretUpdateGke', 'dynamic_secret_update_gke'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_gke",
+        sdk_create=("DynamicSecretCreateGke", "dynamic_secret_create_gke"),
+        sdk_update=("DynamicSecretUpdateGke", "dynamic_secret_update_gke"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

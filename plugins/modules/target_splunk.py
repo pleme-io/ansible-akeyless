@@ -39,6 +39,9 @@ options:
       description: "Target name"
       type: str
       required: true
+    splunk_token:
+      description: "Splunk Token (used when authenticating with token)"
+      type: str
     token_owner:
       description: "Splunk Token Owner (required when using token authentication for rotation)"
       type: str
@@ -73,10 +76,11 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'audience': {'type': 'str'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'token_owner': {'type': 'str', 'no_log': False},
+    'splunk_token': {'type': 'str'},
+    'token_owner': {'type': 'str'},
     'url': {'type': 'str', 'required': True},
     'use_tls': {'type': 'bool'},
     'gateway_url': {'type': 'str'},
@@ -89,12 +93,15 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_splunk',
-        sdk_create=('TargetCreateSplunk', 'target_create_splunk'),
+        resource_label="target_splunk",
+        sdk_create=("TargetCreateSplunk", "target_create_splunk"),
+        # WARNING: The following fields are immutable after creation.
+        #   - name
+        # Changing them requires destroy + recreate.
         sdk_update=None,
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
         immutable=True,
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

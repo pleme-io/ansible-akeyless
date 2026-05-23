@@ -51,29 +51,21 @@ options:
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
-
     rdp_admin_name:
       description: "RDP Admin Name"
       type: str
-      required: true
-
     rdp_admin_pwd:
       description: "RDP Admin password"
       type: str
-      required: true
-
     rdp_host_name:
       description: "Hostname"
       type: str
-      required: true
     rdp_host_port:
       description: "Port"
       type: str
-
     rdp_user_groups:
       description: "Groups"
       type: str
-      required: true
     secure_access_delay:
       description: "The delay duration, in seconds, to wait after generating just-in-time credentials. Accepted range: 0-120 seconds"
       type: int
@@ -118,17 +110,17 @@ argument_spec = {
     'allow_user_extend_session': {'type': 'int'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
-    'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
+    'fixed_user_claim_keyname': {'type': 'str'},
     'fixed_user_only': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
-    'rdp_admin_name': {'type': 'str', 'required': True},
-    'rdp_admin_pwd': {'type': 'str', 'required': True},
-    'rdp_host_name': {'type': 'str', 'required': True},
+    'rdp_admin_name': {'type': 'str'},
+    'rdp_admin_pwd': {'type': 'str'},
+    'rdp_host_name': {'type': 'str'},
     'rdp_host_port': {'type': 'str'},
-    'rdp_user_groups': {'type': 'str', 'required': True},
+    'rdp_user_groups': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'secure_access_rd_gateway_server': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
@@ -145,11 +137,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_rdp',
-        sdk_create=('GatewayCreateProducerRdp', 'gateway_create_producer_rdp'),
-        sdk_update=('GatewayUpdateProducerRdp', 'gateway_update_producer_rdp'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_rdp",
+        sdk_create=("GatewayCreateProducerRdp", "gateway_create_producer_rdp"),
+        sdk_update=("GatewayUpdateProducerRdp", "gateway_update_producer_rdp"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

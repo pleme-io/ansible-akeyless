@@ -55,7 +55,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'activate_keys_on_creation': {'type': 'str', 'no_log': False},
+    'activate_keys_on_creation': {'type': 'str'},
     'certificate_ttl': {'type': 'int'},
     'name': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
@@ -68,12 +68,17 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='kmip_client_v2',
-        sdk_create=('KmipCreateClient', 'kmip_create_client'),
+        resource_label="kmip_client_v2",
+        sdk_create=("KmipCreateClient", "kmip_create_client"),
+        # WARNING: The following fields are immutable after creation.
+        #   - activate_keys_on_creation
+        #   - certificate_ttl
+        #   - name
+        # Changing them requires destroy + recreate.
         sdk_update=None,
-        sdk_delete=('KmipDeleteClient', 'kmip_delete_client'),
-        sdk_read=('KmipDescribeClient', 'kmip_describe_client'),
         immutable=True,
+        sdk_delete=("KmipDeleteClient", "kmip_delete_client"),
+        sdk_read=("KmipDescribeClient", "kmip_describe_client"),
     )
 
 

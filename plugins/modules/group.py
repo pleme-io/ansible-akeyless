@@ -73,11 +73,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='group',
-        sdk_create=('CreateGroup', 'create_group'),
-        sdk_update=('UpdateGroup', 'update_group'),
-        sdk_delete=('DeleteGroup', 'delete_group'),
-        sdk_read=('GetGroup', 'get_group'),
+        resource_label="group",
+        sdk_create=("CreateGroup", "create_group"),
+        sdk_update=("UpdateGroup", "update_group"),
+        sdk_delete=("DeleteGroup", "delete_group"),
+        sdk_read=("GetGroup", "get_group"),
     )
 
 

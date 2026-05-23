@@ -73,13 +73,15 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='role_auth_method_assoc',
-        sdk_create=('AssocRoleAuthMethod', 'assoc_role_auth_method'),
+        resource_label="role_auth_method_assoc",
+        sdk_create=("AssocRoleAuthMethod", "assoc_role_auth_method"),
+        # WARNING: The following fields are immutable after creation.
+        #   - am_name
+        # Changing them requires destroy + recreate.
         sdk_update=None,
-        sdk_delete=('DeleteRoleAssociation', 'delete_role_association'),
-        sdk_read=('GetRole', 'get_role'),
-        read_key='role_name',
         immutable=True,
+        sdk_delete=("DeleteRoleAssociation", "delete_role_association"),
+        sdk_read=("GetRole", "get_role"),
     )
 
 

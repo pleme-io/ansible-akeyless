@@ -23,16 +23,12 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
-
     artifactory_admin_name:
       description: "Artifactory Admin Name"
       type: str
-      required: true
-
     artifactory_admin_pwd:
       description: "Artifactory Admin password"
       type: str
-      required: true
     artifactory_token_audience:
       description: "Token Audience"
       type: str
@@ -41,11 +37,9 @@ options:
       description: "Token Scope"
       type: str
       required: true
-
     base_url:
       description: "Base URL"
       type: str
-      required: true
     custom_username_template:
       description: "Customize how temporary usernames are generated using go template"
       type: str
@@ -94,11 +88,11 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'artifactory_admin_name': {'type': 'str', 'required': True},
-    'artifactory_admin_pwd': {'type': 'str', 'required': True},
-    'artifactory_token_audience': {'type': 'str', 'required': True, 'no_log': False},
-    'artifactory_token_scope': {'type': 'str', 'required': True, 'no_log': False},
-    'base_url': {'type': 'str', 'required': True},
+    'artifactory_admin_name': {'type': 'str'},
+    'artifactory_admin_pwd': {'type': 'str'},
+    'artifactory_token_audience': {'type': 'str', 'required': True},
+    'artifactory_token_scope': {'type': 'str', 'required': True},
+    'base_url': {'type': 'str'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
@@ -117,11 +111,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_artifactory',
-        sdk_create=('GatewayCreateProducerArtifactory', 'gateway_create_producer_artifactory'),
-        sdk_update=('GatewayUpdateProducerArtifactory', 'gateway_update_producer_artifactory'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_artifactory",
+        sdk_create=("GatewayCreateProducerArtifactory", "gateway_create_producer_artifactory"),
+        sdk_update=("GatewayUpdateProducerArtifactory", "gateway_update_producer_artifactory"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

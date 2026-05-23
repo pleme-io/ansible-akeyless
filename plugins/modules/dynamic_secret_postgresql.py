@@ -45,29 +45,22 @@ options:
     password_length:
       description: "The length of the password to be generated"
       type: str
-
     postgresql_db_name:
       description: "PostgreSQL DB Name"
       type: str
-      required: true
-
     postgresql_host:
       description: "PostgreSQL host"
       type: str
-      required: true
-
     postgresql_password:
       description: "PostgreSQL admin password"
       type: str
-      required: true
+      no_log: true
     postgresql_port:
       description: "PostgreSQL port (default: 5432)"
       type: str
-
     postgresql_username:
       description: "PostgreSQL admin username"
       type: str
-      required: true
     producer_encryption_key:
       description: "Dynamic producer encryption key"
       type: str
@@ -118,13 +111,13 @@ argument_spec = {
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
-    'postgresql_db_name': {'type': 'str', 'required': True},
-    'postgresql_host': {'type': 'str', 'required': True},
-    'postgresql_password': {'type': 'str', 'no_log': True, 'required': True},
+    'password_length': {'type': 'str'},
+    'postgresql_db_name': {'type': 'str'},
+    'postgresql_host': {'type': 'str'},
+    'postgresql_password': {'type': 'str', 'no_log': True},
     'postgresql_port': {'type': 'str'},
-    'postgresql_username': {'type': 'str', 'required': True},
-    'producer_encryption_key': {'type': 'str', 'no_log': False},
+    'postgresql_username': {'type': 'str'},
+    'producer_encryption_key': {'type': 'str'},
     'revocation_statement': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'ssl': {'type': 'bool'},
@@ -141,11 +134,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_postgresql',
-        sdk_create=('DynamicSecretCreatePostgreSql', 'dynamic_secret_create_postgre_sql'),
-        sdk_update=('DynamicSecretUpdatePostgreSql', 'dynamic_secret_update_postgre_sql'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_postgresql",
+        sdk_create=("DynamicSecretCreatePostgreSql", "dynamic_secret_create_postgre_sql"),
+        sdk_update=("DynamicSecretUpdatePostgreSql", "dynamic_secret_update_postgre_sql"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

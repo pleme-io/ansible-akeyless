@@ -29,19 +29,16 @@ options:
     description:
       description: "Description of the object"
       type: str
-
     dockerhub_password:
       description: "Docker Hub password or access token"
       type: str
-      required: true
+      no_log: true
     dockerhub_token_scopes:
       description: "Docker Hub token scopes (comma-separated)"
       type: str
-
     dockerhub_username:
       description: "Docker Hub username"
       type: str
-      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -86,9 +83,9 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'dockerhub_password': {'type': 'str', 'no_log': True, 'required': True},
-    'dockerhub_token_scopes': {'type': 'str', 'no_log': False},
-    'dockerhub_username': {'type': 'str', 'required': True},
+    'dockerhub_password': {'type': 'str', 'no_log': True},
+    'dockerhub_token_scopes': {'type': 'str'},
+    'dockerhub_username': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
     'producer_encryption_key_name': {'type': 'str'},
@@ -105,11 +102,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_dockerhub',
-        sdk_create=('DynamicSecretCreateDockerhub', 'dynamic_secret_create_dockerhub'),
-        sdk_update=('DynamicSecretUpdateDockerhub', 'dynamic_secret_update_dockerhub'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_dockerhub",
+        sdk_create=("DynamicSecretCreateDockerhub", "dynamic_secret_create_dockerhub"),
+        sdk_update=("DynamicSecretUpdateDockerhub", "dynamic_secret_update_dockerhub"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

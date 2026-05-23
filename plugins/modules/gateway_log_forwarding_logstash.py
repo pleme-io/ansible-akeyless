@@ -83,11 +83,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_logstash',
-        sdk_create=('GatewayUpdateLogForwardingLogstash', 'gateway_update_log_forwarding_logstash'),
-        sdk_update=('GatewayUpdateLogForwardingLogstash', 'gateway_update_log_forwarding_logstash'),
-        sdk_delete=('GatewayUpdateLogForwardingLogstash', 'gateway_update_log_forwarding_logstash'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_logstash",
+        sdk_create=("GatewayUpdateLogForwardingLogstash", "gateway_update_log_forwarding_logstash"),
+        sdk_update=("GatewayUpdateLogForwardingLogstash", "gateway_update_log_forwarding_logstash"),
+        sdk_delete=("GatewayUpdateLogForwardingLogstash", "gateway_update_log_forwarding_logstash"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

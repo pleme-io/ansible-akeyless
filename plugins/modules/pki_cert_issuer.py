@@ -231,11 +231,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='pki_cert_issuer',
-        sdk_create=('CreatePKICertIssuer', 'create_pki_cert_issuer'),
-        sdk_update=('UpdatePKICertIssuer', 'update_pki_cert_issuer'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="pki_cert_issuer",
+        sdk_create=("CreatePKICertIssuer", "create_pki_cert_issuer"),
+        sdk_update=("UpdatePKICertIssuer", "update_pki_cert_issuer"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

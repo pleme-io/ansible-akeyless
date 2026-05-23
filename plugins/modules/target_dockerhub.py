@@ -26,16 +26,13 @@ options:
     description:
       description: "Target description"
       type: str
-
     dockerhub_password:
       description: "Docker Hub password or access token"
       type: str
-      required: true
-
+      no_log: true
     dockerhub_username:
       description: "Docker Hub username"
       type: str
-      required: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -69,9 +66,9 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'description': {'type': 'str'},
-    'dockerhub_password': {'type': 'str', 'no_log': True, 'required': True},
-    'dockerhub_username': {'type': 'str', 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'dockerhub_password': {'type': 'str', 'no_log': True},
+    'dockerhub_username': {'type': 'str'},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
@@ -84,11 +81,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_dockerhub',
-        sdk_create=('TargetCreateDockerhub', 'target_create_dockerhub'),
-        sdk_update=('TargetUpdateDockerhub', 'target_update_dockerhub'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_dockerhub",
+        sdk_create=("TargetCreateDockerhub", "target_create_dockerhub"),
+        sdk_update=("TargetUpdateDockerhub", "target_update_dockerhub"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

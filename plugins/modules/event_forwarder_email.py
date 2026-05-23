@@ -30,11 +30,9 @@ options:
     description:
       description: "Description of the object"
       type: str
-
     email_to:
       description: "A comma seperated list of email addresses to send event to"
       type: str
-      required: true
     event_types:
       description: "List of event types to notify about [request-access, certificate-pending-expiration, certificate-expired, certificate-provisioning-success, certificate-provisioning-failure, auth-method-pending-expiration, auth-method-expired, next-automatic-rotation, rotated-secret-success, rotated-secret-failure, dynamic-secret-failure, multi-auth-failure, uid-rotation-failure, apply-justification, email-auth-method-approved, usage, rotation-usage, gateway-inactive, static-secret-updated, rate-limiting, usage-report, secret-sync]"
       type: list
@@ -96,13 +94,13 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
     'description': {'type': 'str'},
-    'email_to': {'type': 'str', 'required': True},
+    'email_to': {'type': 'str'},
     'event_types': {'type': 'list', 'elements': 'str'},
     'every': {'type': 'str'},
     'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
     'include_error': {'type': 'str'},
     'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'override_url': {'type': 'str'},
     'runner_type': {'type': 'str', 'required': True},
@@ -117,11 +115,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='event_forwarder_email',
-        sdk_create=('EventForwarderCreateEmail', 'event_forwarder_create_email'),
-        sdk_update=('EventForwarderUpdateEmail', 'event_forwarder_update_email'),
-        sdk_delete=('EventForwarderDelete', 'event_forwarder_delete'),
-        sdk_read=('GetEventForwarder', 'get_event_forwarder'),
+        resource_label="event_forwarder_email",
+        sdk_create=("EventForwarderCreateEmail", "event_forwarder_create_email"),
+        sdk_update=("EventForwarderUpdateEmail", "event_forwarder_update_email"),
+        sdk_delete=("EventForwarderDelete", "event_forwarder_delete"),
+        sdk_read=("GetEventForwarder", "get_event_forwarder"),
     )
 
 

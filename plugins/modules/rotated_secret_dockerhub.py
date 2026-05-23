@@ -92,10 +92,10 @@ argument_spec = {
     'auto_rotate': {'type': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'rotation_event_in': {'type': 'list', 'elements': 'str'},
     'rotation_hour': {'type': 'int'},
     'rotation_interval': {'type': 'str'},
@@ -111,11 +111,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='rotated_secret_dockerhub',
-        sdk_create=('RotatedSecretCreateDockerhub', 'rotated_secret_create_dockerhub'),
-        sdk_update=('RotatedSecretUpdateDockerhub', 'rotated_secret_update_dockerhub'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="rotated_secret_dockerhub",
+        sdk_create=("RotatedSecretCreateDockerhub", "rotated_secret_create_dockerhub"),
+        sdk_update=("RotatedSecretUpdateDockerhub", "rotated_secret_update_dockerhub"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

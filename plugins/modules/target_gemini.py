@@ -23,11 +23,9 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
-
     api_key:
       description: "API key for Gemini"
       type: str
-      required: true
     description:
       description: "Target description"
       type: str
@@ -66,10 +64,10 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'api_key': {'type': 'str', 'no_log': True, 'required': True},
+    'api_key': {'type': 'str'},
     'description': {'type': 'str'},
     'gemini_url': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
@@ -82,11 +80,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_gemini',
-        sdk_create=('TargetCreateGemini', 'target_create_gemini'),
-        sdk_update=('TargetUpdateGemini', 'target_update_gemini'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_gemini",
+        sdk_create=("TargetCreateGemini", "target_create_gemini"),
+        sdk_update=("TargetUpdateGemini", "target_update_gemini"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

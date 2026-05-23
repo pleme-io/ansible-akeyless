@@ -76,7 +76,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('UidCreateChildToken', 'uid_create_child_token'),
+        sdk_call=("UidCreateChildToken", "uid_create_child_token"),
     )
 
 

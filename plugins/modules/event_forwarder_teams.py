@@ -93,7 +93,7 @@ argument_spec = {
     'every': {'type': 'str'},
     'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
     'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'runner_type': {'type': 'str', 'required': True},
     'targets_event_source_locations': {'type': 'list', 'elements': 'str'},
@@ -108,11 +108,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='event_forwarder_teams',
-        sdk_create=('EventForwarderCreateTeams', 'event_forwarder_create_teams'),
-        sdk_update=('EventForwarderUpdateTeams', 'event_forwarder_update_teams'),
-        sdk_delete=('EventForwarderDelete', 'event_forwarder_delete'),
-        sdk_read=('GetEventForwarder', 'get_event_forwarder'),
+        resource_label="event_forwarder_teams",
+        sdk_create=("EventForwarderCreateTeams", "event_forwarder_create_teams"),
+        sdk_update=("EventForwarderUpdateTeams", "event_forwarder_update_teams"),
+        sdk_delete=("EventForwarderDelete", "event_forwarder_delete"),
+        sdk_read=("GetEventForwarder", "get_event_forwarder"),
     )
 
 

@@ -69,7 +69,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'api_key': {'type': 'str', 'no_log': True},
+    'api_key': {'type': 'str'},
     'enable': {'type': 'str'},
     'host': {'type': 'str'},
     'log_service': {'type': 'str'},
@@ -87,11 +87,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_datadog',
-        sdk_create=('GatewayUpdateLogForwardingDatadog', 'gateway_update_log_forwarding_datadog'),
-        sdk_update=('GatewayUpdateLogForwardingDatadog', 'gateway_update_log_forwarding_datadog'),
-        sdk_delete=('GatewayUpdateLogForwardingDatadog', 'gateway_update_log_forwarding_datadog'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_datadog",
+        sdk_create=("GatewayUpdateLogForwardingDatadog", "gateway_update_log_forwarding_datadog"),
+        sdk_update=("GatewayUpdateLogForwardingDatadog", "gateway_update_log_forwarding_datadog"),
+        sdk_delete=("GatewayUpdateLogForwardingDatadog", "gateway_update_log_forwarding_datadog"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

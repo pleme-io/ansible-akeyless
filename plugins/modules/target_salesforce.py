@@ -43,6 +43,7 @@ options:
     client_secret:
       description: "Salesforce connected app client secret"
       type: str
+      no_log: true
     description:
       description: "Target description"
       type: str
@@ -63,6 +64,7 @@ options:
     security_token:
       description: "Salesforce security token"
       type: str
+      no_log: true
     tenant_url:
       description: "Salesforce tenant URL"
       type: str
@@ -89,7 +91,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'app_private_key_data': {'type': 'str', 'no_log': True},
+    'app_private_key_data': {'type': 'str'},
     'auth_flow': {'type': 'str', 'required': True},
     'ca_cert_data': {'type': 'str'},
     'ca_cert_name': {'type': 'str'},
@@ -97,7 +99,7 @@ argument_spec = {
     'client_secret': {'type': 'str', 'no_log': True},
     'description': {'type': 'str'},
     'email': {'type': 'str', 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'security_token': {'type': 'str', 'no_log': True},
@@ -112,11 +114,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_salesforce',
-        sdk_create=('TargetCreateSalesforce', 'target_create_salesforce'),
-        sdk_update=('TargetUpdateSalesforce', 'target_update_salesforce'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_salesforce",
+        sdk_create=("TargetCreateSalesforce", "target_create_salesforce"),
+        sdk_update=("TargetUpdateSalesforce", "target_update_salesforce"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

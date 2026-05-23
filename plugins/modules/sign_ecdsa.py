@@ -27,12 +27,10 @@ options:
     item_id:
       description: "Item ID of the EC key"
       type: int
-
     key_name:
       description: "Name of the EC key"
       type: str
-      required: true
-    payload:
+    message:
       description: "Base64-encoded message to sign"
       type: str
       required: true
@@ -65,8 +63,8 @@ argument_spec = {
     'accessibility': {'type': 'str'},
     'display_id': {'type': 'str'},
     'item_id': {'type': 'int'},
-    'key_name': {'type': 'str', 'required': True},
-    'payload': {'type': 'str', 'required': True},
+    'key_name': {'type': 'str'},
+    'message': {'type': 'str', 'required': True},
     'prehashed': {'type': 'bool'},
     'version': {'type': 'int'},
     'gateway_url': {'type': 'str'},
@@ -79,7 +77,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('SignEcDsa', 'sign_ec_dsa'),
+        sdk_call=("SignEcDsa", "sign_ec_dsa"),
     )
 
 

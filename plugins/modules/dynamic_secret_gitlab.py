@@ -32,6 +32,7 @@ options:
     gitlab_access_token:
       description: "GitLab personal access token"
       type: str
+      no_log: true
     gitlab_access_type:
       description: "GitLab access type: personal or project"
       type: str
@@ -39,6 +40,7 @@ options:
     gitlab_certificate:
       description: "GitLab TLS certificate (PEM)"
       type: str
+      no_log: true
     gitlab_role:
       description: "GitLab role for dynamic tokens"
       type: str
@@ -100,7 +102,7 @@ argument_spec = {
     'gitlab_access_type': {'type': 'str', 'required': True},
     'gitlab_certificate': {'type': 'str', 'no_log': True},
     'gitlab_role': {'type': 'str'},
-    'gitlab_token_scopes': {'type': 'str', 'required': True, 'no_log': False},
+    'gitlab_token_scopes': {'type': 'str', 'required': True},
     'gitlab_url': {'type': 'str'},
     'group_name': {'type': 'str'},
     'installation_organization': {'type': 'str'},
@@ -119,11 +121,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_gitlab',
-        sdk_create=('DynamicSecretCreateGitlab', 'dynamic_secret_create_gitlab'),
-        sdk_update=('DynamicSecretUpdateGitlab', 'dynamic_secret_update_gitlab'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_gitlab",
+        sdk_create=("DynamicSecretCreateGitlab", "dynamic_secret_create_gitlab"),
+        sdk_update=("DynamicSecretUpdateGitlab", "dynamic_secret_update_gitlab"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

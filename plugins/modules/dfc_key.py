@@ -148,11 +148,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dfc_key',
-        sdk_create=('CreateDFCKey', 'create_dfc_key'),
-        sdk_update=('UpdateItem', 'update_item'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="dfc_key",
+        sdk_create=("CreateDFCKey", "create_dfc_key"),
+        sdk_update=("UpdateItem", "update_item"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

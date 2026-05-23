@@ -32,6 +32,7 @@ options:
     cassandra_password:
       description: "Cassandra admin password"
       type: str
+      no_log: true
     cassandra_port:
       description: "Cassandra port (default: 9042)"
       type: str
@@ -66,6 +67,7 @@ options:
     ssl_certificate:
       description: "SSL certificate (PEM)"
       type: str
+      no_log: true
     tags:
       description: "Tags for the producer"
       type: list
@@ -108,7 +110,7 @@ argument_spec = {
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'ssl': {'type': 'bool'},
     'ssl_certificate': {'type': 'str', 'no_log': True},
@@ -125,11 +127,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_cassandra',
-        sdk_create=('DynamicSecretCreateCassandra', 'dynamic_secret_create_cassandra'),
-        sdk_update=('DynamicSecretUpdateCassandra', 'dynamic_secret_update_cassandra'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_cassandra",
+        sdk_create=("DynamicSecretCreateCassandra", "dynamic_secret_create_cassandra"),
+        sdk_update=("DynamicSecretUpdateCassandra", "dynamic_secret_update_cassandra"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

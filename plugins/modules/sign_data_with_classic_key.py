@@ -80,7 +80,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('SignDataWithClassicKey', 'sign_data_with_classic_key'),
+        sdk_call=("SignDataWithClassicKey", "sign_data_with_classic_key"),
     )
 
 

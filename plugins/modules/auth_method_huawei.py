@@ -23,10 +23,8 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
-
     access_expires:
       description: "Access expiration date in Unix timestamp (select 0 for access without
-      type: int
 expiry date)"
       type: int
     allowed_client_type:
@@ -147,11 +145,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_huawei',
-        sdk_create=('CreateAuthMethodHuawei', 'create_auth_method_huawei'),
-        sdk_update=('UpdateAuthMethod', 'update_auth_method'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_huawei",
+        sdk_create=("CreateAuthMethodHuawei", "create_auth_method_huawei"),
+        sdk_update=("UpdateAuthMethod", "update_auth_method"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

@@ -38,6 +38,9 @@ options:
     key:
       description: "Encryption key name for the secret value"
       type: str
+    lock_during_sra_session:
+      description: "Lock this secret for read/update while an SRA session is active"
+      type: str
     max_versions:
       description: "Maximum number of versions"
       type: str
@@ -54,6 +57,7 @@ options:
     rotated_password:
       description: "Rotated-username password (relevant only for rotator-type=password)"
       type: str
+      no_log: true
     rotated_username:
       description: "Username to be rotated"
       type: str
@@ -105,10 +109,11 @@ argument_spec = {
     'auto_rotate': {'type': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
+    'lock_during_sra_session': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'rotate_after_disconnect': {'type': 'str'},
     'rotated_password': {'type': 'str', 'no_log': True},
     'rotated_username': {'type': 'str'},
@@ -128,11 +133,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='rotated_secret_mysql',
-        sdk_create=('RotatedSecretCreateMysql', 'rotated_secret_create_mysql'),
-        sdk_update=('RotatedSecretUpdateMysql', 'rotated_secret_update_mysql'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="rotated_secret_mysql",
+        sdk_create=("RotatedSecretCreateMysql", "rotated_secret_create_mysql"),
+        sdk_update=("RotatedSecretUpdateMysql", "rotated_secret_update_mysql"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

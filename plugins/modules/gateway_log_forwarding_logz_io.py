@@ -61,7 +61,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'enable': {'type': 'str'},
-    'logz_io_token': {'type': 'str', 'no_log': True},
+    'logz_io_token': {'type': 'str'},
     'output_format': {'type': 'str'},
     'protocol': {'type': 'str'},
     'pull_interval': {'type': 'str'},
@@ -75,11 +75,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_logz_io',
-        sdk_create=('GatewayUpdateLogForwardingLogzIo', 'gateway_update_log_forwarding_logz_io'),
-        sdk_update=('GatewayUpdateLogForwardingLogzIo', 'gateway_update_log_forwarding_logz_io'),
-        sdk_delete=('GatewayUpdateLogForwardingLogzIo', 'gateway_update_log_forwarding_logz_io'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_logz_io",
+        sdk_create=("GatewayUpdateLogForwardingLogzIo", "gateway_update_log_forwarding_logz_io"),
+        sdk_update=("GatewayUpdateLogForwardingLogzIo", "gateway_update_log_forwarding_logz_io"),
+        sdk_delete=("GatewayUpdateLogForwardingLogzIo", "gateway_update_log_forwarding_logz_io"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

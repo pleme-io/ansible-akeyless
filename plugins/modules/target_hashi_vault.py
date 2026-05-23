@@ -26,11 +26,9 @@ options:
     description:
       description: "Target description"
       type: str
-
     hashi_url:
       description: "HashiCorp Vault API URL, e.g. https://vault-mgr01:8200"
       type: str
-      required: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -45,11 +43,10 @@ options:
       description: "Comma-separated list of vault namespaces"
       type: list
       elements: str
-
     vault_token:
       description: "HashiCorp Vault token"
       type: str
-      required: true
+      no_log: true
 '''
 
 EXAMPLES = r'''
@@ -73,12 +70,12 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'description': {'type': 'str'},
-    'hashi_url': {'type': 'str', 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'hashi_url': {'type': 'str'},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'namespace': {'type': 'list', 'elements': 'str'},
-    'vault_token': {'type': 'str', 'no_log': True, 'required': True},
+    'vault_token': {'type': 'str', 'no_log': True},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -89,11 +86,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_hashi_vault',
-        sdk_create=('TargetCreateHashiVault', 'target_create_hashi_vault'),
-        sdk_update=('TargetUpdateHashiVault', 'target_update_hashi_vault'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_hashi_vault",
+        sdk_create=("TargetCreateHashiVault", "target_create_hashi_vault"),
+        sdk_update=("TargetUpdateHashiVault", "target_update_hashi_vault"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

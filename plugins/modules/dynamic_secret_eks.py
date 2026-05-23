@@ -29,39 +29,30 @@ options:
     description:
       description: "Description of the object"
       type: str
-
     eks_access_key_id:
       description: "AWS access key ID for EKS"
       type: str
-      required: true
+      no_log: true
     eks_assume_role:
       description: "AWS role ARN to assume for EKS"
       type: str
-
     eks_cluster_ca_cert:
       description: "EKS cluster CA certificate (PEM)"
       type: str
-      required: true
-
+      no_log: true
     eks_cluster_endpoint:
       description: "EKS cluster API server URL"
       type: str
-      required: true
-
     eks_cluster_name:
       description: "EKS cluster name"
       type: str
-      required: true
-
     eks_region:
       description: "AWS region for EKS cluster"
       type: str
-      required: true
-
     eks_secret_access_key:
       description: "AWS secret access key for EKS"
       type: str
-      required: true
+      no_log: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -115,13 +106,13 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'eks_access_key_id': {'type': 'str', 'no_log': True, 'required': True},
+    'eks_access_key_id': {'type': 'str', 'no_log': True},
     'eks_assume_role': {'type': 'str'},
-    'eks_cluster_ca_cert': {'type': 'str', 'no_log': True, 'required': True},
-    'eks_cluster_endpoint': {'type': 'str', 'required': True},
-    'eks_cluster_name': {'type': 'str', 'required': True, 'no_log': False},
-    'eks_region': {'type': 'str', 'required': True},
-    'eks_secret_access_key': {'type': 'str', 'no_log': True, 'required': True},
+    'eks_cluster_ca_cert': {'type': 'str', 'no_log': True},
+    'eks_cluster_endpoint': {'type': 'str'},
+    'eks_cluster_name': {'type': 'str'},
+    'eks_region': {'type': 'str'},
+    'eks_secret_access_key': {'type': 'str', 'no_log': True},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
     'producer_encryption_key_name': {'type': 'str'},
@@ -141,11 +132,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_eks',
-        sdk_create=('DynamicSecretCreateEks', 'dynamic_secret_create_eks'),
-        sdk_update=('DynamicSecretUpdateEks', 'dynamic_secret_update_eks'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_eks",
+        sdk_create=("DynamicSecretCreateEks", "dynamic_secret_create_eks"),
+        sdk_update=("DynamicSecretUpdateEks", "dynamic_secret_update_eks"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

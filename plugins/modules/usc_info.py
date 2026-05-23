@@ -18,11 +18,9 @@ extends_documentation_fragment:
 description:
   - Retrieve information about usc_info.
 options:
-
     usc_name:
       description: "Name of the Universal Secrets Connector item"
       type: str
-      required: true
 '''
 
 EXAMPLES = r'''
@@ -43,7 +41,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 )
 
 argument_spec = {
-    'usc_name': {'required': True, 'type': 'str'},
+    'usc_name': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -54,7 +52,7 @@ argument_spec = {
 def main():
     run_info_module(
         argument_spec=argument_spec,
-        sdk_call=('UscList', 'usc_list'),
+        sdk_call=("UscList", "usc_list"),
     )
 
 

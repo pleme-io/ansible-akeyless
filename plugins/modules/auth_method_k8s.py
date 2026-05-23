@@ -121,7 +121,7 @@ argument_spec = {
     'description': {'type': 'str'},
     'expiration_event_in': {'type': 'list', 'elements': 'str'},
     'force_sub_claims': {'type': 'bool'},
-    'gen_key': {'type': 'str', 'no_log': False},
+    'gen_key': {'type': 'str'},
     'gw_bound_ips': {'type': 'list', 'elements': 'str'},
     'jwt_ttl': {'type': 'int'},
     'name': {'type': 'str', 'required': True},
@@ -137,11 +137,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_k8s',
-        sdk_create=('AuthMethodCreateK8s', 'auth_method_create_k8s'),
-        sdk_update=('AuthMethodUpdateK8s', 'auth_method_update_k8s'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_k8s",
+        sdk_create=("AuthMethodCreateK8s", "auth_method_create_k8s"),
+        sdk_update=("AuthMethodUpdateK8s", "auth_method_update_k8s"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

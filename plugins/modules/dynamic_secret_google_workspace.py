@@ -104,8 +104,8 @@ argument_spec = {
     'admin_email': {'type': 'str', 'required': True},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
-    'gcp_key': {'type': 'str', 'no_log': True},
+    'fixed_user_claim_keyname': {'type': 'str'},
+    'gcp_key': {'type': 'str'},
     'group_email': {'type': 'str'},
     'group_role': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
@@ -127,11 +127,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_google_workspace',
-        sdk_create=('DynamicSecretCreateGoogleWorkspace', 'dynamic_secret_create_google_workspace'),
-        sdk_update=('DynamicSecretUpdateGoogleWorkspace', 'dynamic_secret_update_google_workspace'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_google_workspace",
+        sdk_create=("DynamicSecretCreateGoogleWorkspace", "dynamic_secret_create_google_workspace"),
+        sdk_update=("DynamicSecretUpdateGoogleWorkspace", "dynamic_secret_update_google_workspace"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

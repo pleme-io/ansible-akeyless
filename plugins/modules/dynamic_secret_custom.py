@@ -115,11 +115,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_custom',
-        sdk_create=('DynamicSecretCreateCustom', 'dynamic_secret_create_custom'),
-        sdk_update=('DynamicSecretUpdateCustom', 'dynamic_secret_update_custom'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_custom",
+        sdk_create=("DynamicSecretCreateCustom", "dynamic_secret_create_custom"),
+        sdk_update=("DynamicSecretUpdateCustom", "dynamic_secret_update_custom"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

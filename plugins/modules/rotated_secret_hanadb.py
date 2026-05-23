@@ -51,6 +51,7 @@ options:
     rotated_password:
       description: "Rotated-username password (relevant only for rotator-type=password)"
       type: str
+      no_log: true
     rotated_username:
       description: "Username to be rotated"
       type: str
@@ -102,10 +103,10 @@ argument_spec = {
     'auto_rotate': {'type': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'rotated_password': {'type': 'str', 'no_log': True},
     'rotated_username': {'type': 'str'},
     'rotation_event_in': {'type': 'list', 'elements': 'str'},
@@ -124,11 +125,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='rotated_secret_hanadb',
-        sdk_create=('RotatedSecretCreateHanadb', 'rotated_secret_create_hanadb'),
-        sdk_update=('RotatedSecretUpdateHanadb', 'rotated_secret_update_hanadb'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="rotated_secret_hanadb",
+        sdk_create=("RotatedSecretCreateHanadb", "rotated_secret_create_hanadb"),
+        sdk_update=("RotatedSecretUpdateHanadb", "rotated_secret_update_hanadb"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

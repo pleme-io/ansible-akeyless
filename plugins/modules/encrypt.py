@@ -77,7 +77,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('Encrypt', 'encrypt'),
+        sdk_call=("Encrypt", "encrypt"),
     )
 
 

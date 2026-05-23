@@ -56,7 +56,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('GetCertChallenge', 'get_cert_challenge'),
+        sdk_call=("GetCertChallenge", "get_cert_challenge"),
     )
 
 

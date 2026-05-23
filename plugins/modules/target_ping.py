@@ -42,21 +42,12 @@ options:
       description: "Target name"
       type: str
       required: true
-
     ping_url:
       description: "Ping Identity server URL"
       type: str
-      required: true
-
     privileged_user:
       description: "Ping Identity privileged username"
       type: str
-      required: true
-    password:
-      description: "Password."
-      type: str
-      required: true
-
 '''
 
 EXAMPLES = r'''
@@ -82,12 +73,11 @@ argument_spec = {
     'administrative_port': {'type': 'str'},
     'authorization_port': {'type': 'str'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password': {'type': 'str', 'no_log': True, 'required': True},
-    'ping_url': {'type': 'str', 'required': True},
-    'privileged_user': {'type': 'str', 'required': True},
+    'ping_url': {'type': 'str'},
+    'privileged_user': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -98,11 +88,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_ping',
-        sdk_create=('TargetCreatePing', 'target_create_ping'),
-        sdk_update=('TargetUpdatePing', 'target_update_ping'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_ping",
+        sdk_create=("TargetCreatePing", "target_create_ping"),
+        sdk_update=("TargetUpdatePing", "target_update_ping"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

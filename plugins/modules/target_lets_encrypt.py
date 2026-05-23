@@ -32,7 +32,6 @@ options:
     dns_target_creds:
       description: "Name of existing cloud target for DNS credentials. Required when acme-challenge=dns. Supported: AWS, Azure, GCP targets"
       type: str
-
     email:
       description: "Email address for ACME account registration"
       type: str
@@ -87,10 +86,10 @@ argument_spec = {
     'acme_challenge': {'type': 'str'},
     'description': {'type': 'str'},
     'dns_target_creds': {'type': 'str'},
-    'email': {'required': True, 'type': 'str'},
+    'email': {'type': 'str', 'required': True},
     'gcp_project': {'type': 'str'},
     'hosted_zone': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'lets_encrypt_url': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
@@ -106,11 +105,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_lets_encrypt',
-        sdk_create=('TargetCreateLetsEncrypt', 'target_create_lets_encrypt'),
-        sdk_update=('TargetUpdateLetsEncrypt', 'target_update_lets_encrypt'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_lets_encrypt",
+        sdk_create=("TargetCreateLetsEncrypt", "target_create_lets_encrypt"),
+        sdk_update=("TargetUpdateLetsEncrypt", "target_update_lets_encrypt"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

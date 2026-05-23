@@ -30,12 +30,10 @@ options:
     item_id:
       description: "Item ID of the key"
       type: int
-
     key_name:
       description: "Name of the RSA key"
       type: str
-      required: true
-    payload:
+    message:
       description: "Hashed message to sign"
       type: str
       required: true
@@ -69,8 +67,8 @@ argument_spec = {
     'hash_function': {'type': 'str'},
     'input_format': {'type': 'str'},
     'item_id': {'type': 'int'},
-    'key_name': {'type': 'str', 'required': True},
-    'payload': {'type': 'str', 'required': True},
+    'key_name': {'type': 'str'},
+    'message': {'type': 'str', 'required': True},
     'prehashed': {'type': 'bool'},
     'version': {'type': 'int'},
     'gateway_url': {'type': 'str'},
@@ -83,7 +81,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('SignPKCS1', 'sign_pkcs1'),
+        sdk_call=("SignPKCS1", "sign_pkcs1"),
     )
 
 

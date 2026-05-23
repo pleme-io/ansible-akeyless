@@ -26,39 +26,27 @@ options:
     delete_protection:
       description: "Protection from accidental deletion of this object [true/false]"
       type: str
-
     eks_access_key_id:
       description: "Access Key ID"
       type: str
-      required: true
     eks_assume_role:
       description: "IAM assume role"
       type: str
-
     eks_cluster_ca_cert:
       description: "EKS cluster CA certificate"
       type: str
-      required: true
-
     eks_cluster_endpoint:
       description: "EKS cluster URL endpoint"
       type: str
-      required: true
-
     eks_cluster_name:
       description: "EKS cluster name"
       type: str
-      required: true
-
     eks_region:
       description: "Region"
       type: str
-      required: true
-
     eks_secret_access_key:
       description: "Secret Access Key"
       type: str
-      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -111,13 +99,13 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'delete_protection': {'type': 'str'},
-    'eks_access_key_id': {'type': 'str', 'required': True},
+    'eks_access_key_id': {'type': 'str'},
     'eks_assume_role': {'type': 'str'},
-    'eks_cluster_ca_cert': {'type': 'str', 'required': True},
-    'eks_cluster_endpoint': {'type': 'str', 'required': True},
-    'eks_cluster_name': {'type': 'str', 'required': True, 'no_log': False},
-    'eks_region': {'type': 'str', 'required': True},
-    'eks_secret_access_key': {'type': 'str', 'required': True, 'no_log': True},
+    'eks_cluster_ca_cert': {'type': 'str'},
+    'eks_cluster_endpoint': {'type': 'str'},
+    'eks_cluster_name': {'type': 'str'},
+    'eks_region': {'type': 'str'},
+    'eks_secret_access_key': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
     'producer_encryption_key_name': {'type': 'str'},
@@ -137,11 +125,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_eks',
-        sdk_create=('GatewayCreateProducerEks', 'gateway_create_producer_eks'),
-        sdk_update=('GatewayUpdateProducerEks', 'gateway_update_producer_eks'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_eks",
+        sdk_create=("GatewayCreateProducerEks", "gateway_create_producer_eks"),
+        sdk_update=("GatewayUpdateProducerEks", "gateway_update_producer_eks"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

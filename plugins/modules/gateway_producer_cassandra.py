@@ -97,14 +97,14 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'cassandra_creation_statements': {'type': 'str'},
     'cassandra_hosts': {'type': 'str'},
-    'cassandra_password': {'type': 'str', 'no_log': True},
+    'cassandra_password': {'type': 'str'},
     'cassandra_port': {'type': 'str'},
     'cassandra_username': {'type': 'str'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'ssl': {'type': 'bool'},
     'ssl_certificate': {'type': 'str'},
@@ -121,11 +121,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_cassandra',
-        sdk_create=('GatewayCreateProducerCassandra', 'gateway_create_producer_cassandra'),
-        sdk_update=('GatewayUpdateProducerCassandra', 'gateway_update_producer_cassandra'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_cassandra",
+        sdk_create=("GatewayCreateProducerCassandra", "gateway_create_producer_cassandra"),
+        sdk_update=("GatewayUpdateProducerCassandra", "gateway_update_producer_cassandra"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

@@ -82,11 +82,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='esm',
-        sdk_create=('EsmCreate', 'esm_create'),
-        sdk_update=('EsmUpdate', 'esm_update'),
-        sdk_delete=('EsmDelete', 'esm_delete'),
-        sdk_read=('EsmGet', 'esm_get'),
+        resource_label="esm",
+        sdk_create=("EsmCreate", "esm_create"),
+        sdk_update=("EsmUpdate", "esm_update"),
+        sdk_delete=("EsmDelete", "esm_delete"),
+        sdk_read=("EsmGet", "esm_get"),
     )
 
 

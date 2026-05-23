@@ -93,6 +93,7 @@ options:
     service_account_creds_data:
       description: "GCP service account credentials JSON"
       type: str
+      no_log: true
     type:
       description: "GCP auth type: gce or iam"
       type: str
@@ -153,11 +154,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_gcp',
-        sdk_create=('AuthMethodCreateGcp', 'auth_method_create_gcp'),
-        sdk_update=('AuthMethodUpdateGcp', 'auth_method_update_gcp'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_gcp",
+        sdk_create=("AuthMethodCreateGcp", "auth_method_create_gcp"),
+        sdk_update=("AuthMethodUpdateGcp", "auth_method_update_gcp"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

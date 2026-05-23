@@ -113,15 +113,15 @@ argument_spec = {
     'app_obj_id': {'type': 'str'},
     'azure_administrative_unit': {'type': 'str'},
     'azure_client_id': {'type': 'str'},
-    'azure_client_secret': {'type': 'str', 'no_log': True},
+    'azure_client_secret': {'type': 'str'},
     'azure_tenant_id': {'type': 'str'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
-    'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
+    'fixed_user_claim_keyname': {'type': 'str'},
     'fixed_user_only': {'type': 'bool'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -141,11 +141,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_azure',
-        sdk_create=('GatewayCreateProducerAzure', 'gateway_create_producer_azure'),
-        sdk_update=('GatewayUpdateProducerAzure', 'gateway_update_producer_azure'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_azure",
+        sdk_create=("GatewayCreateProducerAzure", "gateway_create_producer_azure"),
+        sdk_update=("GatewayUpdateProducerAzure", "gateway_update_producer_azure"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

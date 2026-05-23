@@ -92,8 +92,8 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'delete_protection': {'type': 'str'},
-    'github_app_id': {'type': 'int', 'no_log': False},
-    'github_app_private_key': {'type': 'str', 'no_log': True},
+    'github_app_id': {'type': 'int'},
+    'github_app_private_key': {'type': 'str'},
     'github_base_url': {'type': 'str'},
     'installation_id': {'type': 'int'},
     'installation_organization': {'type': 'str'},
@@ -102,9 +102,9 @@ argument_spec = {
     'name': {'type': 'str', 'required': True},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
-    'token_permissions': {'type': 'list', 'elements': 'str', 'no_log': False},
-    'token_repositories': {'type': 'list', 'elements': 'str', 'no_log': False},
-    'token_ttl': {'type': 'str', 'no_log': False},
+    'token_permissions': {'type': 'list', 'elements': 'str'},
+    'token_repositories': {'type': 'list', 'elements': 'str'},
+    'token_ttl': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -115,11 +115,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_github',
-        sdk_create=('GatewayCreateProducerGithub', 'gateway_create_producer_github'),
-        sdk_update=('GatewayUpdateProducerGithub', 'gateway_update_producer_github'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_github",
+        sdk_create=("GatewayCreateProducerGithub", "gateway_create_producer_github"),
+        sdk_update=("GatewayUpdateProducerGithub", "gateway_update_producer_github"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

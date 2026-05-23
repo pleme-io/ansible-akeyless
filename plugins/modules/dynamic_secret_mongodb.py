@@ -38,6 +38,7 @@ options:
     mongodb_atlas_api_private_key:
       description: "MongoDB Atlas API private key"
       type: str
+      no_log: true
     mongodb_atlas_api_public_key:
       description: "MongoDB Atlas API public key"
       type: str
@@ -50,21 +51,16 @@ options:
     mongodb_default_auth_db:
       description: "MongoDB default authentication database"
       type: str
-
     mongodb_host_port:
       description: "MongoDB host:port"
       type: str
-      required: true
-
     mongodb_name:
       description: "MongoDB database name"
       type: str
-      required: true
-
     mongodb_password:
       description: "MongoDB admin password"
       type: str
-      required: true
+      no_log: true
     mongodb_roles:
       description: "MongoDB roles (e.g., readWrite@db)"
       type: str
@@ -77,11 +73,9 @@ options:
     mongodb_uri_options:
       description: "MongoDB URI options"
       type: str
-
     mongodb_username:
       description: "MongoDB admin username"
       type: str
-      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -136,16 +130,16 @@ argument_spec = {
     'mongodb_atlas_project_id': {'type': 'str'},
     'mongodb_custom_data': {'type': 'str'},
     'mongodb_default_auth_db': {'type': 'str'},
-    'mongodb_host_port': {'type': 'str', 'required': True},
-    'mongodb_name': {'type': 'str', 'required': True},
-    'mongodb_password': {'type': 'str', 'no_log': True, 'required': True},
+    'mongodb_host_port': {'type': 'str'},
+    'mongodb_name': {'type': 'str'},
+    'mongodb_password': {'type': 'str', 'no_log': True},
     'mongodb_roles': {'type': 'str'},
     'mongodb_scopes': {'type': 'str'},
     'mongodb_server_uri': {'type': 'str'},
     'mongodb_uri_options': {'type': 'str'},
-    'mongodb_username': {'type': 'str', 'required': True},
+    'mongodb_username': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'tags': {'type': 'list', 'elements': 'str'},
@@ -161,11 +155,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_mongodb',
-        sdk_create=('DynamicSecretCreateMongoDb', 'dynamic_secret_create_mongo_db'),
-        sdk_update=('DynamicSecretUpdateMongoDb', 'dynamic_secret_update_mongo_db'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_mongodb",
+        sdk_create=("DynamicSecretCreateMongoDb", "dynamic_secret_create_mongo_db"),
+        sdk_update=("DynamicSecretUpdateMongoDb", "dynamic_secret_update_mongo_db"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

@@ -95,11 +95,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_aws_s3',
-        sdk_create=('GatewayUpdateLogForwardingAwsS3', 'gateway_update_log_forwarding_aws_s3'),
-        sdk_update=('GatewayUpdateLogForwardingAwsS3', 'gateway_update_log_forwarding_aws_s3'),
-        sdk_delete=('GatewayUpdateLogForwardingAwsS3', 'gateway_update_log_forwarding_aws_s3'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_aws_s3",
+        sdk_create=("GatewayUpdateLogForwardingAwsS3", "gateway_update_log_forwarding_aws_s3"),
+        sdk_update=("GatewayUpdateLogForwardingAwsS3", "gateway_update_log_forwarding_aws_s3"),
+        sdk_delete=("GatewayUpdateLogForwardingAwsS3", "gateway_update_log_forwarding_aws_s3"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

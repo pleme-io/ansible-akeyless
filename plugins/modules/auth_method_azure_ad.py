@@ -171,11 +171,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_azure_ad',
-        sdk_create=('AuthMethodCreateAzureAD', 'auth_method_create_azure_ad'),
-        sdk_update=('AuthMethodUpdateAzureAD', 'auth_method_update_azure_ad'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_azure_ad",
+        sdk_create=("AuthMethodCreateAzureAD", "auth_method_create_azure_ad"),
+        sdk_update=("AuthMethodUpdateAzureAD", "auth_method_update_azure_ad"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

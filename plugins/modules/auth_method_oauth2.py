@@ -153,11 +153,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_oauth2',
-        sdk_create=('AuthMethodCreateOauth2', 'auth_method_create_oauth2'),
-        sdk_update=('AuthMethodUpdateOauth2', 'auth_method_update_oauth2'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_oauth2",
+        sdk_create=("AuthMethodCreateOauth2", "auth_method_create_oauth2"),
+        sdk_update=("AuthMethodUpdateOauth2", "auth_method_update_oauth2"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

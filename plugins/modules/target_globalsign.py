@@ -59,15 +59,6 @@ options:
     timeout:
       description: "Timeout waiting for certificate validation in Duration format (1h - 1 Hour, 20m - 20 Minutes, 33m3s - 33 Minutes and 3 Seconds), maximum 1h."
       type: str
-    password:
-      description: "Password."
-      type: str
-      required: true
-    username:
-      description: "Username."
-      type: str
-      required: true
-
 '''
 
 EXAMPLES = r'''
@@ -95,12 +86,10 @@ argument_spec = {
     'contact_last_name': {'type': 'str', 'required': True},
     'contact_phone': {'type': 'str', 'required': True},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password': {'type': 'str', 'required': True, 'no_log': True},
     'profile_id': {'type': 'str', 'required': True},
-    'username': {'type': 'str', 'required': True},
     'timeout': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
@@ -112,11 +101,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_globalsign',
-        sdk_create=('TargetCreateGlobalSign', 'target_create_global_sign'),
-        sdk_update=('TargetUpdateGlobalSign', 'target_update_global_sign'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_globalsign",
+        sdk_create=("TargetCreateGlobalSign", "target_create_global_sign"),
+        sdk_update=("TargetUpdateGlobalSign", "target_update_global_sign"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

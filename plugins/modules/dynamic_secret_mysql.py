@@ -29,6 +29,7 @@ options:
     db_server_certificates:
       description: "Database server certificates (PEM)"
       type: str
+      no_log: true
     db_server_name:
       description: "Database server name for TLS verification"
       type: str
@@ -41,21 +42,16 @@ options:
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
-
     mysql_dbname:
       description: "MySQL database name"
       type: str
-      required: true
-
     mysql_host:
       description: "MySQL host"
       type: str
-      required: true
-
     mysql_password:
       description: "MySQL admin password"
       type: str
-      required: true
+      no_log: true
     mysql_port:
       description: "MySQL port (default: 3306)"
       type: str
@@ -65,11 +61,9 @@ options:
     mysql_screation_statements:
       description: "MySQL Creation statements"
       type: str
-
     mysql_username:
       description: "MySQL admin username"
       type: str
-      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -89,6 +83,7 @@ options:
     ssl_certificate:
       description: "SSL certificate (PEM)"
       type: str
+      no_log: true
     tags:
       description: "Tags for the producer"
       type: list
@@ -127,15 +122,15 @@ argument_spec = {
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
-    'mysql_dbname': {'type': 'str', 'required': True},
-    'mysql_host': {'type': 'str', 'required': True},
-    'mysql_password': {'type': 'str', 'no_log': True, 'required': True},
+    'mysql_dbname': {'type': 'str'},
+    'mysql_host': {'type': 'str'},
+    'mysql_password': {'type': 'str', 'no_log': True},
     'mysql_port': {'type': 'str'},
     'mysql_revocation_statements': {'type': 'str'},
     'mysql_screation_statements': {'type': 'str'},
-    'mysql_username': {'type': 'str', 'required': True},
+    'mysql_username': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'ssl': {'type': 'bool'},
@@ -153,11 +148,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_mysql',
-        sdk_create=('DynamicSecretCreateMySql', 'dynamic_secret_create_my_sql'),
-        sdk_update=('DynamicSecretUpdateMySql', 'dynamic_secret_update_my_sql'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_mysql",
+        sdk_create=("DynamicSecretCreateMySql", "dynamic_secret_create_my_sql"),
+        sdk_update=("DynamicSecretUpdateMySql", "dynamic_secret_update_my_sql"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

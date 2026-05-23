@@ -58,7 +58,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'DeleteRemote': {'type': 'bool'},
-    'filter_secret_value': {'type': 'str', 'no_log': False},
+    'filter_secret_value': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'namespace': {'type': 'str'},
     'remote_secret_name': {'type': 'str'},
@@ -73,7 +73,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('RotatedSecretSync', 'rotated_secret_sync'),
+        sdk_call=("RotatedSecretSync", "rotated_secret_sync"),
     )
 
 

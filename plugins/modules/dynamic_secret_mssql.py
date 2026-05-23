@@ -35,41 +35,32 @@ options:
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
-
     mssql_allowed_db_names:
       description: "CSV of allowed DB names for runtime selection when getting the secret value.
-      type: str
 Empty => use target DB only; '*' => any DB allowed; One or more names => user must choose from this list"
       type: str
     mssql_create_statements:
       description: "MSSQL Creation statements"
       type: str
-
     mssql_dbname:
       description: "MSSQL database name"
       type: str
-      required: true
-
     mssql_host:
       description: "MSSQL host"
       type: str
-      required: true
-
     mssql_password:
       description: "MSSQL admin password"
       type: str
-      required: true
+      no_log: true
     mssql_port:
       description: "MSSQL port (default: 1433)"
       type: str
     mssql_revocation_statements:
       description: "MSSQL revocation statements"
       type: str
-
     mssql_username:
       description: "MSSQL admin username"
       type: str
-      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -121,14 +112,14 @@ argument_spec = {
     'item_custom_fields': {'type': 'dict'},
     'mssql_allowed_db_names': {'type': 'str'},
     'mssql_create_statements': {'type': 'str'},
-    'mssql_dbname': {'type': 'str', 'required': True},
-    'mssql_host': {'type': 'str', 'required': True},
-    'mssql_password': {'type': 'str', 'no_log': True, 'required': True},
+    'mssql_dbname': {'type': 'str'},
+    'mssql_host': {'type': 'str'},
+    'mssql_password': {'type': 'str', 'no_log': True},
     'mssql_port': {'type': 'str'},
     'mssql_revocation_statements': {'type': 'str'},
-    'mssql_username': {'type': 'str', 'required': True},
+    'mssql_username': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'tags': {'type': 'list', 'elements': 'str'},
@@ -144,11 +135,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_mssql',
-        sdk_create=('DynamicSecretCreateMsSql', 'dynamic_secret_create_ms_sql'),
-        sdk_update=('DynamicSecretUpdateMsSql', 'dynamic_secret_update_ms_sql'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_mssql",
+        sdk_create=("DynamicSecretCreateMsSql", "dynamic_secret_create_ms_sql"),
+        sdk_update=("DynamicSecretUpdateMsSql", "dynamic_secret_update_ms_sql"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

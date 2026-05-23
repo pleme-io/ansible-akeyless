@@ -27,10 +27,12 @@ options:
       description: "AWS secret access key"
       type: str
       required: true
+      no_log: true
     access_key_id:
       description: "AWS access key ID"
       type: str
       required: true
+      no_log: true
     description:
       description: "Target description"
       type: str
@@ -56,6 +58,7 @@ options:
     session_token:
       description: "AWS session token (for temporary credentials)"
       type: str
+      no_log: true
     use_gw_cloud_identity:
       description: "Use gateway cloud identity for authentication"
       type: bool
@@ -85,7 +88,7 @@ argument_spec = {
     'access_key_id': {'type': 'str', 'required': True, 'no_log': True},
     'description': {'type': 'str'},
     'generate_external_id': {'type': 'bool'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'region': {'type': 'str'},
@@ -94,6 +97,7 @@ argument_spec = {
     'use_gw_cloud_identity': {'type': 'bool'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
     'access_type': {'type': 'str', 'default': 'access_key'},
 }
 
@@ -101,11 +105,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_aws',
-        sdk_create=('TargetCreateAws', 'target_create_aws'),
-        sdk_update=('TargetUpdateAws', 'target_update_aws'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_aws",
+        sdk_create=("TargetCreateAws", "target_create_aws"),
+        sdk_update=("TargetUpdateAws", "target_update_aws"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

@@ -35,6 +35,7 @@ options:
     azure_client_secret:
       description: "Azure client secret"
       type: str
+      no_log: true
     azure_tenant_id:
       description: "Azure tenant ID"
       type: str
@@ -121,11 +122,11 @@ argument_spec = {
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
+    'fixed_user_claim_keyname': {'type': 'str'},
     'fixed_user_only': {'type': 'bool'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -145,11 +146,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_azure',
-        sdk_create=('DynamicSecretCreateAzure', 'dynamic_secret_create_azure'),
-        sdk_update=('DynamicSecretUpdateAzure', 'dynamic_secret_update_azure'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_azure",
+        sdk_create=("DynamicSecretCreateAzure", "dynamic_secret_create_azure"),
+        sdk_update=("DynamicSecretUpdateAzure", "dynamic_secret_update_azure"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

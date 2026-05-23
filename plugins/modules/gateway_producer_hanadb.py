@@ -29,35 +29,27 @@ options:
     delete_protection:
       description: "Protection from accidental deletion of this object [true/false]"
       type: str
-
     hana_dbname:
       description: "HanaDb Name"
       type: str
-      required: true
     hanadb_create_statements:
       description: "HanaDb Creation statements"
       type: str
-
     hanadb_host:
       description: "HanaDb Host"
       type: str
-      required: true
-
     hanadb_password:
       description: "HanaDb Password"
       type: str
-      required: true
     hanadb_port:
       description: "HanaDb Port"
       type: str
     hanadb_revocation_statements:
       description: "HanaDb Revocation statements"
       type: str
-
     hanadb_username:
       description: "HanaDb Username"
       type: str
-      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -105,16 +97,16 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
-    'hana_dbname': {'type': 'str', 'required': True},
+    'hana_dbname': {'type': 'str'},
     'hanadb_create_statements': {'type': 'str'},
-    'hanadb_host': {'type': 'str', 'required': True},
-    'hanadb_password': {'type': 'str', 'required': True, 'no_log': True},
+    'hanadb_host': {'type': 'str'},
+    'hanadb_password': {'type': 'str'},
     'hanadb_port': {'type': 'str'},
     'hanadb_revocation_statements': {'type': 'str'},
-    'hanadb_username': {'type': 'str', 'required': True},
+    'hanadb_username': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -129,11 +121,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_hanadb',
-        sdk_create=('GatewayCreateProducerHanaDb', 'gateway_create_producer_hana_db'),
-        sdk_update=('GatewayUpdateProducerHanaDb', 'gateway_update_producer_hana_db'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_hanadb",
+        sdk_create=("GatewayCreateProducerHanaDb", "gateway_create_producer_hana_db"),
+        sdk_update=("GatewayUpdateProducerHanaDb", "gateway_update_producer_hana_db"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

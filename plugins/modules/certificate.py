@@ -36,19 +36,15 @@ options:
       description: "How many days before the expiration of the certificate would you like to be notified."
       type: list
       elements: str
-
     format:
       description: "CertificateFormat of the certificate and private key, possible values: cer,crt,pem,pfx,p12.
-      type: str
 Required when passing inline certificate content with --certificate-data or --key-data, otherwise format is derived from the file extension."
       type: str
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
-
     key:
       description: "The name of a key to use to encrypt the certificate's key (if empty, the
-      type: str
 account default protectionKey key will be used)"
       type: str
     key_data:
@@ -90,8 +86,8 @@ argument_spec = {
     'expiration_event_in': {'type': 'list', 'elements': 'str'},
     'format': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
-    'key': {'type': 'str', 'no_log': False},
-    'key_data': {'type': 'str', 'no_log': True},
+    'key': {'type': 'str'},
+    'key_data': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'tags': {'type': 'list', 'elements': 'str'},
     'gateway_url': {'type': 'str'},
@@ -104,11 +100,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='certificate',
-        sdk_create=('CreateCertificate', 'create_certificate'),
-        sdk_update=('UpdateCertificateValue', 'update_certificate_value'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('GetCertificateValue', 'get_certificate_value'),
+        resource_label="certificate",
+        sdk_create=("CreateCertificate", "create_certificate"),
+        sdk_update=("UpdateCertificateValue", "update_certificate_value"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("GetCertificateValue", "get_certificate_value"),
     )
 
 
