@@ -32,6 +32,19 @@ def install_collection_module_util(stem: str) -> types.ModuleType:
     Used by tests that load production plugins (filters / tests /
     lookups / etc.) whose imports reference these helpers at module
     scope.
+
+    Available to test files in two ways:
+    1. As a fixture: request `install_module_util` (a callable
+       wrapping this function), e.g.:
+           def test_x(install_module_util):
+               install_module_util("akeyless_plugin_helpers")
+    2. Direct call from a fixture defined IN tests/unit/conftest.py
+       can access this function directly.
+
+    See pytest docs on conftest.py auto-discovery for the resolution
+    order: tests/unit/conftest.py is auto-loaded for everything under
+    tests/unit/, so the `install_module_util` fixture below works
+    in every nested test module.
     """
     # Ensure the parent package skeleton exists in sys.modules.
     for name in (
@@ -51,6 +64,22 @@ def install_collection_module_util(stem: str) -> types.ModuleType:
     sys.modules[full] = mod
     spec.loader.exec_module(mod)
     return mod
+
+
+@pytest.fixture
+def install_module_util():
+    """Fixture wrapper around install_collection_module_util(). Lets
+    test files DRY out their per-file stub installers:
+
+        def test_filter(install_module_util):
+            install_module_util("akeyless_plugin_helpers")
+            ...
+
+    Replaces ~15 lines of `for name in (...): sys.modules.setdefault`
+    + `spec_from_file_location` + `exec_module` boilerplate per test
+    file. The function is idempotent so the fixture can be called
+    multiple times safely."""
+    return install_collection_module_util
 
 
 class _FakeApiException(Exception):
