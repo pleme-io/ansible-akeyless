@@ -36,7 +36,13 @@ theme:
 markdown_extensions:
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  # superfences custom_fences supports mermaid diagram blocks via the
+  # mkdocs-material-bundled mermaid renderer. Architecture page uses it.
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -82,3 +88,8 @@ nav:
       - Plugins (auto-generated): reference/plugins/
       - Modules (auto-generated): reference/modules/
       - Roles (auto-generated): reference/roles/
+  - Project:
+      - Contributing: https://github.com/pleme-io/ansible-akeyless/blob/main/CONTRIBUTING.md
+      - Security policy: https://github.com/pleme-io/ansible-akeyless/blob/main/SECURITY.md
+      - Code of Conduct: https://github.com/pleme-io/ansible-akeyless/blob/main/CODE_OF_CONDUCT.md
+      - Changelog: https://github.com/pleme-io/ansible-akeyless/blob/main/CHANGELOG.md

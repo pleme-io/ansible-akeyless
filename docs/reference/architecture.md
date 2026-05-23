@@ -8,9 +8,14 @@ trying to debug why something behaves the way it does.
 
 Three repos move together:
 
-```
-akeyless-terraform-resources  →  ansible-forge  →  ansible-akeyless
-(TOML specs + provider.toml)     (Rust generator)    (this repo, published)
+```mermaid
+graph LR
+  A[akeyless-terraform-resources<br/>119 TOML specs<br/>+ provider.toml]
+    -->|read by| B[ansible-forge<br/>Rust generator]
+  B -->|emits 209 modules<br/>+ client_helper.py| C[ansible-akeyless<br/>this repo, published to Galaxy]
+  B -.->|byte-exact compare<br/>backstop on every PR| C
+  D[hand-written plugins<br/>lookup / filter / test /<br/>callback / action / cache] --> C
+  C -->|auto-bump → release →<br/>4-min cycle| E[Galaxy<br/>drzln0.akeyless]
 ```
 
 - **akeyless-terraform-resources** holds 119 TOML specs describing
@@ -111,20 +116,19 @@ plugins/
 
 ## The test pyramid
 
-```
-                ┌─────────────────────────────────┐
-                │ live-integration                │  431 skipped
-                │ (real Akeyless gateway)         │  (env-gated)
-                ├─────────────────────────────────┤
-                │ tests/mock                      │  269+ wire tests
-                │ (mock-server lifecycle)         │
-                ├─────────────────────────────────┤
-                │ tests/unit                      │  5500+ tests
-                │ (per-helper / per-plugin)       │  inc. property
-                ├─────────────────────────────────┤
-                │ tests/sanity                    │  1500+ tests
-                │ (drift prevention)              │
-                └─────────────────────────────────┘
+```mermaid
+graph TD
+  L[live-integration<br/>real Akeyless gateway<br/>~430 env-gated]
+  M[tests/mock<br/>mock-server lifecycle<br/>269+ wire tests<br/>6 CRUD families + 3 lookups + action + info]
+  U[tests/unit<br/>per-helper / per-plugin<br/>5500+ tests inc. property fuzz]
+  S[tests/sanity<br/>drift prevention<br/>1500+ tests pinning every public surface]
+  L --> M
+  M --> U
+  U --> S
+  style L fill:#f9f,stroke:#333
+  style M fill:#bbf,stroke:#333
+  style U fill:#bfb,stroke:#333
+  style S fill:#fbb,stroke:#333
 ```
 
 - **Sanity** layer pins every public surface: CHANGELOG / README /
