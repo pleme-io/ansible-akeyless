@@ -10,3 +10,12 @@ drzln0-akeyless-*.tar.gz
 
 # Claude Code per-project session metadata
 .claude/
+
+# mkdocs site build output
+site/
+
+# Auto-generated reference docs: scripts/build_reference_docs.py
+# regenerates these from each plugin/module's DOCUMENTATION YAML
+# on every mkdocs build, so they're not checked into the repo.
+docs/reference/plugins/
+docs/reference/modules/

@@ -106,6 +106,7 @@ def test_critical_workflows_present():
         "codeql.yml",             # security
         "integration-live.yml",   # live-gateway smoke
         "mutation-test.yml",      # nightly mutmut
+        "docs-publish.yml",       # mkdocs site to GitHub Pages
     }
     present = {p.name for p in WORKFLOWS}
     missing = expected - present
