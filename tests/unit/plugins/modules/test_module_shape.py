@@ -49,6 +49,14 @@ def _load_helper_names():
 HELPER_NAMES = _load_helper_names()
 AUTH_KEYS = {"gateway_url", "access_id", "access_key", "access_type"}
 
+# Module-name allowlist: these are module wrappers for action plugins
+# (plugins/action/*.py) where the actual work happens controller-side.
+# They intentionally don't import the akeyless_client helper -- they
+# delegate to ansible.builtin.copy / file / template via the action
+# plugin instead. The wrapper exists only so `ansible-doc` finds
+# DOCUMENTATION.
+ACTION_SHADOW_MODULES = frozenset({"secret_to_file"})
+
 
 def _module_files():
     return sorted(p for p in MODULES_DIR.glob("*.py") if not p.name.startswith("_"))
@@ -165,6 +173,10 @@ def all_module_trees():
 
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)
 def test_module_has_argument_spec_with_auth_keys(module_path):
+    if module_path.stem in ACTION_SHADOW_MODULES:
+        pytest.skip(
+            "action-plugin shadow module; argspec lives in the action plugin"
+        )
     tree = ast.parse(module_path.read_text())
     spec = _argument_spec_entries(tree)
     assert spec, f"{module_path.name}: argument_spec missing or not a dict literal"
@@ -189,6 +201,8 @@ def test_module_has_main(module_path):
 
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)
 def test_module_imports_helper_functions(module_path):
+    if module_path.stem in ACTION_SHADOW_MODULES:
+        pytest.skip("action-plugin shadow module; helper import not applicable")
     source = module_path.read_text()
     assert HELPER_IMPORT in source, f"{module_path.name}: helper import missing"
     # Must import at least one of the helper symbols.

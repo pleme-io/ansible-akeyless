@@ -98,11 +98,21 @@ _KNOWN_UNPARSEABLE = {
     # reasons. Each entry: filename -> reason.
 }
 
+# Action-plugin shadow wrappers (plugins/action/<name>.py runs instead).
+# Invoking main() directly hits the wrapper's "not implemented" stub
+# and exits with a documented message; not a real module run.
+_ACTION_SHADOW_MODULES = {
+    "secret_to_file.py":
+        "action-plugin shadow; real impl lives in plugins/action/",
+}
+
 
 @pytest.mark.parametrize("module_file", _all_module_files())
 def test_module_loads_and_dispatches(mock_server, module_file):
     if module_file in _KNOWN_UNPARSEABLE:
         pytest.skip(f"argspec unparseable: {_KNOWN_UNPARSEABLE[module_file]}")
+    if module_file in _ACTION_SHADOW_MODULES:
+        pytest.skip(f"action shadow: {_ACTION_SHADOW_MODULES[module_file]}")
 
     module_path = MODULES_DIR / module_file
     argspec = _parse_argspec(module_path)

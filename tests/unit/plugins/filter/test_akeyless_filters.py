@@ -19,19 +19,20 @@ FILTER_PATH = REPO_ROOT / "plugins" / "filter" / "akeyless.py"
 
 
 def _install_ansible_errors_stub():
-    """Stub ansible.errors.AnsibleFilterError so the filter imports
-    without a real Ansible install."""
-    if "ansible.errors" in sys.modules:
-        return
+    """Ensure ansible.errors carries AnsibleFilterError. Idempotent
+    merge with any pre-existing ansible.errors stub installed by
+    sibling test files (e.g. action plugin tests bring in
+    AnsibleActionFail)."""
     ansible_pkg = sys.modules.setdefault("ansible", types.ModuleType("ansible"))
-    errors_mod = types.ModuleType("ansible.errors")
-
-    class _StubFilterError(Exception):
-        pass
-
-    errors_mod.AnsibleFilterError = _StubFilterError
-    sys.modules["ansible.errors"] = errors_mod
-    ansible_pkg.errors = errors_mod
+    errors_mod = sys.modules.get("ansible.errors")
+    if errors_mod is None:
+        errors_mod = types.ModuleType("ansible.errors")
+        sys.modules["ansible.errors"] = errors_mod
+        ansible_pkg.errors = errors_mod
+    if not hasattr(errors_mod, "AnsibleFilterError"):
+        class _StubFilterError(Exception):
+            pass
+        errors_mod.AnsibleFilterError = _StubFilterError
 
 
 @pytest.fixture(scope="module")

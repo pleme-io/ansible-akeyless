@@ -28,17 +28,20 @@ _PROP_SETTINGS = dict(deadline=None,
 
 
 def _install_ansible_errors_stub():
-    if "ansible.errors" in sys.modules:
-        return
+    """Ensure ansible.errors carries AnsibleFilterError. Other test
+    modules may have already installed an ansible.errors with
+    different stubs (e.g. AnsibleActionFail); merge rather than
+    overwrite so all consumers get their expected exception class."""
     ansible_pkg = sys.modules.setdefault("ansible", types.ModuleType("ansible"))
-    errors_mod = types.ModuleType("ansible.errors")
-
-    class _StubFilterError(Exception):
-        pass
-
-    errors_mod.AnsibleFilterError = _StubFilterError
-    sys.modules["ansible.errors"] = errors_mod
-    ansible_pkg.errors = errors_mod
+    errors_mod = sys.modules.get("ansible.errors")
+    if errors_mod is None:
+        errors_mod = types.ModuleType("ansible.errors")
+        sys.modules["ansible.errors"] = errors_mod
+        ansible_pkg.errors = errors_mod
+    if not hasattr(errors_mod, "AnsibleFilterError"):
+        class _StubFilterError(Exception):
+            pass
+        errors_mod.AnsibleFilterError = _StubFilterError
 
 
 @pytest.fixture(scope="module")
