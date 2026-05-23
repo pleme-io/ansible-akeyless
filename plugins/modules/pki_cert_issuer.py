@@ -172,130 +172,71 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("CreatePKICertIssuer", dict(module.params, token=token))
-    return call_api(module, client, "create_pki_cert_issuer", body)
-
-
-def update_resource(module, client, token):
-    """Update the resource."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    #   - signer_key_name
-    # Changing them requires destroy + recreate.
-
-    # TODO(phase-1b): use read_mapping for honest diff
-    body = build_body("UpdatePKICertIssuer", dict(module.params, token=token))
-    return call_api(module, client, "update_pki_cert_issuer", body)
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("DeleteItem", dict(module.params, token=token))
-    return call_api(module, client, "delete_item", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("DescribeItem", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "describe_item", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'allow_any_name': {'type': 'bool'},
+    'allow_copy_ext_from_csr': {'type': 'bool'},
+    'allow_subdomains': {'type': 'bool'},
+    'allowed_domains': {'type': 'str'},
+    'allowed_extra_extensions': {'type': 'str'},
+    'allowed_ip_sans': {'type': 'str'},
+    'allowed_uri_sans': {'type': 'str'},
+    'auto_renew': {'type': 'bool'},
+    'ca_target': {'type': 'str'},
+    'client_flag': {'type': 'bool'},
+    'code_signing_flag': {'type': 'bool'},
+    'country': {'type': 'str'},
+    'create_private_crl': {'type': 'bool'},
+    'create_private_ocsp': {'type': 'bool'},
+    'create_public_crl': {'type': 'bool'},
+    'create_public_ocsp': {'type': 'bool'},
+    'critical_key_usage': {'type': 'str'},
+    'delete_protection': {'type': 'bool'},
+    'description': {'type': 'str'},
+    'destination_path': {'type': 'str'},
+    'disable_wildcards': {'type': 'bool'},
+    'enable_acme': {'type': 'bool'},
+    'expiration_event_in': {'type': 'list', 'elements': 'str'},
+    'gw_cluster_url': {'type': 'str'},
+    'is_ca': {'type': 'bool'},
+    'key_usage': {'type': 'str'},
+    'locality': {'type': 'str'},
+    'max_path_len': {'type': 'int'},
+    'name': {'type': 'str', 'required': True},
+    'not_enforce_hostnames': {'type': 'bool'},
+    'not_require_cn': {'type': 'bool'},
+    'ocsp_ttl': {'type': 'str'},
+    'organizational_units': {'type': 'str'},
+    'organizations': {'type': 'str'},
+    'postal_code': {'type': 'str'},
+    'protect_certificates': {'type': 'bool'},
+    'province': {'type': 'str'},
+    'scheduled_renew': {'type': 'int'},
+    'server_flag': {'type': 'bool'},
+    'signer_key_name': {'type': 'str'},
+    'street_address': {'type': 'str'},
+    'tag': {'type': 'list', 'elements': 'str'},
+    'ttl': {'type': 'str', 'required': True},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'allow_any_name': {'type': 'bool'},
-        'allow_copy_ext_from_csr': {'type': 'bool'},
-        'allow_subdomains': {'type': 'bool'},
-        'allowed_domains': {'type': 'str'},
-        'allowed_extra_extensions': {'type': 'str'},
-        'allowed_ip_sans': {'type': 'str'},
-        'allowed_uri_sans': {'type': 'str'},
-        'auto_renew': {'type': 'bool'},
-        'ca_target': {'type': 'str'},
-        'client_flag': {'type': 'bool'},
-        'code_signing_flag': {'type': 'bool'},
-        'country': {'type': 'str'},
-        'create_private_crl': {'type': 'bool'},
-        'create_private_ocsp': {'type': 'bool'},
-        'create_public_crl': {'type': 'bool'},
-        'create_public_ocsp': {'type': 'bool'},
-        'critical_key_usage': {'type': 'str'},
-        'delete_protection': {'type': 'bool'},
-        'description': {'type': 'str'},
-        'destination_path': {'type': 'str'},
-        'disable_wildcards': {'type': 'bool'},
-        'enable_acme': {'type': 'bool'},
-        'expiration_event_in': {'type': 'list', 'elements': 'str'},
-        'gw_cluster_url': {'type': 'str'},
-        'is_ca': {'type': 'bool'},
-        'key_usage': {'type': 'str'},
-        'locality': {'type': 'str'},
-        'max_path_len': {'type': 'int'},
-        'name': {'type': 'str', 'required': True},
-        'not_enforce_hostnames': {'type': 'bool'},
-        'not_require_cn': {'type': 'bool'},
-        'ocsp_ttl': {'type': 'str'},
-        'organizational_units': {'type': 'str'},
-        'organizations': {'type': 'str'},
-        'postal_code': {'type': 'str'},
-        'protect_certificates': {'type': 'bool'},
-        'province': {'type': 'str'},
-        'scheduled_renew': {'type': 'int'},
-        'server_flag': {'type': 'bool'},
-        'signer_key_name': {'type': 'str'},
-        'street_address': {'type': 'str'},
-        'tag': {'type': 'list', 'elements': 'str'},
-        'ttl': {'type': 'str', 'required': True},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='pki_cert_issuer',
+        sdk_create=('CreatePKICertIssuer', 'create_pki_cert_issuer'),
+        sdk_update=('UpdatePKICertIssuer', 'update_pki_cert_issuer'),
+        sdk_delete=('DeleteItem', 'delete_item'),
+        sdk_read=('DescribeItem', 'describe_item'),
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="pki_cert_issuer already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="pki_cert_issuer already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':

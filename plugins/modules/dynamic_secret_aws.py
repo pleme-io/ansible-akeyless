@@ -124,111 +124,53 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("DynamicSecretCreateAws", dict(module.params, token=token))
-    return call_api(module, client, "dynamic_secret_create_aws", body)
-
-
-def update_resource(module, client, token):
-    """Update the resource."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    # Changing them requires destroy + recreate.
-
-    # TODO(phase-1b): use read_mapping for honest diff
-    body = build_body("DynamicSecretUpdateAws", dict(module.params, token=token))
-    return call_api(module, client, "dynamic_secret_update_aws", body)
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("DynamicSecretDelete", dict(module.params, token=token))
-    return call_api(module, client, "dynamic_secret_delete", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("DynamicSecretGet", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "dynamic_secret_get", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'access_mode': {'type': 'str'},
+    'admin_rotation_interval_days': {'type': 'int'},
+    'aws_access_key_id': {'type': 'str', 'no_log': True, 'required': True},
+    'aws_access_secret_key': {'type': 'str', 'no_log': True, 'required': True},
+    'aws_external_id': {'type': 'str'},
+    'aws_role_arns': {'type': 'str'},
+    'aws_user_console_access': {'type': 'bool'},
+    'aws_user_groups': {'type': 'str'},
+    'aws_user_policies': {'type': 'str', 'required': True},
+    'aws_user_programmatic_access': {'type': 'bool'},
+    'custom_username_template': {'type': 'str'},
+    'delete_protection': {'type': 'bool'},
+    'description': {'type': 'str'},
+    'enable_admin_rotation': {'type': 'bool'},
+    'item_custom_fields': {'type': 'dict'},
+    'name': {'type': 'str', 'required': True},
+    'password_length': {'type': 'str', 'no_log': False},
+    'producer_encryption_key_name': {'type': 'str'},
+    'region': {'type': 'str', 'required': True},
+    'secure_access_delay': {'type': 'int'},
+    'session_tags': {'type': 'str'},
+    'tags': {'type': 'list', 'elements': 'str'},
+    'target_name': {'type': 'str'},
+    'transitive_tag_keys': {'type': 'str', 'no_log': False},
+    'user_ttl': {'type': 'str'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'access_mode': {'type': 'str'},
-        'admin_rotation_interval_days': {'type': 'int'},
-        'aws_access_key_id': {'type': 'str', 'no_log': True, 'required': True},
-        'aws_access_secret_key': {'type': 'str', 'no_log': True, 'required': True},
-        'aws_external_id': {'type': 'str'},
-        'aws_role_arns': {'type': 'str'},
-        'aws_user_console_access': {'type': 'bool'},
-        'aws_user_groups': {'type': 'str'},
-        'aws_user_policies': {'type': 'str', 'required': True},
-        'aws_user_programmatic_access': {'type': 'bool'},
-        'custom_username_template': {'type': 'str'},
-        'delete_protection': {'type': 'bool'},
-        'description': {'type': 'str'},
-        'enable_admin_rotation': {'type': 'bool'},
-        'item_custom_fields': {'type': 'dict'},
-        'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str', 'no_log': False},
-        'producer_encryption_key_name': {'type': 'str'},
-        'region': {'type': 'str', 'required': True},
-        'secure_access_delay': {'type': 'int'},
-        'session_tags': {'type': 'str'},
-        'tags': {'type': 'list', 'elements': 'str'},
-        'target_name': {'type': 'str'},
-        'transitive_tag_keys': {'type': 'str', 'no_log': False},
-        'user_ttl': {'type': 'str'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='dynamic_secret_aws',
+        sdk_create=('DynamicSecretCreateAws', 'dynamic_secret_create_aws'),
+        sdk_update=('DynamicSecretUpdateAws', 'dynamic_secret_update_aws'),
+        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
+        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="dynamic_secret_aws already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="dynamic_secret_aws already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':

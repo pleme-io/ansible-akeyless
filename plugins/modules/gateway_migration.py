@@ -276,155 +276,97 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("GatewayCreateMigration", dict(module.params, token=token))
-    return call_api(module, client, "gateway_create_migration", body)
-
-
-def update_resource(module, client, token):
-    """Update the resource."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    # Changing them requires destroy + recreate.
-
-    # TODO(phase-1b): use read_mapping for honest diff
-    body = build_body("GatewayUpdateMigration", dict(module.params, token=token))
-    return call_api(module, client, "gateway_update_migration", body)
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("GatewayDeleteMigration", dict(module.params, token=token))
-    return call_api(module, client, "gateway_delete_migration", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("GatewayGetMigration", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "gateway_get_migration", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'ServiceAccountKeyDecoded': {'type': 'str', 'no_log': True},
+    'ad_auto_rotate': {'type': 'str'},
+    'ad_cert_expiration_event_in': {'type': 'list', 'elements': 'str'},
+    'ad_certificates_path_template': {'type': 'str'},
+    'ad_computer_base_dn': {'type': 'str'},
+    'ad_discover_iis_app': {'type': 'str'},
+    'ad_discover_services': {'type': 'str'},
+    'ad_discovery_types': {'type': 'list', 'elements': 'str'},
+    'ad_domain_name': {'type': 'str'},
+    'ad_domain_users_path_template': {'type': 'str'},
+    'ad_local_users_ignore': {'type': 'str'},
+    'ad_local_users_path_template': {'type': 'str'},
+    'ad_os_filter': {'type': 'str'},
+    'ad_rotation_hour': {'type': 'int'},
+    'ad_rotation_interval': {'type': 'int'},
+    'ad_sra_enable_rdp': {'type': 'str'},
+    'ad_ssh_port': {'type': 'str'},
+    'ad_target_format': {'type': 'str'},
+    'ad_target_name': {'type': 'str'},
+    'ad_targets_path_template': {'type': 'str'},
+    'ad_targets_type': {'type': 'str'},
+    'ad_user_base_dn': {'type': 'str'},
+    'ad_user_groups': {'type': 'str'},
+    'ad_winrm_over_http': {'type': 'str'},
+    'ad_winrm_port': {'type': 'str'},
+    'ad_discover_local_users': {'type': 'str'},
+    'ai_certificate_discovery': {'type': 'str'},
+    'aws_key': {'type': 'str', 'no_log': True},
+    'aws_key_id': {'type': 'str'},
+    'aws_region': {'type': 'str'},
+    'azure_client_id': {'type': 'str'},
+    'azure_kv_name': {'type': 'str'},
+    'azure_secret': {'type': 'str', 'no_log': True},
+    'azure_tenant_id': {'type': 'str'},
+    'conjur_account': {'type': 'str'},
+    'conjur_api_key': {'type': 'str', 'no_log': True},
+    'conjur_url': {'type': 'str'},
+    'conjur_username': {'type': 'str'},
+    'expiration_event_in': {'type': 'list', 'elements': 'str'},
+    'gcp_key': {'type': 'str', 'no_log': True},
+    'gcp_project_id': {'type': 'str'},
+    'hashi_json': {'type': 'str'},
+    'hashi_ns': {'type': 'list', 'elements': 'str'},
+    'hashi_token': {'type': 'str', 'no_log': True},
+    'hashi_url': {'type': 'str'},
+    'hosts': {'type': 'str', 'required': True},
+    'k8s_ca_certificate': {'type': 'list', 'elements': 'int'},
+    'k8s_client_certificate': {'type': 'list', 'elements': 'int'},
+    'k8s_client_key': {'type': 'list', 'elements': 'int', 'no_log': True},
+    'k8s_namespace': {'type': 'str'},
+    'k8s_password': {'type': 'str', 'no_log': True},
+    'k8s_skip_system': {'type': 'bool'},
+    'k8s_token': {'type': 'str', 'no_log': True},
+    'k8s_url': {'type': 'str'},
+    'k8s_username': {'type': 'str'},
+    'name': {'type': 'str', 'required': True},
+    'port_ranges': {'type': 'str'},
+    'protection_key': {'type': 'str', 'no_log': False},
+    'si_auto_rotate': {'type': 'str'},
+    'si_rotation_hour': {'type': 'int'},
+    'si_rotation_interval': {'type': 'int'},
+    'si_sra_enable_rdp': {'type': 'str'},
+    'si_target_name': {'type': 'str', 'required': True},
+    'si_user_groups': {'type': 'str'},
+    'si_users_ignore': {'type': 'str'},
+    'si_users_path_template': {'type': 'str', 'required': True},
+    'target_location': {'type': 'str', 'required': True},
+    'type': {'type': 'str'},
+    'use_gw_cloud_identity': {'type': 'bool'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'ServiceAccountKeyDecoded': {'type': 'str', 'no_log': True},
-        'ad_auto_rotate': {'type': 'str'},
-        'ad_cert_expiration_event_in': {'type': 'list', 'elements': 'str'},
-        'ad_certificates_path_template': {'type': 'str'},
-        'ad_computer_base_dn': {'type': 'str'},
-        'ad_discover_iis_app': {'type': 'str'},
-        'ad_discover_services': {'type': 'str'},
-        'ad_discovery_types': {'type': 'list', 'elements': 'str'},
-        'ad_domain_name': {'type': 'str'},
-        'ad_domain_users_path_template': {'type': 'str'},
-        'ad_local_users_ignore': {'type': 'str'},
-        'ad_local_users_path_template': {'type': 'str'},
-        'ad_os_filter': {'type': 'str'},
-        'ad_rotation_hour': {'type': 'int'},
-        'ad_rotation_interval': {'type': 'int'},
-        'ad_sra_enable_rdp': {'type': 'str'},
-        'ad_ssh_port': {'type': 'str'},
-        'ad_target_format': {'type': 'str'},
-        'ad_target_name': {'type': 'str'},
-        'ad_targets_path_template': {'type': 'str'},
-        'ad_targets_type': {'type': 'str'},
-        'ad_user_base_dn': {'type': 'str'},
-        'ad_user_groups': {'type': 'str'},
-        'ad_winrm_over_http': {'type': 'str'},
-        'ad_winrm_port': {'type': 'str'},
-        'ad_discover_local_users': {'type': 'str'},
-        'ai_certificate_discovery': {'type': 'str'},
-        'aws_key': {'type': 'str', 'no_log': True},
-        'aws_key_id': {'type': 'str'},
-        'aws_region': {'type': 'str'},
-        'azure_client_id': {'type': 'str'},
-        'azure_kv_name': {'type': 'str'},
-        'azure_secret': {'type': 'str', 'no_log': True},
-        'azure_tenant_id': {'type': 'str'},
-        'conjur_account': {'type': 'str'},
-        'conjur_api_key': {'type': 'str', 'no_log': True},
-        'conjur_url': {'type': 'str'},
-        'conjur_username': {'type': 'str'},
-        'expiration_event_in': {'type': 'list', 'elements': 'str'},
-        'gcp_key': {'type': 'str', 'no_log': True},
-        'gcp_project_id': {'type': 'str'},
-        'hashi_json': {'type': 'str'},
-        'hashi_ns': {'type': 'list', 'elements': 'str'},
-        'hashi_token': {'type': 'str', 'no_log': True},
-        'hashi_url': {'type': 'str'},
-        'hosts': {'type': 'str', 'required': True},
-        'k8s_ca_certificate': {'type': 'list', 'elements': 'int'},
-        'k8s_client_certificate': {'type': 'list', 'elements': 'int'},
-        'k8s_client_key': {'type': 'list', 'elements': 'int', 'no_log': True},
-        'k8s_namespace': {'type': 'str'},
-        'k8s_password': {'type': 'str', 'no_log': True},
-        'k8s_skip_system': {'type': 'bool'},
-        'k8s_token': {'type': 'str', 'no_log': True},
-        'k8s_url': {'type': 'str'},
-        'k8s_username': {'type': 'str'},
-        'name': {'type': 'str', 'required': True},
-        'port_ranges': {'type': 'str'},
-        'protection_key': {'type': 'str', 'no_log': False},
-        'si_auto_rotate': {'type': 'str'},
-        'si_rotation_hour': {'type': 'int'},
-        'si_rotation_interval': {'type': 'int'},
-        'si_sra_enable_rdp': {'type': 'str'},
-        'si_target_name': {'type': 'str', 'required': True},
-        'si_user_groups': {'type': 'str'},
-        'si_users_ignore': {'type': 'str'},
-        'si_users_path_template': {'type': 'str', 'required': True},
-        'target_location': {'type': 'str', 'required': True},
-        'type': {'type': 'str'},
-        'use_gw_cloud_identity': {'type': 'bool'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='gateway_migration',
+        sdk_create=('GatewayCreateMigration', 'gateway_create_migration'),
+        sdk_update=('GatewayUpdateMigration', 'gateway_update_migration'),
+        sdk_delete=('GatewayDeleteMigration', 'gateway_delete_migration'),
+        sdk_read=('GatewayGetMigration', 'gateway_get_migration'),
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="gateway_migration already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="gateway_migration already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':

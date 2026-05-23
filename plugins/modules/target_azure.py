@@ -79,99 +79,41 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("TargetCreateAzure", dict(module.params, token=token))
-    return call_api(module, client, "target_create_azure", body)
-
-
-def update_resource(module, client, token):
-    """Update the resource."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    # Changing them requires destroy + recreate.
-
-    # TODO(phase-1b): use read_mapping for honest diff
-    body = build_body("TargetUpdateAzure", dict(module.params, token=token))
-    return call_api(module, client, "target_update_azure", body)
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("TargetDelete", dict(module.params, token=token))
-    return call_api(module, client, "target_delete", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("TargetGet", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "target_get", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'azure_cloud': {'type': 'str'},
+    'client_id': {'type': 'str'},
+    'client_secret': {'type': 'str', 'no_log': True},
+    'connection_type': {'type': 'str'},
+    'description': {'type': 'str'},
+    'key': {'type': 'str', 'no_log': False},
+    'max_versions': {'type': 'str'},
+    'name': {'type': 'str', 'required': True},
+    'resource_group_name': {'type': 'str'},
+    'resource_name': {'type': 'str'},
+    'subscription_id': {'type': 'str'},
+    'tenant_id': {'type': 'str'},
+    'use_gw_cloud_identity': {'type': 'bool'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'azure_cloud': {'type': 'str'},
-        'client_id': {'type': 'str'},
-        'client_secret': {'type': 'str', 'no_log': True},
-        'connection_type': {'type': 'str'},
-        'description': {'type': 'str'},
-        'key': {'type': 'str', 'no_log': False},
-        'max_versions': {'type': 'str'},
-        'name': {'type': 'str', 'required': True},
-        'resource_group_name': {'type': 'str'},
-        'resource_name': {'type': 'str'},
-        'subscription_id': {'type': 'str'},
-        'tenant_id': {'type': 'str'},
-        'use_gw_cloud_identity': {'type': 'bool'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='target_azure',
+        sdk_create=('TargetCreateAzure', 'target_create_azure'),
+        sdk_update=('TargetUpdateAzure', 'target_update_azure'),
+        sdk_delete=('TargetDelete', 'target_delete'),
+        sdk_read=('TargetGet', 'target_get'),
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="target_azure already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="target_azure already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':
