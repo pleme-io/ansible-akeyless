@@ -212,10 +212,16 @@ def _classify(outcome):
         # convergence is the *goal*, not a failure — count both as WORKS.
         if not msg or "already in desired state" in msg or "already absent" in msg:
             return "WORKS"
-    # Timeout = network/connection didn't return within socket timeout.
-    # Common when pointing at a local gateway that's actually trying
-    # to validate stub data against the real internet.
-    if "timed out" in msg or "timeout" in msg or "read timed out" in msg:
+    # Timeout = the *transport* (socket / pytest-timeout) gave up
+    # before the gateway responded. Match only on the precise
+    # signatures these emit, not on the word "timeout" anywhere -- API
+    # error bodies frequently include phrases like "connection timeout"
+    # when describing a backend dial failure (mongodb / redis / etc.)
+    # and those are API_REJECTED, not transport TIMEOUT.
+    if ("failed: timeout" in msg                    # pytest-timeout
+        or "read timed out" in msg                  # urllib3 read
+        or "connection timed out" in msg            # urllib3 connect
+        or "remotedisconnected" in msg):            # half-closed socket
         return "TIMEOUT"
     # API drift signatures
     if "missing required parameter" in msg:
