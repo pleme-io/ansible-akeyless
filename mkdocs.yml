@@ -74,8 +74,11 @@ nav:
       - Skip per-task auth: walkthroughs/token-caching.md
       - Dynamic + rotated secrets: walkthroughs/dynamic-secrets.md
       - AWX / AAP integration: walkthroughs/awx-aap-integration.md
+      - Migrate from another secrets manager: walkthroughs/migration.md
+      - Troubleshooting: walkthroughs/troubleshooting.md
   - Reference:
       - Architecture: reference/architecture.md
       - Authentication: reference/authentication.md
       - Plugins (auto-generated): reference/plugins/
       - Modules (auto-generated): reference/modules/
+      - Roles (auto-generated): reference/roles/

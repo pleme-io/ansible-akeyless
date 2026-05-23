@@ -19,3 +19,4 @@ site/
 # on every mkdocs build, so they're not checked into the repo.
 docs/reference/plugins/
 docs/reference/modules/
+docs/reference/roles/

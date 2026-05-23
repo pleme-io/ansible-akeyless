@@ -42,6 +42,7 @@ except ImportError:
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PLUGINS_DIR = REPO_ROOT / "plugins"
+ROLES_DIR = REPO_ROOT / "roles"
 NAMESPACE = "drzln0"
 COLLECTION = "akeyless"
 
@@ -323,9 +324,69 @@ def build_module_pages() -> List[Tuple[str, str]]:
     return nav_entries
 
 
+def build_role_pages() -> List[Tuple[str, str]]:
+    """Render per-role markdown pages by inlining the role's existing
+    README.md (the source of truth for role docs in Ansible Galaxy)
+    and prepending a generated header sourced from meta/main.yml's
+    galaxy_info.
+
+    Returns [(role_name, page_path)] for the nav summary."""
+    nav_entries: List[Tuple[str, str]] = []
+    if not ROLES_DIR.exists():
+        return nav_entries
+    for role_dir in sorted(p for p in ROLES_DIR.iterdir() if p.is_dir()):
+        meta_path = role_dir / "meta" / "main.yml"
+        readme_path = role_dir / "README.md"
+        if not meta_path.exists():
+            continue
+        try:
+            meta = yaml.safe_load(meta_path.read_text()) or {}
+        except yaml.YAMLError:
+            continue
+        galaxy_info = meta.get("galaxy_info") or {}
+        description = galaxy_info.get("description", "")
+        min_ansible = galaxy_info.get("min_ansible_version", "")
+        author = galaxy_info.get("author", "")
+        tags = galaxy_info.get("galaxy_tags") or []
+        readme_body = (
+            readme_path.read_text() if readme_path.exists()
+            else f"_(role README not yet written)_\n"
+        )
+        # Strip the README's leading H1 so we don't get a duplicate.
+        readme_body = re.sub(r"^#\s+\S[^\n]*\n", "", readme_body, count=1)
+        fqcn = f"{NAMESPACE}.{COLLECTION}.{role_dir.name}"
+        lines = [
+            f"# `{fqcn}` — role",
+            "",
+            f"> {description}" if description else "",
+            "",
+        ]
+        if min_ansible:
+            lines.append(f"_Min Ansible version: {min_ansible}_")
+        if author:
+            lines.append(f"_Author: {author}_")
+        if tags:
+            lines.append(
+                "_Tags: " + ", ".join(f"`{t}`" for t in tags) + "_"
+            )
+        lines.append("")
+        lines.append(readme_body)
+        lines.append("---")
+        lines.append(
+            f"_Auto-generated header; body sourced from "
+            f"[roles/{role_dir.name}/README.md]"
+            f"(https://github.com/pleme-io/ansible-akeyless/blob/main/roles/{role_dir.name}/README.md)._"
+        )
+        virtual = f"reference/roles/{role_dir.name}.md"
+        _write(virtual, "\n".join(lines))
+        nav_entries.append((role_dir.name, virtual))
+    return nav_entries
+
+
 def build_nav_indices(
     plugin_nav: List[Tuple[str, str, str]],
     module_nav: List[Tuple[str, str]],
+    role_nav: List[Tuple[str, str]],
 ) -> None:
     """Write a per-section SUMMARY.md the literate-nav mkdocs plugin
     consumes, plus per-type index pages."""
@@ -364,13 +425,34 @@ def build_nav_indices(
     _write("reference/modules/SUMMARY.md",
            "\n".join(["* [Modules](index.md)"] + ["  " + s for s in summary_mods]))
 
+    # Roles index.
+    if role_nav:
+        roles_index = ["# Roles reference\n",
+                        f"_Total: {len(role_nav)} roles._\n",
+                        "Auto-generated header (from meta/main.yml's galaxy_info) "
+                        "+ inlined README body.\n",
+                        "## Roles\n"]
+        for name, path in role_nav:
+            rel = path.replace("reference/roles/", "")
+            roles_index.append(f"- [{name}]({rel})")
+        _write("reference/roles/index.md", "\n".join(roles_index))
+        summary_roles = [f"* [{n}]({p.replace('reference/roles/', '')})"
+                          for n, p in role_nav]
+        _write("reference/roles/SUMMARY.md",
+               "\n".join(["* [Roles](index.md)"] + ["  " + s for s in summary_roles]))
+
 
 def main() -> None:
     plugin_nav = build_plugin_pages()
     module_nav = build_module_pages()
-    build_nav_indices(plugin_nav, module_nav)
+    role_nav = build_role_pages()
+    build_nav_indices(plugin_nav, module_nav, role_nav)
     if not _USING_GEN_FILES:
-        print(f"Wrote {len(plugin_nav)} plugin + {len(module_nav)} module pages")
+        print(
+            f"Wrote {len(plugin_nav)} plugin + "
+            f"{len(module_nav)} module + "
+            f"{len(role_nav)} role pages"
+        )
 
 
 # Always-run entry point (mkdocs-gen-files invokes the file at import time).
