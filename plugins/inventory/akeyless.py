@@ -94,6 +94,10 @@ from ansible.plugins.inventory import BaseInventoryPlugin, Constructable
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_lookup_auth import (
     authenticated_client as _authenticate,
 )
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    AUTH_OPT_KEYS,
+    normalize_sdk_result,
+)
 
 try:
     import akeyless
@@ -106,7 +110,7 @@ def _fetch_secret(client: Any, token: str, name: str) -> Any:
     """Fetch a single static secret and parse its value as JSON."""
     body = akeyless.GetSecretValue(names=[name], token=token)
     try:
-        result = client.get_secret_value(body)
+        result = normalize_sdk_result(client.get_secret_value(body))
     except ApiException as exc:
         status = getattr(exc, "status", "?")
         raise AnsibleError(
@@ -114,8 +118,6 @@ def _fetch_secret(client: Any, token: str, name: str) -> Any:
             f"{exc.body or exc.reason}"
         ) from exc
 
-    if hasattr(result, "to_dict"):
-        result = result.to_dict()
     if not isinstance(result, dict) or name not in result:
         raise AnsibleError(
             f"Akeyless response missing secret {name!r}; got {list(result or [])}"
@@ -176,9 +178,7 @@ class InventoryModule(BaseInventoryPlugin, Constructable):
         super().parse(inventory, loader, path)
         self._read_config_data(path)
 
-        opts = {k: self.get_option(k) for k in (
-            "gateway_url", "access_id", "access_key", "access_type", "token",
-        )}
+        opts = {k: self.get_option(k) for k in AUTH_OPT_KEYS}
         secrets: List[str] = self.get_option("secrets") or []
         if not secrets:
             raise AnsibleError(
