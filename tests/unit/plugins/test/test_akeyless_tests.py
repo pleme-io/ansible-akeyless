@@ -26,10 +26,35 @@ TEST_FILES = {
 }
 
 
+def _install_plugin_helpers_stub():
+    """Each per-test file imports @akeyless_test from
+    plugins/module_utils/akeyless_plugin_helpers.py at module scope."""
+    import types
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        sys.modules.setdefault(name, types.ModuleType(name))
+    full = (
+        "ansible_collections.drzln0.akeyless.plugins.module_utils"
+        ".akeyless_plugin_helpers"
+    )
+    sys.modules.pop(full, None)
+    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_plugin_helpers.py"
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
+
+
 @pytest.fixture(scope="module")
 def tests():
     """Merge each per-test file's exports into a single namespace
     that the existing test cases can reach via `tests.<symbol>`."""
+    _install_plugin_helpers_stub()
     merged = type("MergedTestPlugins", (), {})()
     for name, path in TEST_FILES.items():
         spec = importlib.util.spec_from_file_location(

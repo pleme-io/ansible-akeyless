@@ -29,10 +29,33 @@ _PROP_SETTINGS = dict(deadline=None,
                        suppress_health_check=[HealthCheck.function_scoped_fixture])
 
 
+def _install_plugin_helpers_stub():
+    import types
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        sys.modules.setdefault(name, types.ModuleType(name))
+    full = (
+        "ansible_collections.drzln0.akeyless.plugins.module_utils"
+        ".akeyless_plugin_helpers"
+    )
+    sys.modules.pop(full, None)
+    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_plugin_helpers.py"
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
+
+
 @pytest.fixture(scope="module")
 def tests():
     """Merge per-test-file exports onto one object so existing test
     methods reach them as `tests.<test_name>`."""
+    _install_plugin_helpers_stub()
     merged = type("MergedTestPlugins", (), {})()
     for name, path in PER_TEST_FILES.items():
         spec = importlib.util.spec_from_file_location(

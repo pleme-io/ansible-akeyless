@@ -49,16 +49,18 @@ def _ensure_lookup_auth_helper_registered():
         "ansible_collections.drzln0.akeyless.plugins.module_utils",
     ):
         sys.modules.setdefault(name, types.ModuleType(name))
-    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
-            ".akeyless_lookup_auth")
-    # Force fresh load -- helper caches `akeyless` reference; per-test
-    # fake_akeyless must be picked up.
-    sys.modules.pop(full, None)
-    helper_path = ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
-    helper_spec = importlib.util.spec_from_file_location(full, helper_path)
-    helper_mod = importlib.util.module_from_spec(helper_spec)
-    sys.modules[full] = helper_mod
-    helper_spec.loader.exec_module(helper_mod)  # type: ignore[union-attr]
+    for stem in ("akeyless_lookup_auth", "akeyless_plugin_helpers"):
+        full = (
+            f"ansible_collections.drzln0.akeyless.plugins.module_utils.{stem}"
+        )
+        # Force fresh load -- helper caches `akeyless` reference; per-test
+        # fake_akeyless must be picked up.
+        sys.modules.pop(full, None)
+        helper_path = ROOT / "plugins" / "module_utils" / f"{stem}.py"
+        helper_spec = importlib.util.spec_from_file_location(full, helper_path)
+        helper_mod = importlib.util.module_from_spec(helper_spec)
+        sys.modules[full] = helper_mod
+        helper_spec.loader.exec_module(helper_mod)  # type: ignore[union-attr]
 
 
 def _load_lookup_module():

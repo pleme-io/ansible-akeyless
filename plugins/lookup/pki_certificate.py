@@ -98,60 +98,33 @@ _raw:
   elements: dict
 """
 
-from typing import Any, Dict, List, Optional
-
-from ansible.errors import AnsibleError, AnsibleLookupError
 from ansible.plugins.lookup import LookupBase
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_lookup_auth import (
-    DEFAULT_ACCESS_TYPE,
-    DEFAULT_GATEWAY_URL,
     HAS_AKEYLESS,
     AKEYLESS_IMPORT_ERROR,
-    authenticated_client as _authenticated_client,
+)
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    akeyless_lookup,
+    compact_kwargs,
 )
 
 try:
     import akeyless
-    from akeyless.exceptions import ApiException
 except ImportError:  # pragma: no cover - HAS_AKEYLESS handles this
     pass
 
 
+_CERT_EXTRA_OPTS = ("common_name", "alt_names", "ttl", "key_data_base64")
+
+
+@akeyless_lookup(extra_opts=_CERT_EXTRA_OPTS)
 class LookupModule(LookupBase):
     """Issue PKI certificates from Akeyless cert issuers."""
 
-    def run(self, terms: List[str], variables: Optional[Dict[str, Any]] = None,
-            **kwargs: Any) -> List[Any]:
-        self.set_options(var_options=variables, direct=kwargs)
-        opts = {k: self.get_option(k) for k in (
-            "gateway_url", "access_id", "access_key", "access_type", "token",
-            "common_name", "alt_names", "ttl", "key_data_base64",
-        )}
-
-        client, token = _authenticated_client(opts)
-
-        # Build the cert-issue body. Akeyless's GetPKICertificate
-        # accepts the issuer name + optional CN/SAN/TTL/CSR overrides.
-        cert_kwargs = {
-            "token": token,
-        }
-        for k in ("common_name", "alt_names", "ttl", "key_data_base64"):
-            v = opts.get(k)
-            if v is not None and v != "":
-                cert_kwargs[k] = v
-
-        out: List[Any] = []
-        for term in terms:
-            body = akeyless.GetPKICertificate(cert_issuer_name=term, **cert_kwargs)
-            try:
-                result = client.get_pki_certificate(body)
-            except ApiException as exc:
-                status = getattr(exc, "status", "?")
-                raise AnsibleLookupError(
-                    f"Akeyless get_pki_certificate({term!r}) failed "
-                    f"({status}): {exc.body or exc.reason}"
-                ) from exc
-            if hasattr(result, "to_dict"):
-                result = result.to_dict()
-            out.append(result)
-        return out
+    def fetch(self, client, token, opts, term):
+        body = akeyless.GetPKICertificate(
+            cert_issuer_name=term,
+            token=token,
+            **compact_kwargs(opts, _CERT_EXTRA_OPTS),
+        )
+        return client.get_pki_certificate(body)

@@ -39,12 +39,15 @@ _value:
 import re
 from typing import Any, Dict
 
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    akeyless_test,
+)
+
 _ACCESS_ID_RE = re.compile(r"^p-[a-fA-F0-9]{16,}$")
 
 
-def is_akeyless_access_id(value: Any) -> bool:
-    if not isinstance(value, str):
-        return False
+@akeyless_test
+def is_akeyless_access_id(value: str) -> bool:
     return bool(_ACCESS_ID_RE.match(value))
 
 

@@ -37,10 +37,13 @@ _value:
 
 from typing import Any, Dict
 
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    akeyless_test,
+)
 
-def is_pem_block(value: Any) -> bool:
-    if not isinstance(value, str):
-        return False
+
+@akeyless_test
+def is_pem_block(value: str) -> bool:
     lines = value.strip().splitlines()
     if not lines:
         return False

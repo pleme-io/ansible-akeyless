@@ -82,17 +82,23 @@ def _install_ansible_lookup_stubs():
         if name not in sys.modules:
             sys.modules[name] = types.ModuleType(name)
 
-    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
-    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
-            ".akeyless_lookup_auth")
-    # Force fresh load so the helper's `import akeyless` rebinds to
-    # whatever fake_akeyless installed for THIS test (otherwise the
-    # first test wins and subsequent tests see a stale akeyless ref).
-    sys.modules.pop(full, None)
-    spec = importlib.util.spec_from_file_location(full, helper_path)
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[full] = mod
-    spec.loader.exec_module(mod)
+    # Load both module_utils helpers from disk under their canonical
+    # FQ names so the production lookup's absolute imports resolve.
+    # akeyless_plugin_helpers depends on akeyless_lookup_auth being
+    # importable for its lazy lookup of `authenticated_client`.
+    for stem in ("akeyless_lookup_auth", "akeyless_plugin_helpers"):
+        helper_path = REPO_ROOT / "plugins" / "module_utils" / f"{stem}.py"
+        full = (
+            f"ansible_collections.drzln0.akeyless.plugins.module_utils.{stem}"
+        )
+        # Force fresh load so the helper's `import akeyless` rebinds to
+        # whatever fake_akeyless installed for THIS test (otherwise the
+        # first test wins and subsequent tests see a stale akeyless ref).
+        sys.modules.pop(full, None)
+        spec = importlib.util.spec_from_file_location(full, helper_path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[full] = mod
+        spec.loader.exec_module(mod)
 
 
 def _load_lookup(fake_akeyless):
@@ -124,47 +130,11 @@ def test_lookup_module_class_exists(lookup):
     assert issubclass(LookupModule, LookupBase)
 
 
-def test_default_constants_match_collection_defaults(lookup):
-    """The lookup must use the same gateway URL + access_type defaults
-    as the helper module so behaviour is consistent across lookup vs
-    module-task usage."""
-    assert lookup.DEFAULT_GATEWAY_URL == "https://api.akeyless.io"
-    assert lookup.DEFAULT_ACCESS_TYPE == "access_key"
-
-
-def test_authenticated_client_uses_pre_issued_token(lookup):
-    """When opts['token'] is set, _authenticated_client skips the auth
-    call and returns the V2Api client + the verbatim token. Avoids the
-    auth round-trip when the caller already has a session token (e.g.
-    from a prior task)."""
-    instance = lookup._authenticated_client({"token": "pre-issued-tok"})
-    client, token = instance
-    assert token == "pre-issued-tok"
-    # The auth() method on the V2Api stub must NOT have been called.
-    assert not client.auth.called
-
-
-def test_authenticated_client_requires_access_id_when_no_token(lookup):
-    """No token + no access_id -> AnsibleError. Catches misconfiguration
-    that would otherwise surface as a 401 from the gateway."""
-    from ansible.errors import AnsibleError
-    with pytest.raises(AnsibleError, match="access_id is required"):
-        lookup._authenticated_client({"token": None, "access_id": None})
-
-
-def test_authenticated_client_runs_auth_path_when_no_token(lookup):
-    """With access_id supplied, _authenticated_client calls client.auth
-    with the constructed Auth body and returns its .token."""
-    # Wire the akeyless stub's V2Api(...) -> client.auth -> AuthResponse
-    fake_client = MagicMock(name="V2Api()")
-    fake_client.auth.return_value = MagicMock(token="resolved-token")
-    lookup.akeyless.V2Api = MagicMock(return_value=fake_client)
-    _, token = lookup._authenticated_client({
-        "access_id": "p-xxx",
-        "access_key": "secret==",
-    })
-    assert token == "resolved-token"
-    fake_client.auth.assert_called_once()
+# Auth-helper tests previously lived here (one per lookup test file).
+# After the @akeyless_lookup decorator landed and `_authenticated_client`
+# was consolidated into plugins/module_utils/akeyless_lookup_auth.py,
+# they now live in tests/unit/plugins/module_utils/test_lookup_auth.py
+# (single source, no per-lookup duplication).
 
 
 def test_run_reorders_results_to_match_input_terms(lookup):

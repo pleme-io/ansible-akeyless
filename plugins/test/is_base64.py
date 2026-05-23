@@ -41,15 +41,17 @@ _value:
 import base64
 from typing import Any, Dict
 
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    akeyless_test,
+)
 
-def is_base64(value: Any) -> bool:
-    if not isinstance(value, str):
-        return False
-    try:
-        base64.b64decode(value, validate=True)
-        return True
-    except (ValueError, base64.binascii.Error):
-        return False
+
+@akeyless_test
+def is_base64(value: str) -> bool:
+    # @akeyless_test traps any exception and returns False; b64decode's
+    # ValueError / binascii.Error are caught for free.
+    base64.b64decode(value, validate=True)
+    return True
 
 
 class TestModule:

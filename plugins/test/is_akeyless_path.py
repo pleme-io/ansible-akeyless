@@ -44,12 +44,17 @@ _value:
 import re
 from typing import Any, Dict
 
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    akeyless_test,
+)
+
 _PATH_RE = re.compile(r"^/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*$")
 
 
-def is_akeyless_path(value: Any) -> bool:
-    if not isinstance(value, str):
-        return False
+@akeyless_test
+def is_akeyless_path(value: str) -> bool:
+    # @akeyless_test handles the non-string -> False guard + the
+    # "any exception => False" safety net.
     if value != value.strip() or value.endswith("/"):
         return False
     if not _PATH_RE.match(value):

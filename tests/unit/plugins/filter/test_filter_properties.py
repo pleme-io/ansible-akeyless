@@ -44,9 +44,31 @@ def _install_ansible_errors_stub():
         errors_mod.AnsibleFilterError = _StubFilterError
 
 
+def _install_plugin_helpers_stub():
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        sys.modules.setdefault(name, types.ModuleType(name))
+    full = (
+        "ansible_collections.drzln0.akeyless.plugins.module_utils"
+        ".akeyless_plugin_helpers"
+    )
+    sys.modules.pop(full, None)
+    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_plugin_helpers.py"
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
+
+
 @pytest.fixture(scope="module")
 def filters():
     _install_ansible_errors_stub()
+    _install_plugin_helpers_stub()
     spec = importlib.util.spec_from_file_location(
         "akeyless_filters_property_under_test", FILTER_PATH
     )
