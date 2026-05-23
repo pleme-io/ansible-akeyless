@@ -98,6 +98,19 @@
           touch $out
         '';
 
+        # Sanity tests -- collection-level metadata invariants (galaxy.yml,
+        # meta/runtime.yml, doc_fragments/auth.py) + the smoke test wrapped
+        # as pytest. Cheap (<1s) but catches release-blocking misedits to
+        # the manifest before substrate-bump fires.
+        sanityCheck = pkgs.runCommand "sanity-tests" {
+          nativeBuildInputs = [ pythonEnv ];
+          src = self;
+        } ''
+          cp -r $src ./work && cd work && chmod -R +w .
+          python3 -m pytest tests/sanity/ -q --ignore=tests/sanity/smoke.py
+          touch $out
+        '';
+
         openapiCheck = pkgs.runCommand "openapi-coverage" {
           nativeBuildInputs = [ pythonEnv ];
           src = self;
@@ -115,6 +128,7 @@
             smoke = smokeCheck;
             unit = unitCheck;
             mock = mockCheck;
+            sanity = sanityCheck;
             openapi = openapiCheck;
           };
 
