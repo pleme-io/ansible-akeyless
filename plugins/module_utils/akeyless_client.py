@@ -378,3 +378,33 @@ def run_standard_crud(
     body = build_body(update_model, dict(module.params, token=token))
     result = call_api(module, client, update_method, body)
     module.exit_json(changed=True, result=result, diff=diff)
+
+
+def run_action_module(argument_spec, sdk_call, supports_check_mode=False):
+    """Drive a one-shot non-CRUD module. Replaces the run_action +
+    main() boilerplate that the ~26 action modules (uid_generate_token,
+    sign_pkcs1, encrypt, decrypt, generate_ca, …) carried.
+
+      argument_spec        AnsibleModule argument spec.
+      sdk_call             Tuple ("ModelClassName", "snake_method_name").
+      supports_check_mode  Whether AnsibleModule should advertise it.
+                           Defaults to False because action modules
+                           are imperative one-shots -- check_mode has
+                           no meaningful "would-do" semantics for
+                           "sign this message" or "rotate this token".
+
+    Behavior: build_body → call_api → exit_json(changed=True,
+    result=<sdk response dict>). The action label is whatever Ansible
+    Galaxy displays via the module name; no extra labelling needed.
+    """
+    from ansible.module_utils.basic import AnsibleModule
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=supports_check_mode,
+    )
+    client, token = get_client(module)
+    sdk_model, sdk_method = sdk_call
+    body = build_body(sdk_model, dict(module.params, token=token))
+    result = call_api(module, client, sdk_method, body)
+    module.exit_json(changed=True, result=result)

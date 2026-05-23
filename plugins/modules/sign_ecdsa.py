@@ -57,45 +57,30 @@ result:
   returned: success
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body,
+    run_action_module,
 )
 
-
-def run_action(module, client, token):
-    """Invoke the action and return the SDK response."""
-    # argspec field is `payload` (avoid Ansible-reserved `message`);
-    # remap to the SDK model\'s `message` field name.
-    _p = dict(module.params, token=token)
-    _p["message"] = _p.pop("payload", None)
-    body = build_body("SignEcDsa", _p)
-    return call_api(module, client, "sign_ec_dsa", body)
+argument_spec = {
+    'accessibility': {'type': 'str'},
+    'display_id': {'type': 'str'},
+    'item_id': {'type': 'int'},
+    'key_name': {'type': 'str', 'required': True},
+    'payload': {'type': 'str', 'required': True},
+    'prehashed': {'type': 'bool'},
+    'version': {'type': 'int'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'accessibility': {'type': 'str'},
-        'display_id': {'type': 'str'},
-        'item_id': {'type': 'int'},
-        'key_name': {'type': 'str', 'required': True},
-        'payload': {'type': 'str', 'required': True},
-        'prehashed': {'type': 'bool'},
-        'version': {'type': 'int'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
-
-    client, token = get_client(module)
-    result = run_action(module, client, token)
-    # Mask sensitive response fields before echoing back to the user.
-    _sensitive = {'result'}
-    masked = { k: ('***' if k in _sensitive else v) for k, v in (result or {}).items() }
-    module.exit_json(changed=True, result=masked)
+    run_action_module(
+        argument_spec=argument_spec,
+        sdk_call=('SignEcDsa', 'sign_ec_dsa'),
+    )
 
 
 if __name__ == '__main__':

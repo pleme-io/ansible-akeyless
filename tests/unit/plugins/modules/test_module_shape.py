@@ -26,10 +26,12 @@ HELPER_IMPORT = (
 )
 HELPER_NAMES = {
     "get_client", "call_api", "build_body",
-    # Standard-CRUD modules now collapse to `run_standard_crud`, which
-    # itself uses the three lower-level primitives internally. Either
-    # form is valid for "the module is wired to the helper".
+    # Standard-CRUD modules now collapse to `run_standard_crud`; action
+    # modules collapse to `run_action_module`. Both wrap the lower-level
+    # primitives, so any of these symbols satisfies "the module is wired
+    # to the helper".
     "run_standard_crud",
+    "run_action_module",
 }
 AUTH_KEYS = {"gateway_url", "access_id", "access_key", "access_type"}
 
