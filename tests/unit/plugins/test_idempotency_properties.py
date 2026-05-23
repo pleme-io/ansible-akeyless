@@ -232,3 +232,88 @@ class TestDriftToDiffProperties:
             assert diff["after"][key] == after
         assert len(diff["before"]) == len(drift)
         assert len(diff["after"]) == len(drift)
+
+
+# ---------------------------------------------------------------------- build_body
+
+
+class TestBuildBodyProperties:
+    """build_body is the SDK-input filtering primitive that every helper
+    routes through. It must NEVER raise on legitimate-shape inputs (it
+    raises only for unknown model names, which is a generator bug, not
+    a runtime concern). The filtered output must always be a subset of
+    the input (no key invention).
+    """
+
+    @given(
+        params=st.dictionaries(field_name, scalar_value, max_size=15),
+    )
+    @settings(max_examples=200, deadline=None)
+    def test_filters_are_subset_of_input(self, helper, params):
+        """The returned object's kwargs are a subset of the input keys.
+        build_body should never *introduce* fields that the caller
+        didn't pass -- only filter/drop based on the SDK model's
+        accepted parameters.
+        """
+        akeyless_mod = sys.modules["akeyless"]
+
+        class _StubModel:
+            attribute_map = {k: k for k in params}
+
+            def __init__(self, **kw):
+                self._filtered = kw
+
+        akeyless_mod.PropTestModel = _StubModel
+
+        body = helper.build_body("PropTestModel", params)
+        filtered_keys = set(body._filtered.keys())
+        # 1. Every key in the output must have been in the input.
+        assert filtered_keys.issubset(params.keys())
+        # 2. Every key in the output must have a non-None value.
+        assert all(body._filtered[k] is not None for k in filtered_keys)
+        # 3. No None-valued key from the input survives.
+        none_input_keys = {k for k, v in params.items() if v is None}
+        assert filtered_keys.isdisjoint(none_input_keys)
+
+    @given(
+        # Pick a name that we haven't installed on the fake akeyless.
+        model=st.text(
+            alphabet=st.characters(whitelist_categories=("Lu",)), min_size=3, max_size=20),
+    )
+    @settings(max_examples=50, deadline=None)
+    def test_unknown_model_raises_value_error(self, helper, model):
+        """Unknown model names are a generator-side bug (the spec evolved
+        without a regen); the helper must surface them loudly via
+        ValueError so the failure can be traced back to the codegen,
+        not buried as a runtime AttributeError mid-stack."""
+        akeyless_mod = sys.modules["akeyless"]
+        # Reset any prior installed model attrs to ensure the random
+        # name truly isn't present.
+        if hasattr(akeyless_mod, model):
+            delattr(akeyless_mod, model)
+        # Verbatim __getattr__ on MagicMock returns a MagicMock, so we
+        # need the akeyless stub to actually NOT have the attribute.
+        # The fixture installs a real ModuleType which doesn't define
+        # __getattr__; getattr() will fall through to AttributeError.
+        with pytest.raises(ValueError, match="Unknown Akeyless model"):
+            helper.build_body(model, {"x": 1})
+
+    @given(
+        params=st.dictionaries(field_name, st.none(), max_size=5),
+    )
+    @settings(max_examples=20, deadline=None)
+    def test_all_none_input_filters_to_empty(self, helper, params):
+        """When every parameter is None, the filtered body has nothing
+        but the model identity -- never any None-valued kwargs leaking
+        into the SDK call."""
+        akeyless_mod = sys.modules["akeyless"]
+
+        class _StubModel:
+            attribute_map = {k: k for k in params}
+
+            def __init__(self, **kw):
+                self._filtered = kw
+
+        akeyless_mod.AllNoneModel = _StubModel
+        body = helper.build_body("AllNoneModel", params)
+        assert body._filtered == {}
