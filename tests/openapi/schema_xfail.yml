@@ -45,3 +45,23 @@ xfail:
       - password
       - username
     reason: "Windows target credentials required upstream; generator emits both as optional. Track upstream in ansible-forge."
+
+  sign_pkcs1:
+    missing_required:
+      - message
+    reason: "Argspec renamed `message` → `payload` because Ansible Core reserves `message` for built-in argument names (validate-modules: invalid-argument-name). SDK body still uses `message`; create_resource maps `payload` → `message` at body-build time. Track upstream in ansible-forge."
+
+  verify_pkcs1:
+    missing_required:
+      - message
+    reason: "Argspec renamed `message` → `payload` (Ansible-reserved). See sign_pkcs1. Track upstream in ansible-forge."
+
+  sign_ecdsa:
+    missing_required:
+      - message
+    reason: "Argspec renamed `message` → `payload` (Ansible-reserved). See sign_pkcs1. Track upstream in ansible-forge."
+
+  verify_ecdsa:
+    missing_required:
+      - message
+    reason: "Argspec renamed `message` → `payload` (Ansible-reserved). See sign_pkcs1. Track upstream in ansible-forge."
