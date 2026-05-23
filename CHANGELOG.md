@@ -27,6 +27,69 @@ Substantial expansion of the non-module Ansible Galaxy surface and
 generator-side hardening. Galaxy publishes catching up across tags
 v0.2.6+ as CI blockers clear.
 
+### Added — plugin decorator suite (v0.2.14+)
+
+- **`plugins/module_utils/akeyless_plugin_helpers.py`** — three new
+  decorators that DRY up the patterns shared across non-module plugins:
+  - `@akeyless_lookup(extra_opts=..., per_term=True)` — class decorator
+    for `LookupBase` subclasses. Injects a `run()` that handles
+    `set_options` + auth + per-term loop + `ApiException` translation +
+    SDK-model `.to_dict()` normalisation. The decorated class only
+    defines `fetch(self, client, token, opts, term)`.
+  - `@akeyless_filter(expects=str)` — function decorator for Jinja2
+    filters. Strict type-check on the first argument + uniform
+    `AnsibleFilterError` translation. Friendlier display names
+    (string/dict/integer/...) on type-mismatch errors.
+  - `@akeyless_test` — function decorator for Jinja2 tests.
+    Non-string input returns False (no boilerplate guard per test) and
+    any unexpected exception in the predicate coerces to False (tests
+    must not raise during template render).
+  - Utility helpers: `AUTH_OPT_KEYS`, `normalize_sdk_result(x)`,
+    `compact_kwargs(opts, keys)` (drops None/empty, keeps 0/False).
+- **Refactored 8 plugin files** to use the decorators:
+  - 3 lookups (secret, dynamic_secret, pki_certificate)
+  - 7 filters (now also split into per-file modules)
+  - 4 test plugins
+  - inventory plugin (uses AUTH_OPT_KEYS + normalize_sdk_result)
+  - action plugin secret_to_file (uses AUTH_OPT_KEYS)
+  Net: ~80 LOC removed from plugin bodies; same behaviour, expressed
+  declaratively.
+
+### Added — per-filter file structure (v0.2.18+)
+
+- **7 per-filter modules** in `plugins/filter/` (b64decode_secret,
+  parse_dotenv_secret, secret_to_json, split_pem_bundle,
+  secret_keys_to_env, mask_secret, secret_strength). Each carries its
+  own `DOCUMENTATION` block + a `FilterModule` that re-exports from
+  the shared `plugins/filter/akeyless.py` implementation. Required by
+  antsibull-docs's collection-docs format, which expects per-file
+  filter modules for documentation rendering.
+
+### Fixed — docs-lint chain (v0.2.15+)
+
+- **`no_log: true` stripped from DOCUMENTATION YAML** (66 modules,
+  98 occurrences). antsibull-docs's strict `ModuleDocSchema` rejected
+  the key as `extra_forbidden`. Runtime masking unchanged -- the
+  `'no_log': True` argspec entries that actually do the work are
+  preserved.
+- **`options: {}` for info modules** (17 _info modules). Empty
+  `options:` parsed as `None`, crashing antsibull-docs with
+  `argument of type 'NoneType' is not iterable`. Explicit empty dict
+  fixes the YAML shape.
+- **YAML colon escapes** in lookup RETURN + per-filter DOCUMENTATION
+  blocks where embedded `"response:"` / `"by cutoff:"` text was being
+  parsed as a mapping value.
+- **Markdown-style link** replaced with plain text in
+  `gateway_migration.py` (rstcheck warning).
+
+### Added — generator-side fixes (ansible-forge)
+
+- `build_options_yaml` no longer emits `no_log: true` (docs schema
+  rejection).
+- `ModuleFragments::from_attributes` substitutes `    {}` when
+  `build_options_yaml` returns empty (prevents `options: null`).
+- Regression tests pin both behaviours.
+
 ### Added — non-module Galaxy plugin types
 
 - **Inventory plugin** `drzln0.akeyless.akeyless` — loads hosts from
