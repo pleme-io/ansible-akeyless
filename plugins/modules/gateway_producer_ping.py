@@ -56,7 +56,7 @@ options:
       type: list
       elements: str
     ping_issuer_dn:
-      description: "Issuer DN of trusted CA certificate that imported into Ping Federate server. You may select \'Trust Any\' to trust all the existing issuers in Ping Federate server. Used in conjunction with ping-cert-subject-dn (relevant for CLIENT_TLS_CERTIFICATE authentication method)"
+      description: "Issuer DN of trusted CA certificate that imported into Ping Federate server. You may select Trust Any to trust all the existing issuers in Ping Federate server. Used in conjunction with ping-cert-subject-dn (relevant for CLIENT_TLS_CERTIFICATE authentication method)"
       type: str
     ping_jwks:
       description: "Base64-encoded JSON Web Key Set (JWKS). If no explicit value is given, the producer will create JWKs and matched signed JWT (Sign Algo: RS256) and return it as value (relevant for PRIVATE_KEY_JWT authentication method)"
