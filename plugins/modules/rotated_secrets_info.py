@@ -17,8 +17,7 @@ extends_documentation_fragment:
   - drzln0.akeyless.auth
 description:
   - Retrieve information about rotated_secrets_info.
-options:
-
+options: {}
 '''
 
 EXAMPLES = r'''

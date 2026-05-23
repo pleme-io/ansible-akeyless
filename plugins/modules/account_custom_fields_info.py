@@ -17,8 +17,7 @@ extends_documentation_fragment:
   - drzln0.akeyless.auth
 description:
   - Retrieve information about account_custom_fields_info.
-options:
-
+options: {}
 '''
 
 EXAMPLES = r'''
