@@ -36,10 +36,20 @@ def test_create_when_absent(mock_server):
     assert methods == ["get_role", "create_role"], methods
 
 
-def test_update_when_present(mock_server):
-    """GET 200 -> update_role is called once -> changed=True."""
-    mock_server.on("get_role", response={"role_name": "demo"})
-    mock_server.on("update_role", response={"role_name": "demo", "updated": True})
+def test_update_when_present_and_drift(mock_server):
+    """GET returns a current state whose `description` differs from
+    the desired param -> compute_diff sees drift -> update_role is
+    called once -> changed=True with diff metadata.
+
+    Post-idempotency contract; pre-idempotency the test just checked
+    that update fires whenever the resource exists, regardless of
+    whether anything actually differed."""
+    mock_server.on(
+        "get_role",
+        response={"role_name": "demo", "description": "old"})
+    mock_server.on(
+        "update_role",
+        response={"role_name": "demo", "updated": True})
 
     payload, code = mock_server.run_module(
         "role.py",
@@ -48,7 +58,7 @@ def test_update_when_present(mock_server):
             "access_id": "p-test",
             "access_key": "k-test",
             "state": "present",
-            "description": "updated",
+            "description": "new",
         },
     )
 
@@ -56,6 +66,38 @@ def test_update_when_present(mock_server):
     assert payload.get("changed") is True
     methods = [name for name, _body in mock_server.calls]
     assert "update_role" in methods
+    assert "create_role" not in methods
+    diff = payload.get("diff") or {}
+    assert diff.get("before", {}).get("description") == "old"
+    assert diff.get("after", {}).get("description") == "new"
+
+
+def test_no_update_when_in_desired_state(mock_server):
+    """When GET returns state matching desired params, the module
+    skips update entirely and returns changed=False with the
+    'already in desired state' msg. This is the whole point of the
+    compute_diff layer -- honest convergence vs always-changed."""
+    mock_server.on(
+        "get_role",
+        response={"role_name": "demo", "description": "stable"})
+    mock_server.on("update_role", response={"updated": True})
+
+    payload, code = mock_server.run_module(
+        "role.py",
+        params={
+            "name": "demo",
+            "access_id": "p-test",
+            "access_key": "k-test",
+            "state": "present",
+            "description": "stable",
+        },
+    )
+
+    assert code == 0, payload
+    assert payload.get("changed") is False
+    assert "already in desired state" in (payload.get("msg") or "")
+    methods = [name for name, _body in mock_server.calls]
+    assert "update_role" not in methods
     assert "create_role" not in methods
 
 
