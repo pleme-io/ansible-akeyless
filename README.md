@@ -239,7 +239,7 @@ as the upstream OpenAPI spec evolves. Pin in `requirements.yml`:
 ```yaml
 collections:
   - name: drzln0.akeyless
-    version: '==0.2.13'
+    version: '>=0.2,<0.3'
 ```
 
 After `v1.0`, breaking changes only in major bumps.

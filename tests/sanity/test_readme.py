@@ -126,20 +126,55 @@ def test_readme_test_plugin_count_matches_reality(readme_text):
     )
 
 
-def test_readme_pin_version_matches_galaxy(readme_text, galaxy_version):
-    """The `version: '==X.Y.Z'` example in the README must equal the
-    current galaxy.yml version. A stale pin tells new users to install
-    a version that may have publish issues."""
-    match = re.search(
-        r"version:\s*['\"]==(\d+\.\d+\.\d+)['\"]",
+def test_readme_pin_example_is_present_and_well_formed(readme_text, galaxy_version):
+    """The README must show a version-pin example so new users know
+    how to pin in requirements.yml. We accept either:
+
+      - a major.minor range (`>=0.2,<0.3`) -- preferred because patches
+        get auto-published every few hours via the auto-bump pipeline
+        and a `==0.2.X` pin goes stale on every release; OR
+      - a strict `==X.Y.Z` pin whose major.minor matches galaxy.yml's
+        major.minor (patch-level drift allowed, since users
+        intentionally pinning to a specific patch can lag).
+
+    A nailed-to-exact-galaxy `==X.Y.Z` pin was tried first; it broke
+    the sanity check on every auto-bump because the README wasn't
+    edited in lockstep. Major.minor matching is the right contract.
+    """
+    range_match = re.search(
+        r"version:\s*['\"]>=\s*(\d+\.\d+)\s*,\s*<\s*(\d+\.\d+)['\"]",
         readme_text,
     )
-    assert match, "README missing the `version: '==X.Y.Z'` pin example"
-    pinned = match.group(1)
-    assert pinned == galaxy_version, (
-        f"README pins v{pinned}; galaxy.yml is at v{galaxy_version}. "
-        f"Bump the README pin example to match."
+    strict_match = re.search(
+        r"version:\s*['\"]==(\d+\.\d+)\.(\d+)['\"]",
+        readme_text,
     )
+    assert range_match or strict_match, (
+        "README missing a `version: '...'` pin example; users need an "
+        "example to copy into requirements.yml"
+    )
+
+    galaxy_major_minor = ".".join(galaxy_version.split(".")[:2])
+    if range_match:
+        # Must include galaxy's current major.minor.
+        lower = range_match.group(1)
+        upper = range_match.group(2)
+        # Naive: lower <= galaxy_major_minor < upper, lexicographic ok for X.Y
+        assert (
+            tuple(int(p) for p in lower.split("."))
+            <= tuple(int(p) for p in galaxy_major_minor.split("."))
+            < tuple(int(p) for p in upper.split("."))
+        ), (
+            f"README range pin '>= {lower}, < {upper}' does not cover "
+            f"galaxy.yml's current {galaxy_major_minor}.x line"
+        )
+    else:
+        pinned_major_minor = strict_match.group(1)
+        assert pinned_major_minor == galaxy_major_minor, (
+            f"README strict pin is v{pinned_major_minor}.X but galaxy.yml is "
+            f"on v{galaxy_major_minor}.X. Update the README example (or "
+            f"switch to a range pin like '>=0.2,<0.3' that absorbs auto-bumps)"
+        )
 
 
 def test_readme_mentions_each_plugin_type(readme_text):
