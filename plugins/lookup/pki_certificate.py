@@ -90,10 +90,10 @@ EXAMPLES = """
 
 RETURN = """
 _raw:
-  description: One dict per term (in order); shape mirrors Akeyless's
-               get-pki-certificate response: cert (PEM), private_key
-               (PEM, when issuer-side-generated), ca_chain (list of
-               PEM), parent_cert (PEM), etc.
+  description: "One dict per term (in order); shape mirrors Akeyless's
+                get-pki-certificate response: cert (PEM), private_key
+                (PEM, when issuer-side-generated), ca_chain (list of
+                PEM), parent_cert (PEM), etc."
   type: list
   elements: dict
 """

@@ -38,23 +38,34 @@ TYPE_REQUIRED: dict = {
     "callback": frozenset({"name", "short_description", "author"}),
     "test": frozenset({"name", "short_description", "author"}),
     "cache": frozenset({"name", "short_description", "author"}),
+    "filter": frozenset({"name", "short_description", "author"}),
 }
 
 
 def _plugin_files():
     """Yield (plugin_type, path) for every plugin file with a
-    DOCUMENTATION block, skipping action / module shadows."""
+    DOCUMENTATION block, skipping:
+    - __init__.py (no plugin code)
+    - plugins/filter/akeyless.py (impl-only shared module; the 7 per-
+      filter files each carry their own DOCUMENTATION + FilterModule)
+    """
     for plugin_type, type_dir in [
         ("lookup", PLUGINS_DIR / "lookup"),
         ("inventory", PLUGINS_DIR / "inventory"),
         ("callback", PLUGINS_DIR / "callback"),
         ("test", PLUGINS_DIR / "test"),
         ("cache", PLUGINS_DIR / "cache"),
+        ("filter", PLUGINS_DIR / "filter"),
     ]:
         if not type_dir.exists():
             continue
         for path in sorted(type_dir.glob("*.py")):
             if path.name == "__init__.py":
+                continue
+            # akeyless.py is the impl-only shared module for the
+            # filter type -- per-filter files import from it and
+            # carry the actual DOCUMENTATION blocks.
+            if plugin_type == "filter" and path.name == "akeyless.py":
                 continue
             yield plugin_type, path
 
