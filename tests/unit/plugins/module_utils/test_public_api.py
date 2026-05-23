@@ -112,3 +112,48 @@ def test_idempotency_ignore_keys_includes_auth_and_state(helper):
     assert not missing, (
         f"IDEMPOTENCY_IGNORE_KEYS missing required entries: {missing}"
     )
+
+
+def test_dunder_all_matches_pinned_surface(helper):
+    """__all__ is the module's declared public-export list. Adding/
+    removing a name here is a deliberate API change; pin it so the
+    diff surfaces in code review."""
+    expected_all = {
+        # Lifecycle helpers
+        "run_standard_crud", "run_action_module", "run_info_module",
+        # Primitives
+        "get_client", "call_api", "build_body",
+        # Idempotency helpers
+        "compute_diff", "drift_to_diff", "IDEMPOTENCY_IGNORE_KEYS",
+        # Typed value objects
+        "SdkCall",
+        # Decorator + registry sets
+        "lifecycle_helper", "LIFECYCLE_HELPERS", "PRIMITIVES",
+        # Constants
+        "DEFAULT_GATEWAY_URL", "DEFAULT_ACCESS_TYPE",
+        "HAS_AKEYLESS", "AKEYLESS_IMPORT_ERROR",
+    }
+    actual = set(getattr(helper, "__all__", []))
+    assert actual == expected_all, (
+        f"__all__ drifted: "
+        f"removed={expected_all - actual}, added={actual - expected_all}"
+    )
+
+
+@pytest.mark.parametrize(
+    "name", sorted({
+        "run_standard_crud", "run_action_module", "run_info_module",
+        "get_client", "call_api", "build_body",
+        "compute_diff", "drift_to_diff", "IDEMPOTENCY_IGNORE_KEYS",
+        "SdkCall",
+        "lifecycle_helper", "LIFECYCLE_HELPERS", "PRIMITIVES",
+        "DEFAULT_GATEWAY_URL", "DEFAULT_ACCESS_TYPE",
+        "HAS_AKEYLESS", "AKEYLESS_IMPORT_ERROR",
+    })
+)
+def test_every_dunder_all_symbol_resolves(helper, name):
+    """Every name in __all__ must be defined at module scope. Catches
+    drift where __all__ lists a symbol that was renamed/removed."""
+    assert hasattr(helper, name), (
+        f"__all__ lists {name!r} but it isn't defined on the module"
+    )
