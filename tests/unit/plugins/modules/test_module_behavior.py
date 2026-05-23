@@ -17,7 +17,9 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+import functools
 import importlib.util
+import inspect
 import sys
 import types
 from pathlib import Path
@@ -113,17 +115,60 @@ def _result_mock(d):
     return m
 
 
+def module_test(name, params=None, check_mode=False):
+    """Decorator: drop the 3-line harness boilerplate from every test.
+
+    Usage:
+        @module_test("role.py", params={"name": "r1", "access_id": "p", ...})
+        def test_role_create_calls_sdk(target, client):
+            client.get_role.side_effect = ApiException(status=404, body="missing")
+            ...
+
+    Pytest-friendly: the decorator rewrites the wrapped function's
+    signature so pytest's fixture discovery still sees `harness` (and
+    any other fixtures the inner function asked for, like `monkeypatch`).
+    The inner function only declares `target, client, *other_fixtures`;
+    the harness call + factory unpacking happens once, in the wrapper.
+    """
+    bind_params = params or {}
+
+    def decorator(fn):
+        sig = inspect.signature(fn)
+        # Strip target/client from the visible signature (the wrapper
+        # injects them); keep every other fixture parameter so pytest
+        # can still inject e.g. monkeypatch, tmp_path, etc.
+        passthrough = [
+            p for n, p in sig.parameters.items()
+            if n not in ("target", "client")
+        ]
+
+        @functools.wraps(fn)
+        def wrapper(harness, **kwargs):
+            target, _factory, client = harness(
+                name, params=bind_params, check_mode=check_mode,
+            )
+            return fn(target=target, client=client, **kwargs)
+
+        new_sig_params = [
+            inspect.Parameter("harness", inspect.Parameter.POSITIONAL_OR_KEYWORD)
+        ] + passthrough
+        wrapper.__signature__ = inspect.Signature(new_sig_params)
+        return wrapper
+
+    return decorator
+
+
 # ---------------------------------------------------------------------------
 # CRUD: role.py
 # ---------------------------------------------------------------------------
 
 
-def test_role_create_calls_sdk(harness, monkeypatch):
+@module_test(
+    "role.py",
+    params={"name": "r1", "access_id": "p", "access_key": "k", "state": "present"},
+)
+def test_role_create_calls_sdk(target, client, monkeypatch):
     monkeypatch.setenv("AKEYLESS_TOKEN", "")  # ensure auth path runs
-    target, _factory, client = harness(
-        "role.py",
-        params={"name": "r1", "access_id": "p", "access_key": "k", "state": "present"},
-    )
 
     # read returns None -> create branch
     from akeyless.exceptions import ApiException
@@ -134,29 +179,23 @@ def test_role_create_calls_sdk(harness, monkeypatch):
     with pytest.raises(SystemExit):
         target.main()
     client.create_role.assert_called_once()
-    # The first positional arg to create_role is the SDK model body.
-    # build_body("CreateRole", ...) -> akeyless.CreateRole(**filtered).
-    body = client.create_role.call_args.args[0]
-    # body is whatever akeyless.CreateRole(...) returned; in our fake it's
-    # a MagicMock with the kwargs recorded on .call_args.
-    assert client.create_role.called
 
 
-def test_role_update_when_exists_and_drift(harness):
+@module_test(
+    "role.py",
+    params={
+        "name": "r1",
+        "access_id": "p",
+        "access_key": "k",
+        "state": "present",
+        "description": "new-description",
+    },
+)
+def test_role_update_when_exists_and_drift(target, client):
     """When the resource exists AND a desired param differs from
     current state, the module calls update_resource and reports
     changed=True with diff metadata. This is the post-idempotency
     contract -- pre-idempotency, update was unconditional."""
-    target, _factory, client = harness(
-        "role.py",
-        params={
-            "name": "r1",
-            "access_id": "p",
-            "access_key": "k",
-            "state": "present",
-            "description": "new-description",
-        },
-    )
     # current has different description -> drift -> update called
     client.get_role.return_value = _result_mock(
         {"name": "r1", "description": "old-description"})
@@ -173,20 +212,20 @@ def test_role_update_when_exists_and_drift(harness):
     assert diff["after"]["description"] == "new-description"
 
 
-def test_role_no_update_when_in_desired_state(harness):
+@module_test(
+    "role.py",
+    params={
+        "name": "r1",
+        "access_id": "p",
+        "access_key": "k",
+        "state": "present",
+        "description": "matching-description",
+    },
+)
+def test_role_no_update_when_in_desired_state(target, client):
     """Honest idempotency: when current state matches the desired
     params, the module skips the API write entirely and returns
     changed=False. The whole point of the compute_diff layer."""
-    target, _factory, client = harness(
-        "role.py",
-        params={
-            "name": "r1",
-            "access_id": "p",
-            "access_key": "k",
-            "state": "present",
-            "description": "matching-description",
-        },
-    )
     client.get_role.return_value = _result_mock(
         {"name": "r1", "description": "matching-description"})
 
@@ -198,11 +237,11 @@ def test_role_no_update_when_in_desired_state(harness):
     assert "already in desired state" in (ei.value.kwargs.get("msg") or "")
 
 
-def test_role_delete_when_exists(harness):
-    target, _factory, client = harness(
-        "role.py",
-        params={"name": "r1", "access_id": "p", "access_key": "k", "state": "absent"},
-    )
+@module_test(
+    "role.py",
+    params={"name": "r1", "access_id": "p", "access_key": "k", "state": "absent"},
+)
+def test_role_delete_when_exists(target, client):
     client.get_role.return_value = _result_mock({"name": "r1"})
     client.delete_role.return_value = _result_mock({"deleted": True})
 
@@ -212,13 +251,13 @@ def test_role_delete_when_exists(harness):
     assert ei.value.kwargs.get("changed") is True
 
 
-def test_role_delete_no_op_when_absent(harness):
+@module_test(
+    "role.py",
+    params={"name": "r1", "access_id": "p", "access_key": "k", "state": "absent"},
+)
+def test_role_delete_no_op_when_absent(target, client):
     from akeyless.exceptions import ApiException
 
-    target, _factory, client = harness(
-        "role.py",
-        params={"name": "r1", "access_id": "p", "access_key": "k", "state": "absent"},
-    )
     client.get_role.side_effect = ApiException(status=404, body="missing")
 
     with pytest.raises(SystemExit) as ei:
@@ -227,12 +266,12 @@ def test_role_delete_no_op_when_absent(harness):
     assert ei.value.kwargs.get("changed") is False
 
 
-def test_role_check_mode_short_circuits(harness):
-    target, _factory, client = harness(
-        "role.py",
-        params={"name": "r1", "access_id": "p", "access_key": "k", "state": "present"},
-        check_mode=True,
-    )
+@module_test(
+    "role.py",
+    params={"name": "r1", "access_id": "p", "access_key": "k", "state": "present"},
+    check_mode=True,
+)
+def test_role_check_mode_short_circuits(target, client):
     # read returns a value (resource exists)
     client.get_role.return_value = _result_mock({"name": "r1"})
 
@@ -250,19 +289,19 @@ def test_role_check_mode_short_circuits(harness):
 # ---------------------------------------------------------------------------
 
 
-def test_uid_generate_token_returns_token_verbatim(harness):
+@module_test(
+    "uid_generate_token.py",
+    params={
+        "auth_method_name": "uid1",
+        "access_id": "p",
+        "access_key": "k",
+    },
+)
+def test_uid_generate_token_returns_token_verbatim(target, client):
     """An earlier draft masked the token server-side, but chained tasks
     (uid_rotate_token / uid_create_child_token / uid_list_children) all
     need the cleartext value. Redaction has to live at the playbook
     layer via `no_log: true`, not in the module."""
-    target, _factory, client = harness(
-        "uid_generate_token.py",
-        params={
-            "auth_method_name": "uid1",
-            "access_id": "p",
-            "access_key": "k",
-        },
-    )
     client.uid_generate_token.return_value = _result_mock(
         {"token": "real-secret", "uid_token": "uid-secret", "ttl": 60}
     )
@@ -281,11 +320,11 @@ def test_uid_generate_token_returns_token_verbatim(harness):
 # ---------------------------------------------------------------------------
 
 
-def test_role_info_returns_data_dict(harness):
-    target, _factory, client = harness(
-        "role_info.py",
-        params={"name": "r1", "access_id": "p", "access_key": "k"},
-    )
+@module_test(
+    "role_info.py",
+    params={"name": "r1", "access_id": "p", "access_key": "k"},
+)
+def test_role_info_returns_data_dict(target, client):
     client.get_role.return_value = _result_mock({"name": "r1", "rules": []})
 
     with pytest.raises(SystemExit) as ei:
@@ -299,13 +338,13 @@ def test_role_info_returns_data_dict(harness):
 # ---------------------------------------------------------------------------
 
 
-def test_call_api_failure_calls_fail_json(harness):
+@module_test(
+    "role.py",
+    params={"name": "r1", "access_id": "p", "access_key": "k", "state": "present"},
+)
+def test_call_api_failure_calls_fail_json(target, client):
     from akeyless.exceptions import ApiException
 
-    target, _factory, client = harness(
-        "role.py",
-        params={"name": "r1", "access_id": "p", "access_key": "k", "state": "present"},
-    )
     # get_role raises a non-404 ApiException -> fail_json (status 500).
     client.get_role.side_effect = ApiException(status=500, body="boom")
 

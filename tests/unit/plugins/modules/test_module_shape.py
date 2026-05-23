@@ -24,16 +24,29 @@ MODULES_DIR = REPO_ROOT / "plugins" / "modules"
 HELPER_IMPORT = (
     "from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client"
 )
-HELPER_NAMES = {
-    "get_client", "call_api", "build_body",
-    # Collapsed-shape helpers: CRUD modules use `run_standard_crud`,
-    # one-shot actions use `run_action_module`, info data-sources use
-    # `run_info_module`. Each wraps the lower-level primitives, so any
-    # of these symbols satisfies "module is wired to the helper".
-    "run_standard_crud",
-    "run_action_module",
-    "run_info_module",
-}
+
+
+def _load_helper_names():
+    """Single source of truth for which symbols a module may import
+    from akeyless_client: derived from the helper module's
+    `@lifecycle_helper` registry + the `PRIMITIVES` set. Adding a new
+    helper just means decorating it in akeyless_client.py -- this test
+    file picks it up automatically, no edit needed.
+    """
+    import importlib.util
+    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_client.py"
+    spec = importlib.util.spec_from_file_location("_helper_introspection", helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    # The helper module imports `akeyless` at top-level (in a try/except);
+    # to load it for pure introspection we need a stub for cases where
+    # akeyless isn't installed in the test environment. The try/except
+    # in akeyless_client.py handles the missing case gracefully, so this
+    # load should succeed regardless.
+    spec.loader.exec_module(mod)
+    return set(mod.LIFECYCLE_HELPERS) | set(mod.PRIMITIVES)
+
+
+HELPER_NAMES = _load_helper_names()
 AUTH_KEYS = {"gateway_url", "access_id", "access_key", "access_type"}
 
 
