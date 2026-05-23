@@ -215,3 +215,55 @@ def test_docs_publish_workflow_has_pages_permission():
         "docs-publish.yml missing top-level `permissions.id-token: write` "
         "(required for actions/deploy-pages@v4)"
     )
+
+
+# ---------------------------------------------------------------------------
+# Mermaid diagram support + presence
+# ---------------------------------------------------------------------------
+
+
+def test_mkdocs_yml_enables_mermaid_custom_fences():
+    """The mermaid diagrams in architecture.md only render when
+    pymdownx.superfences is configured with the mermaid custom_fence.
+    Pin the configuration so a future markdown_extensions edit
+    can't silently break diagram rendering."""
+    text = MKDOCS_YML.read_text()
+    assert "name: mermaid" in text, (
+        "mkdocs.yml missing pymdownx.superfences custom_fence for mermaid"
+    )
+    assert "class: mermaid" in text
+
+
+def test_architecture_page_has_diagrams():
+    """The architecture page is the visual on-ramp for contributors.
+    Pin at least one mermaid diagram so it can't silently regress to
+    text-only ASCII art."""
+    arch = (DOCS_DIR / "reference" / "architecture.md").read_text()
+    assert "```mermaid" in arch, (
+        "docs/reference/architecture.md missing any mermaid diagram"
+    )
+    # Ensure at least two diagrams (prime directive flow + test pyramid).
+    assert arch.count("```mermaid") >= 2, (
+        "architecture page should include both the 3-repo flow + the test pyramid"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Nav completeness (Project section)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("link_substring", [
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "CODE_OF_CONDUCT.md",
+    "CHANGELOG.md",
+])
+def test_project_nav_links_present(link_substring):
+    """The Project section of the nav must surface the standard
+    repo-level docs (CONTRIBUTING / SECURITY / Code of Conduct /
+    CHANGELOG) so visitors don't have to leave the site to find them."""
+    text = MKDOCS_YML.read_text()
+    assert link_substring in text, (
+        f"mkdocs.yml nav missing a link to {link_substring}"
+    )
