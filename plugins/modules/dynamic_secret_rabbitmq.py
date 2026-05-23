@@ -42,42 +42,30 @@ options:
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
-
     rabbitmq_admin_pwd:
       description: "RabbitMQ Admin password"
       type: str
-      required: true
-
     rabbitmq_admin_user:
       description: "RabbitMQ Admin User"
       type: str
-      required: true
-
     rabbitmq_server_uri:
       description: "RabbitMQ management API URI"
       type: str
-      required: true
-
     rabbitmq_user_conf_permission:
       description: "RabbitMQ configure permission for dynamic users"
       type: str
-      required: true
-
     rabbitmq_user_read_permission:
       description: "RabbitMQ read permission for dynamic users"
       type: str
-      required: true
     rabbitmq_user_tags:
       description: "RabbitMQ tags for dynamic users (comma-separated)"
       type: str
     rabbitmq_user_vhost:
       description: "RabbitMQ vhost for dynamic users"
       type: str
-
     rabbitmq_user_write_permission:
       description: "RabbitMQ write permission for dynamic users"
       type: str
-      required: true
     tags:
       description: "Tags for the producer"
       type: list
@@ -114,16 +102,16 @@ argument_spec = {
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
-    'rabbitmq_admin_pwd': {'type': 'str', 'required': True},
-    'rabbitmq_admin_user': {'type': 'str', 'required': True},
-    'rabbitmq_server_uri': {'type': 'str', 'required': True},
-    'rabbitmq_user_conf_permission': {'type': 'str', 'required': True},
-    'rabbitmq_user_read_permission': {'type': 'str', 'required': True},
+    'rabbitmq_admin_pwd': {'type': 'str'},
+    'rabbitmq_admin_user': {'type': 'str'},
+    'rabbitmq_server_uri': {'type': 'str'},
+    'rabbitmq_user_conf_permission': {'type': 'str'},
+    'rabbitmq_user_read_permission': {'type': 'str'},
     'rabbitmq_user_tags': {'type': 'str'},
     'rabbitmq_user_vhost': {'type': 'str'},
-    'rabbitmq_user_write_permission': {'type': 'str', 'required': True},
+    'rabbitmq_user_write_permission': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
     'user_ttl': {'type': 'str'},
@@ -137,11 +125,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_rabbitmq',
-        sdk_create=('DynamicSecretCreateRabbitMq', 'dynamic_secret_create_rabbit_mq'),
-        sdk_update=('DynamicSecretUpdateRabbitMq', 'dynamic_secret_update_rabbit_mq'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_rabbitmq",
+        sdk_create=("DynamicSecretCreateRabbitMq", "dynamic_secret_create_rabbit_mq"),
+        sdk_update=("DynamicSecretUpdateRabbitMq", "dynamic_secret_update_rabbit_mq"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

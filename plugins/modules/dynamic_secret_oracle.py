@@ -29,6 +29,7 @@ options:
     db_server_certificates:
       description: "Database server certificates (PEM)"
       type: str
+      no_log: true
     db_server_name:
       description: "Database server name for TLS verification"
       type: str
@@ -45,16 +46,13 @@ options:
       description: "Dynamic secret name"
       type: str
       required: true
-
     oracle_host:
       description: "Oracle host"
       type: str
-      required: true
-
     oracle_password:
       description: "Oracle admin password"
       type: str
-      required: true
+      no_log: true
     oracle_port:
       description: "Oracle port (default: 1521)"
       type: str
@@ -64,16 +62,12 @@ options:
     oracle_screation_statements:
       description: "Oracle Creation statements"
       type: str
-
     oracle_service_name:
       description: "Oracle service name"
       type: str
-      required: true
-
     oracle_username:
       description: "Oracle admin username"
       type: str
-      required: true
     password_length:
       description: "The length of the password to be generated"
       type: str
@@ -119,14 +113,14 @@ argument_spec = {
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'oracle_host': {'type': 'str', 'required': True},
-    'oracle_password': {'type': 'str', 'no_log': True, 'required': True},
+    'oracle_host': {'type': 'str'},
+    'oracle_password': {'type': 'str', 'no_log': True},
     'oracle_port': {'type': 'str'},
     'oracle_revocation_statements': {'type': 'str'},
     'oracle_screation_statements': {'type': 'str'},
-    'oracle_service_name': {'type': 'str', 'required': True},
-    'oracle_username': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'oracle_service_name': {'type': 'str'},
+    'oracle_username': {'type': 'str'},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -141,11 +135,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_oracle',
-        sdk_create=('DynamicSecretCreateOracleDb', 'dynamic_secret_create_oracle_db'),
-        sdk_update=('DynamicSecretUpdateOracleDb', 'dynamic_secret_update_oracle_db'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_oracle",
+        sdk_create=("DynamicSecretCreateOracleDb", "dynamic_secret_create_oracle_db"),
+        sdk_update=("DynamicSecretUpdateOracleDb", "dynamic_secret_update_oracle_db"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

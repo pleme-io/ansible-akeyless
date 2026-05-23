@@ -68,6 +68,7 @@ options:
     certificate_data:
       description: "PEM certificate data for validation"
       type: str
+      no_log: true
     delete_protection:
       description: "Enable delete protection"
       type: bool
@@ -103,11 +104,8 @@ options:
       description: "Revoked certificate serial numbers"
       type: list
       elements: str
-
     unique_identifier:
       description: "A unique identifier (ID) value should be configured, such as common_name or organizational_unit
-      type: str
-      required: true
 Whenever a user logs in with a token, these authentication types issue
 a 'sub claim' that contains details uniquely identifying that user.
 This sub claim includes a key containing the ID value that you
@@ -170,11 +168,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_cert',
-        sdk_create=('AuthMethodCreateCert', 'auth_method_create_cert'),
-        sdk_update=('AuthMethodUpdateCert', 'auth_method_update_cert'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_cert",
+        sdk_create=("AuthMethodCreateCert", "auth_method_create_cert"),
+        sdk_update=("AuthMethodUpdateCert", "auth_method_update_cert"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

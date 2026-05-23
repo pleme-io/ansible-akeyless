@@ -29,6 +29,7 @@ options:
     api_key:
       description: "API key to rotate (relevant only for rotator-type=api-key)"
       type: str
+      no_log: true
     authentication_credentials:
       description: "Credentials to connect with: use-user-creds or use-target-creds"
       type: str
@@ -58,6 +59,9 @@ options:
       type: str
     key:
       description: "Encryption key name for the secret value"
+      type: str
+    lock_during_sra_session:
+      description: "Lock this secret for read/update while an SRA session is active"
       type: str
     max_versions:
       description: "Maximum number of versions"
@@ -127,10 +131,11 @@ argument_spec = {
     'grace_rotation_hour': {'type': 'int'},
     'grace_rotation_interval': {'type': 'str'},
     'grace_rotation_timing': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
+    'lock_during_sra_session': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'rotate_after_disconnect': {'type': 'str'},
     'rotation_event_in': {'type': 'list', 'elements': 'str'},
     'rotation_hour': {'type': 'int'},
@@ -148,11 +153,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='rotated_secret_aws',
-        sdk_create=('RotatedSecretCreateAws', 'rotated_secret_create_aws'),
-        sdk_update=('RotatedSecretUpdateAws', 'rotated_secret_update_aws'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="rotated_secret_aws",
+        sdk_create=("RotatedSecretCreateAws", "rotated_secret_create_aws"),
+        sdk_update=("RotatedSecretUpdateAws", "rotated_secret_update_aws"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

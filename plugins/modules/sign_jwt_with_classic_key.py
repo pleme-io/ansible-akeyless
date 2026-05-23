@@ -68,7 +68,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('SignJWTWithClassicKey', 'sign_jwt_with_classic_key'),
+        sdk_call=("SignJWTWithClassicKey", "sign_jwt_with_classic_key"),
     )
 
 

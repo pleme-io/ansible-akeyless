@@ -23,10 +23,8 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
-
     acl_rules:
       description: "A JSON array list of redis ACL rules to attach to the created user. For available rules see the ACL CAT command https://redis.io/commands/acl-cat
-      type: str
 By default the user will have permissions to read all keys '['~*', '+@read']'"
       type: str
     custom_username_template:
@@ -63,6 +61,7 @@ By default the user will have permissions to read all keys '['~*', '+@read']'"
     ssl_certificate:
       description: "SSL certificate (PEM)"
       type: str
+      no_log: true
     tags:
       description: "Tags for the producer"
       type: list
@@ -102,7 +101,7 @@ argument_spec = {
     'host': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'port': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'ssl': {'type': 'bool'},
@@ -120,11 +119,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_redis',
-        sdk_create=('DynamicSecretCreateRedis', 'dynamic_secret_create_redis'),
-        sdk_update=('DynamicSecretUpdateRedis', 'dynamic_secret_update_redis'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_redis",
+        sdk_create=("DynamicSecretCreateRedis", "dynamic_secret_create_redis"),
+        sdk_update=("DynamicSecretUpdateRedis", "dynamic_secret_update_redis"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

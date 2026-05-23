@@ -17,6 +17,8 @@ extends_documentation_fragment:
   - drzln0.akeyless.auth
 description:
   - Retrieve information about items_info.
+options:
+
 '''
 
 EXAMPLES = r'''
@@ -97,7 +99,7 @@ argument_spec = {
 def main():
     run_info_module(
         argument_spec=argument_spec,
-        sdk_call=('ListItems', 'list_items'),
+        sdk_call=("ListItems", "list_items"),
     )
 
 

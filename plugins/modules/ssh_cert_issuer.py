@@ -102,7 +102,7 @@ argument_spec = {
     'description': {'type': 'str'},
     'extensions': {'type': 'dict'},
     'external_username': {'type': 'str'},
-    'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
+    'fixed_user_claim_keyname': {'type': 'str'},
     'host_provider': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'principals': {'type': 'str'},
@@ -121,11 +121,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='ssh_cert_issuer',
-        sdk_create=('CreateSSHCertIssuer', 'create_ssh_cert_issuer'),
-        sdk_update=('UpdateSSHCertIssuer', 'update_ssh_cert_issuer'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="ssh_cert_issuer",
+        sdk_create=("CreateSSHCertIssuer", "create_ssh_cert_issuer"),
+        sdk_update=("UpdateSSHCertIssuer", "update_ssh_cert_issuer"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

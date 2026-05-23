@@ -38,11 +38,16 @@ options:
     pfx_password:
       description: "Optional, the passphrase that protects the private key within the pfx certificate (Relevant only for Azure KV certificates)"
       type: str
-
     region:
-      description:
-        - Optional, create secret in a specific region (GCP only).
-        - If empty, a global secret will be created (provider default).
+      description: "Optional, create secret in a specific region (GCP only).
+If empty, a global secret will be created (provider default)."
+      type: str
+    secret_name:
+      description: "Name for the new universal secrets"
+      type: str
+      required: true
+    selected_repositories:
+      description: ""
       type: str
     tags:
       description: "Tags for the universal secrets"
@@ -58,11 +63,6 @@ options:
       description: "Value of the universal secrets item, either text or base64 encoded binary"
       type: str
       required: true
-    secret_id:
-      description: "Secret id."
-      type: str
-      required: true
-
 '''
 
 EXAMPLES = r'''
@@ -89,11 +89,12 @@ argument_spec = {
     'description': {'type': 'str'},
     'namespace': {'type': 'str'},
     'object_type': {'type': 'str'},
-    'pfx_password': {'type': 'str', 'no_log': True},
+    'pfx_password': {'type': 'str'},
     'region': {'type': 'str'},
-    'secret_id': {'type': 'str', 'required': True},
+    'secret_name': {'type': 'str', 'required': True},
+    'selected_repositories': {'type': 'str'},
     'tags': {'type': 'dict'},
-    'usc_encryption_key': {'type': 'str', 'no_log': True},
+    'usc_encryption_key': {'type': 'str'},
     'usc_name': {'type': 'str', 'required': True},
     'value': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
@@ -106,11 +107,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='usc',
-        sdk_create=('UscCreate', 'usc_create'),
-        sdk_update=('UscUpdate', 'usc_update'),
-        sdk_delete=('UscDelete', 'usc_delete'),
-        sdk_read=('UscGet', 'usc_get'),
+        resource_label="usc",
+        sdk_create=("UscCreate", "usc_create"),
+        sdk_update=("UscUpdate", "usc_update"),
+        sdk_delete=("UscDelete", "usc_delete"),
+        sdk_read=("UscGet", "usc_get"),
     )
 
 

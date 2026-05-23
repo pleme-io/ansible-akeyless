@@ -38,10 +38,8 @@ options:
     description:
       description: "Role description"
       type: str
-
     event_center_access:
       description: "Allow this role to view Event Center. Currently only 'none', 'scoped' and 'all'
-      type: str
 values are supported"
       type: str
     event_forwarders_access:
@@ -64,10 +62,8 @@ values are supported"
     sra_reports_access:
       description: "Allow this role to view SRA reports"
       type: str
-
     usage_reports_access:
       description: "Allow this role to view Usage Report. Currently only 'none' and
-      type: str
 'all' values are supported."
       type: str
 '''
@@ -115,11 +111,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='role',
-        sdk_create=('CreateRole', 'create_role'),
-        sdk_update=('UpdateRole', 'update_role'),
-        sdk_delete=('DeleteRole', 'delete_role'),
-        sdk_read=('GetRole', 'get_role'),
+        resource_label="role",
+        sdk_create=("CreateRole", "create_role"),
+        sdk_update=("UpdateRole", "update_role"),
+        sdk_delete=("DeleteRole", "delete_role"),
+        sdk_read=("GetRole", "get_role"),
     )
 
 

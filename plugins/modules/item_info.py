@@ -80,7 +80,7 @@ argument_spec = {
 def main():
     run_info_module(
         argument_spec=argument_spec,
-        sdk_call=('DescribeItem', 'describe_item'),
+        sdk_call=("DescribeItem", "describe_item"),
     )
 
 

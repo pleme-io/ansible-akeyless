@@ -38,24 +38,20 @@ options:
     k8s_allowed_namespaces:
       description: "Allowed Kubernetes namespaces (comma-separated)"
       type: str
-
     k8s_cluster_ca_cert:
       description: "Kubernetes cluster CA certificate (PEM)"
       type: str
-      required: true
-
+      no_log: true
     k8s_cluster_endpoint:
       description: "Kubernetes API server URL"
       type: str
-      required: true
     k8s_cluster_name:
       description: "K8S cluster name"
       type: str
-
     k8s_cluster_token:
       description: "Kubernetes bearer token"
       type: str
-      required: true
+      no_log: true
     k8s_namespace:
       description: "Kubernetes namespace"
       type: str
@@ -136,10 +132,10 @@ argument_spec = {
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'k8s_allowed_namespaces': {'type': 'str'},
-    'k8s_cluster_ca_cert': {'type': 'str', 'no_log': True, 'required': True},
-    'k8s_cluster_endpoint': {'type': 'str', 'required': True},
-    'k8s_cluster_name': {'type': 'str', 'no_log': False},
-    'k8s_cluster_token': {'type': 'str', 'no_log': True, 'required': True},
+    'k8s_cluster_ca_cert': {'type': 'str', 'no_log': True},
+    'k8s_cluster_endpoint': {'type': 'str'},
+    'k8s_cluster_name': {'type': 'str'},
+    'k8s_cluster_token': {'type': 'str', 'no_log': True},
     'k8s_namespace': {'type': 'str'},
     'k8s_predefined_role_name': {'type': 'str'},
     'k8s_predefined_role_type': {'type': 'str'},
@@ -167,11 +163,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_k8s',
-        sdk_create=('DynamicSecretCreateK8s', 'dynamic_secret_create_k8s'),
-        sdk_update=('DynamicSecretUpdateK8s', 'dynamic_secret_update_k8s'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_k8s",
+        sdk_create=("DynamicSecretCreateK8s", "dynamic_secret_create_k8s"),
+        sdk_update=("DynamicSecretUpdateK8s", "dynamic_secret_update_k8s"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

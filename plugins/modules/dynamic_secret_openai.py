@@ -97,11 +97,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_openai',
-        sdk_create=('DynamicSecretCreateOpenAI', 'dynamic_secret_create_open_ai'),
-        sdk_update=('DynamicSecretUpdateOpenAI', 'dynamic_secret_update_open_ai'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_openai",
+        sdk_create=("DynamicSecretCreateOpenAI", "dynamic_secret_create_open_ai"),
+        sdk_update=("DynamicSecretUpdateOpenAI", "dynamic_secret_update_open_ai"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

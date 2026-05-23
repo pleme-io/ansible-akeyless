@@ -32,35 +32,28 @@ options:
     description:
       description: "Description of the object"
       type: str
-
     hana_dbname:
       description: "HanaDb Name"
       type: str
-      required: true
     hanadb_create_statements:
       description: "HanaDb Creation statements"
       type: str
-
     hanadb_host:
       description: "HANA host"
       type: str
-      required: true
-
     hanadb_password:
       description: "HANA admin password"
       type: str
-      required: true
+      no_log: true
     hanadb_port:
       description: "HANA port (default: 443)"
       type: str
     hanadb_revocation_statements:
       description: "HANA SQL revocation statements"
       type: str
-
     hanadb_username:
       description: "HANA admin username"
       type: str
-      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -109,16 +102,16 @@ argument_spec = {
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'hana_dbname': {'type': 'str', 'required': True},
+    'hana_dbname': {'type': 'str'},
     'hanadb_create_statements': {'type': 'str'},
-    'hanadb_host': {'type': 'str', 'required': True},
-    'hanadb_password': {'type': 'str', 'no_log': True, 'required': True},
+    'hanadb_host': {'type': 'str'},
+    'hanadb_password': {'type': 'str', 'no_log': True},
     'hanadb_port': {'type': 'str'},
     'hanadb_revocation_statements': {'type': 'str'},
-    'hanadb_username': {'type': 'str', 'required': True},
+    'hanadb_username': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -133,11 +126,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_hanadb',
-        sdk_create=('DynamicSecretCreateHanaDb', 'dynamic_secret_create_hana_db'),
-        sdk_update=('DynamicSecretUpdateHanaDb', 'dynamic_secret_update_hana_db'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_hanadb",
+        sdk_create=("DynamicSecretCreateHanaDb", "dynamic_secret_create_hana_db"),
+        sdk_update=("DynamicSecretUpdateHanaDb", "dynamic_secret_update_hana_db"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

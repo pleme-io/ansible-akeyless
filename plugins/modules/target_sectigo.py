@@ -55,15 +55,6 @@ options:
     timeout:
       description: "Timeout waiting for certificate validation in Duration format (1h - 1 Hour, 20m - 20 Minutes, 33m3s - 33 Minutes and 3 Seconds), maximum 1h."
       type: str
-    password:
-      description: "Password."
-      type: str
-      required: true
-    username:
-      description: "Username."
-      type: str
-      required: true
-
 '''
 
 EXAMPLES = r'''
@@ -90,12 +81,10 @@ argument_spec = {
     'customer_uri': {'type': 'str', 'required': True},
     'description': {'type': 'str'},
     'external_requester': {'type': 'str', 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password': {'type': 'str', 'required': True, 'no_log': True},
     'organization_id': {'type': 'int', 'required': True},
-    'username': {'type': 'str', 'required': True},
     'timeout': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
@@ -107,11 +96,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_sectigo',
-        sdk_create=('TargetCreateSectigo', 'target_create_sectigo'),
-        sdk_update=('TargetUpdateSectigo', 'target_update_sectigo'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_sectigo",
+        sdk_create=("TargetCreateSectigo", "target_create_sectigo"),
+        sdk_update=("TargetUpdateSectigo", "target_update_sectigo"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

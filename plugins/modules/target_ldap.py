@@ -31,6 +31,7 @@ options:
       description: "LDAP bind DN password"
       type: str
       required: true
+      no_log: true
     description:
       description: "Target description"
       type: str
@@ -82,13 +83,13 @@ argument_spec = {
     'bind_dn': {'type': 'str', 'required': True},
     'bind_dn_password': {'type': 'str', 'required': True, 'no_log': True},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'ldap_ca_cert': {'type': 'str'},
     'ldap_url': {'type': 'str', 'required': True},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'server_type': {'type': 'str'},
-    'token_expiration': {'type': 'str', 'no_log': False},
+    'token_expiration': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -99,11 +100,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_ldap',
-        sdk_create=('TargetCreateLdap', 'target_create_ldap'),
-        sdk_update=('TargetUpdateLdap', 'target_update_ldap'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_ldap",
+        sdk_create=("TargetCreateLdap", "target_create_ldap"),
+        sdk_update=("TargetUpdateLdap", "target_update_ldap"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

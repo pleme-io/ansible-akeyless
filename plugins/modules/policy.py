@@ -69,8 +69,8 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'allowed_algorithms': {'type': 'list', 'elements': 'str'},
-    'allowed_key_names': {'type': 'list', 'elements': 'str', 'no_log': False},
-    'allowed_key_types': {'type': 'list', 'elements': 'str', 'no_log': False},
+    'allowed_key_names': {'type': 'list', 'elements': 'str'},
+    'allowed_key_types': {'type': 'list', 'elements': 'str'},
     'max_rotation_interval_days': {'type': 'int'},
     'object_types': {'type': 'list', 'elements': 'str'},
     'path': {'type': 'str', 'required': True},
@@ -84,11 +84,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='policy',
-        sdk_create=('PolicyCreateKeys', 'policy_create_keys'),
-        sdk_update=('PolicyUpdateKeys', 'policy_update_keys'),
-        sdk_delete=('PoliciesDelete', 'policies_delete'),
-        sdk_read=('PoliciesGet', 'policies_get'),
+        resource_label="policy",
+        sdk_create=("PolicyCreateKeys", "policy_create_keys"),
+        sdk_update=("PolicyUpdateKeys", "policy_update_keys"),
+        sdk_delete=("PoliciesDelete", "policies_delete"),
+        sdk_read=("PoliciesGet", "policies_get"),
     )
 
 

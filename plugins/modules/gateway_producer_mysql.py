@@ -38,21 +38,15 @@ options:
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
-
     mysql_dbname:
       description: "MySQL DB Name"
       type: str
-      required: true
-
     mysql_host:
       description: "MySQL Host"
       type: str
-      required: true
-
     mysql_password:
       description: "MySQL Password"
       type: str
-      required: true
     mysql_port:
       description: "MySQL Port"
       type: str
@@ -62,11 +56,9 @@ options:
     mysql_screation_statements:
       description: "MySQL Creation statements"
       type: str
-
     mysql_username:
       description: "MySQL Username"
       type: str
-      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -123,15 +115,15 @@ argument_spec = {
     'db_server_name': {'type': 'str'},
     'delete_protection': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
-    'mysql_dbname': {'type': 'str', 'required': True},
-    'mysql_host': {'type': 'str', 'required': True},
-    'mysql_password': {'type': 'str', 'required': True, 'no_log': True},
+    'mysql_dbname': {'type': 'str'},
+    'mysql_host': {'type': 'str'},
+    'mysql_password': {'type': 'str'},
     'mysql_port': {'type': 'str'},
     'mysql_revocation_statements': {'type': 'str'},
     'mysql_screation_statements': {'type': 'str'},
-    'mysql_username': {'type': 'str', 'required': True},
+    'mysql_username': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'ssl': {'type': 'bool'},
@@ -149,11 +141,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_mysql',
-        sdk_create=('GatewayCreateProducerMySQL', 'gateway_create_producer_my_sql'),
-        sdk_update=('GatewayUpdateProducerMySQL', 'gateway_update_producer_my_sql'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_mysql",
+        sdk_create=("GatewayCreateProducerMySQL", "gateway_create_producer_my_sql"),
+        sdk_update=("GatewayUpdateProducerMySQL", "gateway_update_producer_my_sql"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

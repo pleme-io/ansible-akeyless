@@ -73,7 +73,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('Hmac', 'hmac'),
+        sdk_call=("Hmac", "hmac"),
     )
 
 

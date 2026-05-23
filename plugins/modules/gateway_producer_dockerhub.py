@@ -26,21 +26,16 @@ options:
     delete_protection:
       description: "Protection from accidental deletion of this object [true/false]"
       type: str
-
     dockerhub_password:
       description: "DockerhubPassword is either the user's password access token to manage the repository"
       type: str
-      required: true
-
     dockerhub_token_scopes:
       description: "Access token scopes list (comma-separated) to give the dynamic secret
-      type: str
 valid options are in 'repo:admin', 'repo:write', 'repo:read', 'repo:public_read'"
       type: str
     dockerhub_username:
       description: "DockerhubUsername is the name of the user in dockerhub"
       type: str
-      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -84,9 +79,9 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'delete_protection': {'type': 'str'},
-    'dockerhub_password': {'type': 'str', 'required': True, 'no_log': True},
-    'dockerhub_token_scopes': {'type': 'str', 'no_log': False},
-    'dockerhub_username': {'type': 'str', 'required': True},
+    'dockerhub_password': {'type': 'str'},
+    'dockerhub_token_scopes': {'type': 'str'},
+    'dockerhub_username': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
     'producer_encryption_key_name': {'type': 'str'},
@@ -103,11 +98,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_dockerhub',
-        sdk_create=('GatewayCreateProducerDockerhub', 'gateway_create_producer_dockerhub'),
-        sdk_update=('GatewayUpdateProducerDockerhub', 'gateway_update_producer_dockerhub'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_dockerhub",
+        sdk_create=("GatewayCreateProducerDockerhub", "gateway_create_producer_dockerhub"),
+        sdk_update=("GatewayUpdateProducerDockerhub", "gateway_update_producer_dockerhub"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

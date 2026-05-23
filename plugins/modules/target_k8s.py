@@ -32,12 +32,15 @@ options:
     k8s_client_certificate:
       description: "Kubernetes client certificate (PEM)"
       type: str
+      no_log: true
     k8s_client_key:
       description: "Kubernetes client key (PEM)"
       type: str
+      no_log: true
     k8s_cluster_ca_cert:
       description: "Kubernetes cluster CA certificate (PEM)"
       type: str
+      no_log: true
     k8s_cluster_endpoint:
       description: "Kubernetes API server URL"
       type: str
@@ -47,6 +50,7 @@ options:
     k8s_cluster_token:
       description: "Kubernetes bearer token"
       type: str
+      no_log: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -88,9 +92,9 @@ argument_spec = {
     'k8s_client_key': {'type': 'str', 'no_log': True},
     'k8s_cluster_ca_cert': {'type': 'str', 'no_log': True},
     'k8s_cluster_endpoint': {'type': 'str'},
-    'k8s_cluster_name': {'type': 'str', 'no_log': False},
+    'k8s_cluster_name': {'type': 'str'},
     'k8s_cluster_token': {'type': 'str', 'no_log': True},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'use_gw_service_account': {'type': 'bool'},
@@ -104,11 +108,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_k8s',
-        sdk_create=('TargetCreateK8s', 'target_create_k8s'),
-        sdk_update=('TargetUpdateK8s', 'target_update_k8s'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_k8s",
+        sdk_create=("TargetCreateK8s", "target_create_k8s"),
+        sdk_update=("TargetUpdateK8s", "target_update_k8s"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

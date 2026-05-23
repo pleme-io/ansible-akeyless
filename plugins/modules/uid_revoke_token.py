@@ -50,7 +50,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'auth_method_name': {'type': 'str'},
-    'revoke_token': {'type': 'str', 'required': True, 'no_log': True},
+    'revoke_token': {'type': 'str', 'required': True},
     'revoke_type': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
@@ -62,7 +62,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('UidRevokeToken', 'uid_revoke_token'),
+        sdk_call=("UidRevokeToken", "uid_revoke_token"),
     )
 
 

@@ -29,9 +29,11 @@ options:
     gitlab_access_token:
       description: "GitLab personal access token"
       type: str
+      no_log: true
     gitlab_certificate:
       description: "GitLab TLS certificate (PEM)"
       type: str
+      no_log: true
     gitlab_url:
       description: "GitLab URL (for self-hosted)"
       type: str
@@ -71,7 +73,7 @@ argument_spec = {
     'gitlab_access_token': {'type': 'str', 'no_log': True},
     'gitlab_certificate': {'type': 'str', 'no_log': True},
     'gitlab_url': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
@@ -84,11 +86,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_gitlab',
-        sdk_create=('TargetCreateGitlab', 'target_create_gitlab'),
-        sdk_update=('TargetUpdateGitlab', 'target_update_gitlab'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_gitlab",
+        sdk_create=("TargetCreateGitlab", "target_create_gitlab"),
+        sdk_update=("TargetUpdateGitlab", "target_update_gitlab"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

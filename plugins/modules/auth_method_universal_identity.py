@@ -38,6 +38,9 @@ options:
       description: "CIDR whitelist for access"
       type: list
       elements: str
+    child_ttl_limit:
+      description: "Maximum child token ttl allowed in uid-create-child-token"
+      type: int
     delete_protection:
       description: "Enable delete protection"
       type: bool
@@ -72,6 +75,9 @@ options:
       description: "Choose the relevant product type for the auth method [sm, sra, pm, dp, ca]"
       type: list
       elements: str
+    tree_length:
+      description: "Maximum UID tree depth allowed (child of child of ...)"
+      type: int
     ttl:
       description: "Token TTL in seconds"
       type: int
@@ -101,6 +107,7 @@ argument_spec = {
     'allowed_client_type': {'type': 'list', 'elements': 'str'},
     'audit_logs_claims': {'type': 'list', 'elements': 'str'},
     'bound_ips': {'type': 'list', 'elements': 'str'},
+    'child_ttl_limit': {'type': 'int'},
     'delete_protection': {'type': 'bool'},
     'deny_inheritance': {'type': 'bool'},
     'deny_rotate': {'type': 'bool'},
@@ -111,6 +118,7 @@ argument_spec = {
     'jwt_ttl': {'type': 'int'},
     'name': {'type': 'str', 'required': True},
     'product_type': {'type': 'list', 'elements': 'str'},
+    'tree_length': {'type': 'int'},
     'ttl': {'type': 'int'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
@@ -122,11 +130,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_universal_identity',
-        sdk_create=('AuthMethodCreateUniversalIdentity', 'auth_method_create_universal_identity'),
-        sdk_update=('AuthMethodUpdateUniversalIdentity', 'auth_method_update_universal_identity'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_universal_identity",
+        sdk_create=("AuthMethodCreateUniversalIdentity", "auth_method_create_universal_identity"),
+        sdk_update=("AuthMethodUpdateUniversalIdentity", "auth_method_update_universal_identity"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

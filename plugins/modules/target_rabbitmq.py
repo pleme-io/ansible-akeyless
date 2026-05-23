@@ -39,6 +39,7 @@ options:
     rabbitmq_server_password:
       description: "RabbitMQ admin password"
       type: str
+      no_log: true
     rabbitmq_server_uri:
       description: "RabbitMQ management API URI"
       type: str
@@ -68,7 +69,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'rabbitmq_server_password': {'type': 'str', 'no_log': True},
@@ -84,11 +85,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_rabbitmq',
-        sdk_create=('TargetCreateRabbitMq', 'target_create_rabbit_mq'),
-        sdk_update=('TargetUpdateRabbitMq', 'target_update_rabbit_mq'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_rabbitmq",
+        sdk_create=("TargetCreateRabbitMq", "target_create_rabbit_mq"),
+        sdk_update=("TargetUpdateRabbitMq", "target_update_rabbit_mq"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

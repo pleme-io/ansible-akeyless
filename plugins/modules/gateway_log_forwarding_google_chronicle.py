@@ -68,7 +68,7 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'customer_id': {'type': 'str'},
     'enable': {'type': 'str'},
-    'gcp_key': {'type': 'str', 'no_log': True},
+    'gcp_key': {'type': 'str'},
     'log_type': {'type': 'str'},
     'output_format': {'type': 'str'},
     'pull_interval': {'type': 'str'},
@@ -83,11 +83,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_google_chronicle',
-        sdk_create=('GatewayUpdateLogForwardingGoogleChronicle', 'gateway_update_log_forwarding_google_chronicle'),
-        sdk_update=('GatewayUpdateLogForwardingGoogleChronicle', 'gateway_update_log_forwarding_google_chronicle'),
-        sdk_delete=('GatewayUpdateLogForwardingGoogleChronicle', 'gateway_update_log_forwarding_google_chronicle'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_google_chronicle",
+        sdk_create=("GatewayUpdateLogForwardingGoogleChronicle", "gateway_update_log_forwarding_google_chronicle"),
+        sdk_update=("GatewayUpdateLogForwardingGoogleChronicle", "gateway_update_log_forwarding_google_chronicle"),
+        sdk_delete=("GatewayUpdateLogForwardingGoogleChronicle", "gateway_update_log_forwarding_google_chronicle"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

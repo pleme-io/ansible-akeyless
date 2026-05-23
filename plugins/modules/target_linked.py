@@ -76,11 +76,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_linked',
-        sdk_create=('TargetCreateLinked', 'target_create_linked'),
-        sdk_update=('TargetUpdateLinked', 'target_update_linked'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_linked",
+        sdk_create=("TargetCreateLinked", "target_create_linked"),
+        sdk_update=("TargetUpdateLinked", "target_update_linked"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

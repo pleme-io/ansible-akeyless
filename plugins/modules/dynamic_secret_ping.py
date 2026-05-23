@@ -70,6 +70,7 @@ options:
     ping_password:
       description: "Ping Identity password"
       type: str
+      no_log: true
     ping_privileged_user:
       description: "Ping Identity privileged username"
       type: str
@@ -156,11 +157,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_ping',
-        sdk_create=('DynamicSecretCreatePing', 'dynamic_secret_create_ping'),
-        sdk_update=('DynamicSecretUpdatePing', 'dynamic_secret_update_ping'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_ping",
+        sdk_create=("DynamicSecretCreatePing", "dynamic_secret_create_ping"),
+        sdk_update=("DynamicSecretUpdatePing", "dynamic_secret_update_ping"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

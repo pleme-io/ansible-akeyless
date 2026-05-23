@@ -36,11 +36,9 @@ options:
     k8s_auth_type:
       description: "K8S auth type [token/certificate]. (relevant for 'native_k8s' only)"
       type: str
-
     k8s_ca_cert:
       description: "The CA Certificate (base64 encoded) to use to call into the kubernetes API server"
       type: str
-      required: true
     k8s_client_certificate:
       description: "Content of the k8 client certificate (PEM format) in a Base64 format (relevant for 'native_k8s' only)"
       type: str
@@ -71,15 +69,10 @@ options:
     token_exp:
       description: "Time in seconds of expiration of the Akeyless Kube Auth Method token"
       type: int
-
     token_reviewer_jwt:
-      description:
-        - A Kubernetes service account JWT used to access the TokenReview
-          API to validate other JWTs (relevant for 'native_k8s' only).
-        - If not set, the JWT submitted in the authentication process
-          will be used to access the Kubernetes TokenReview API.
+      description: "A Kubernetes service account JWT used to access the TokenReview API to validate other JWTs (relevant for 'native_k8s' only).
+If not set, the JWT submitted in the authentication process will be used to access the Kubernetes TokenReview API."
       type: str
-      required: true
     use_gw_service_account:
       description: "Use the GW's service account"
       type: bool
@@ -109,19 +102,20 @@ argument_spec = {
     'cluster_api_type': {'type': 'str'},
     'disable_issuer_validation': {'type': 'str'},
     'k8s_auth_type': {'type': 'str'},
-    'k8s_ca_cert': {'type': 'str', 'required': True},
+    'k8s_ca_cert': {'type': 'str'},
     'k8s_client_certificate': {'type': 'str'},
-    'k8s_client_key': {'type': 'str', 'no_log': True},
+    'k8s_client_key': {'type': 'str'},
     'k8s_host': {'type': 'str', 'required': True},
     'k8s_issuer': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'rancher_api_key': {'type': 'str', 'no_log': True},
+    'rancher_api_key': {'type': 'str'},
     'rancher_cluster_id': {'type': 'str'},
-    'signing_key': {'type': 'str', 'required': True, 'no_log': True},
-    'token_exp': {'type': 'int', 'no_log': False},
-    'token_reviewer_jwt': {'type': 'str', 'required': True, 'no_log': True},
+    'signing_key': {'type': 'str', 'required': True},
+    'token_exp': {'type': 'int'},
+    'token_reviewer_jwt': {'type': 'str'},
     'use_gw_service_account': {'type': 'bool'},
     'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
     'access_type': {'type': 'str', 'default': 'access_key'},
 }
@@ -130,11 +124,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_k8s_auth_config',
-        sdk_create=('GatewayCreateK8SAuthConfig', 'gateway_create_k8_s_auth_config'),
-        sdk_update=('GatewayUpdateK8SAuthConfig', 'gateway_update_k8_s_auth_config'),
-        sdk_delete=('GatewayDeleteK8SAuthConfig', 'gateway_delete_k8_s_auth_config'),
-        sdk_read=('GatewayGetK8SAuthConfig', 'gateway_get_k8_s_auth_config'),
+        resource_label="gateway_k8s_auth_config",
+        sdk_create=("GatewayCreateK8SAuthConfig", "gateway_create_k8_s_auth_config"),
+        sdk_update=("GatewayUpdateK8SAuthConfig", "gateway_update_k8_s_auth_config"),
+        sdk_delete=("GatewayDeleteK8SAuthConfig", "gateway_delete_k8_s_auth_config"),
+        sdk_read=("GatewayGetK8SAuthConfig", "gateway_get_k8_s_auth_config"),
     )
 
 

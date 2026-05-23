@@ -26,16 +26,13 @@ options:
     description:
       description: "Target description"
       type: str
-
     github_app_id:
       description: "GitHub App ID"
       type: int
-      required: true
-
     github_app_private_key:
       description: "GitHub App private key (PEM)"
       type: str
-      required: true
+      no_log: true
     github_base_url:
       description: "GitHub base URL (for GitHub Enterprise)"
       type: str
@@ -72,10 +69,10 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'description': {'type': 'str'},
-    'github_app_id': {'type': 'int', 'required': True, 'no_log': False},
-    'github_app_private_key': {'type': 'str', 'no_log': True, 'required': True},
+    'github_app_id': {'type': 'int'},
+    'github_app_private_key': {'type': 'str', 'no_log': True},
     'github_base_url': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
@@ -88,11 +85,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_github',
-        sdk_create=('TargetCreateGithub', 'target_create_github'),
-        sdk_update=('TargetUpdateGithub', 'target_update_github'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_github",
+        sdk_create=("TargetCreateGithub", "target_create_github"),
+        sdk_update=("TargetUpdateGithub", "target_update_github"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

@@ -88,7 +88,7 @@ argument_spec = {
     'delete_protection': {'type': 'str'},
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'permission_assignment': {'type': 'str'},
     'public': {'type': 'bool'},
@@ -105,11 +105,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='oidc_app',
-        sdk_create=('CreateOidcApp', 'create_oidc_app'),
-        sdk_update=('UpdateOidcApp', 'update_oidc_app'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="oidc_app",
+        sdk_create=("CreateOidcApp", "create_oidc_app"),
+        sdk_update=("UpdateOidcApp", "update_oidc_app"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

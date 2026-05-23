@@ -34,7 +34,7 @@ options:
       description: "Name of the RSA key"
       type: str
       required: true
-    payload:
+    message:
       description: "Message to verify"
       type: str
       required: true
@@ -73,7 +73,7 @@ argument_spec = {
     'input_format': {'type': 'str'},
     'item_id': {'type': 'int'},
     'key_name': {'type': 'str', 'required': True},
-    'payload': {'type': 'str', 'required': True},
+    'message': {'type': 'str', 'required': True},
     'prehashed': {'type': 'bool'},
     'signature': {'type': 'str', 'required': True},
     'version': {'type': 'int'},
@@ -87,7 +87,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('VerifyPKCS1', 'verify_pkcs1'),
+        sdk_call=("VerifyPKCS1", "verify_pkcs1"),
     )
 
 

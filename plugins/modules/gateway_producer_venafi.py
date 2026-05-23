@@ -133,11 +133,11 @@ argument_spec = {
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
     'user_ttl': {'type': 'str'},
-    'venafi_access_token': {'type': 'str', 'no_log': True},
-    'venafi_api_key': {'type': 'str', 'no_log': True},
+    'venafi_access_token': {'type': 'str'},
+    'venafi_api_key': {'type': 'str'},
     'venafi_baseurl': {'type': 'str'},
     'venafi_client_id': {'type': 'str'},
-    'venafi_refresh_token': {'type': 'str', 'no_log': True},
+    'venafi_refresh_token': {'type': 'str'},
     'venafi_use_tpp': {'type': 'bool'},
     'venafi_zone': {'type': 'str'},
     'gateway_url': {'type': 'str'},
@@ -150,11 +150,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_venafi',
-        sdk_create=('GatewayCreateProducerVenafi', 'gateway_create_producer_venafi'),
-        sdk_update=('GatewayUpdateProducerVenafi', 'gateway_update_producer_venafi'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_venafi",
+        sdk_create=("GatewayCreateProducerVenafi", "gateway_create_producer_venafi"),
+        sdk_update=("GatewayUpdateProducerVenafi", "gateway_update_producer_venafi"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

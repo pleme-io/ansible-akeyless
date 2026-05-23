@@ -30,10 +30,12 @@ options:
       description: "AWS access key ID for EKS"
       type: str
       required: true
+      no_log: true
     eks_cluster_ca_cert:
       description: "EKS cluster CA certificate (PEM)"
       type: str
       required: true
+      no_log: true
     eks_cluster_endpoint:
       description: "EKS cluster API server URL"
       type: str
@@ -49,6 +51,7 @@ options:
       description: "AWS secret access key for EKS"
       type: str
       required: true
+      no_log: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -88,10 +91,10 @@ argument_spec = {
     'eks_access_key_id': {'type': 'str', 'required': True, 'no_log': True},
     'eks_cluster_ca_cert': {'type': 'str', 'required': True, 'no_log': True},
     'eks_cluster_endpoint': {'type': 'str', 'required': True},
-    'eks_cluster_name': {'type': 'str', 'required': True, 'no_log': False},
+    'eks_cluster_name': {'type': 'str', 'required': True},
     'eks_region': {'type': 'str'},
     'eks_secret_access_key': {'type': 'str', 'required': True, 'no_log': True},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'use_gw_cloud_identity': {'type': 'bool'},
@@ -105,11 +108,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_eks',
-        sdk_create=('TargetCreateEks', 'target_create_eks'),
-        sdk_update=('TargetUpdateEks', 'target_update_eks'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_eks",
+        sdk_create=("TargetCreateEks", "target_create_eks"),
+        sdk_update=("TargetUpdateEks", "target_update_eks"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

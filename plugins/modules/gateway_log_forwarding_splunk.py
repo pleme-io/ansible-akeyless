@@ -86,7 +86,7 @@ argument_spec = {
     'pull_interval': {'type': 'str'},
     'source': {'type': 'str'},
     'source_type': {'type': 'str'},
-    'splunk_token': {'type': 'str', 'no_log': True},
+    'splunk_token': {'type': 'str'},
     'splunk_url': {'type': 'str'},
     'tls_certificate': {'type': 'str'},
     'gateway_url': {'type': 'str'},
@@ -99,11 +99,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_splunk',
-        sdk_create=('GatewayUpdateLogForwardingSplunk', 'gateway_update_log_forwarding_splunk'),
-        sdk_update=('GatewayUpdateLogForwardingSplunk', 'gateway_update_log_forwarding_splunk'),
-        sdk_delete=('GatewayUpdateLogForwardingSplunk', 'gateway_update_log_forwarding_splunk'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_splunk",
+        sdk_create=("GatewayUpdateLogForwardingSplunk", "gateway_update_log_forwarding_splunk"),
+        sdk_update=("GatewayUpdateLogForwardingSplunk", "gateway_update_log_forwarding_splunk"),
+        sdk_delete=("GatewayUpdateLogForwardingSplunk", "gateway_update_log_forwarding_splunk"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

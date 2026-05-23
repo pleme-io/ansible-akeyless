@@ -29,9 +29,11 @@ options:
     gke_account_key:
       description: "GCP service account key JSON (base64)"
       type: str
+      no_log: true
     gke_cluster_cert:
       description: "GKE cluster CA certificate (PEM)"
       type: str
+      no_log: true
     gke_cluster_endpoint:
       description: "GKE cluster API server URL"
       type: str
@@ -82,7 +84,7 @@ argument_spec = {
     'gke_cluster_endpoint': {'type': 'str'},
     'gke_cluster_name': {'type': 'str'},
     'gke_service_account_email': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'use_gw_cloud_identity': {'type': 'bool'},
@@ -96,11 +98,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_gke',
-        sdk_create=('TargetCreateGke', 'target_create_gke'),
-        sdk_update=('TargetUpdateGke', 'target_update_gke'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_gke",
+        sdk_create=("TargetCreateGke", "target_create_gke"),
+        sdk_update=("TargetUpdateGke", "target_update_gke"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

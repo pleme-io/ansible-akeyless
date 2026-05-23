@@ -69,12 +69,12 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='kmip_environment',
-        sdk_create=('KmipServerSetup', 'kmip_server_setup'),
+        resource_label="kmip_environment",
+        sdk_create=("KmipServerSetup", "kmip_server_setup"),
         sdk_update=None,
-        sdk_delete=('KmipDeleteServer', 'kmip_delete_server'),
-        sdk_read=('KmipDescribeServer', 'kmip_describe_server'),
         immutable=True,
+        sdk_delete=("KmipDeleteServer", "kmip_delete_server"),
+        sdk_read=("KmipDescribeServer", "kmip_describe_server"),
     )
 
 

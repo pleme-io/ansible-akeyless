@@ -27,6 +27,7 @@ options:
       description: "GoDaddy API key"
       type: str
       required: true
+      no_log: true
     customer_id:
       description: "Customer ID (ShopperId) required for renewal of imported certificates"
       type: str
@@ -41,6 +42,7 @@ options:
       description: "IMAP password"
       type: str
       required: true
+      no_log: true
     imap_port:
       description: "IMAP server port"
       type: str
@@ -62,6 +64,7 @@ options:
       description: "GoDaddy API secret"
       type: str
       required: true
+      no_log: true
     timeout:
       description: "GoDaddy API timeout"
       type: str
@@ -94,7 +97,7 @@ argument_spec = {
     'imap_password': {'type': 'str', 'required': True, 'no_log': True},
     'imap_port': {'type': 'str'},
     'imap_username': {'type': 'str', 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'secret': {'type': 'str', 'required': True, 'no_log': True},
@@ -109,11 +112,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_godaddy',
-        sdk_create=('TargetCreateGodaddy', 'target_create_godaddy'),
-        sdk_update=('TargetUpdateGodaddy', 'target_update_godaddy'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_godaddy",
+        sdk_create=("TargetCreateGodaddy", "target_create_godaddy"),
+        sdk_update=("TargetUpdateGodaddy", "target_update_godaddy"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

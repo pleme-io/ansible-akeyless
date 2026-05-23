@@ -68,7 +68,7 @@ argument_spec = {
     'output_format': {'type': 'str'},
     'pull_interval': {'type': 'str'},
     'workspace_id': {'type': 'str'},
-    'workspace_key': {'type': 'str', 'no_log': True},
+    'workspace_key': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -79,11 +79,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_azure_analytics',
-        sdk_create=('GatewayUpdateLogForwardingAzureAnalytics', 'gateway_update_log_forwarding_azure_analytics'),
-        sdk_update=('GatewayUpdateLogForwardingAzureAnalytics', 'gateway_update_log_forwarding_azure_analytics'),
-        sdk_delete=('GatewayUpdateLogForwardingAzureAnalytics', 'gateway_update_log_forwarding_azure_analytics'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_azure_analytics",
+        sdk_create=("GatewayUpdateLogForwardingAzureAnalytics", "gateway_update_log_forwarding_azure_analytics"),
+        sdk_update=("GatewayUpdateLogForwardingAzureAnalytics", "gateway_update_log_forwarding_azure_analytics"),
+        sdk_delete=("GatewayUpdateLogForwardingAzureAnalytics", "gateway_update_log_forwarding_azure_analytics"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

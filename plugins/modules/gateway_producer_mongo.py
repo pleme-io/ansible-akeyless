@@ -47,21 +47,15 @@ options:
     mongodb_default_auth_db:
       description: "MongoDB server default authentication database"
       type: str
-
     mongodb_host_port:
       description: "MongoDB server host and port"
       type: str
-      required: true
-
     mongodb_name:
       description: "MongoDB Name"
       type: str
-      required: true
-
     mongodb_password:
       description: "MongoDB server password. You will prompted to provide a password if it will not appear in CLI parameters"
       type: str
-      required: true
     mongodb_roles:
       description: "MongoDB Roles"
       type: str
@@ -74,11 +68,9 @@ options:
     mongodb_uri_options:
       description: "MongoDB server URI options"
       type: str
-
     mongodb_username:
       description: "MongoDB server username"
       type: str
-      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -127,21 +119,21 @@ argument_spec = {
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
-    'mongodb_atlas_api_private_key': {'type': 'str', 'no_log': True},
+    'mongodb_atlas_api_private_key': {'type': 'str'},
     'mongodb_atlas_api_public_key': {'type': 'str'},
     'mongodb_atlas_project_id': {'type': 'str'},
     'mongodb_custom_data': {'type': 'str'},
     'mongodb_default_auth_db': {'type': 'str'},
-    'mongodb_host_port': {'type': 'str', 'required': True},
-    'mongodb_name': {'type': 'str', 'required': True},
-    'mongodb_password': {'type': 'str', 'required': True, 'no_log': True},
+    'mongodb_host_port': {'type': 'str'},
+    'mongodb_name': {'type': 'str'},
+    'mongodb_password': {'type': 'str'},
     'mongodb_roles': {'type': 'str'},
     'mongodb_scopes': {'type': 'str'},
     'mongodb_server_uri': {'type': 'str'},
     'mongodb_uri_options': {'type': 'str'},
-    'mongodb_username': {'type': 'str', 'required': True},
+    'mongodb_username': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'tags': {'type': 'list', 'elements': 'str'},
@@ -157,11 +149,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_mongo',
-        sdk_create=('GatewayCreateProducerMongo', 'gateway_create_producer_mongo'),
-        sdk_update=('GatewayUpdateProducerMongo', 'gateway_update_producer_mongo'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_mongo",
+        sdk_create=("GatewayCreateProducerMongo", "gateway_create_producer_mongo"),
+        sdk_update=("GatewayUpdateProducerMongo", "gateway_update_producer_mongo"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

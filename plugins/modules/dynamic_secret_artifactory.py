@@ -23,16 +23,13 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
-
     artifactory_admin_name:
       description: "Artifactory admin username"
       type: str
-      required: true
-
     artifactory_admin_pwd:
       description: "Artifactory admin password"
       type: str
-      required: true
+      no_log: true
     artifactory_token_audience:
       description: "Artifactory token audience"
       type: str
@@ -41,11 +38,9 @@ options:
       description: "Artifactory token scope"
       type: str
       required: true
-
     base_url:
       description: "Artifactory base URL"
       type: str
-      required: true
     custom_username_template:
       description: "Customize how temporary usernames are generated using go template"
       type: str
@@ -97,11 +92,11 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'artifactory_admin_name': {'type': 'str', 'required': True},
-    'artifactory_admin_pwd': {'type': 'str', 'no_log': True, 'required': True},
-    'artifactory_token_audience': {'type': 'str', 'required': True, 'no_log': False},
-    'artifactory_token_scope': {'type': 'str', 'required': True, 'no_log': False},
-    'base_url': {'type': 'str', 'required': True},
+    'artifactory_admin_name': {'type': 'str'},
+    'artifactory_admin_pwd': {'type': 'str', 'no_log': True},
+    'artifactory_token_audience': {'type': 'str', 'required': True},
+    'artifactory_token_scope': {'type': 'str', 'required': True},
+    'base_url': {'type': 'str'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
@@ -121,11 +116,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_artifactory',
-        sdk_create=('DynamicSecretCreateArtifactory', 'dynamic_secret_create_artifactory'),
-        sdk_update=('DynamicSecretUpdateArtifactory', 'dynamic_secret_update_artifactory'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_artifactory",
+        sdk_create=("DynamicSecretCreateArtifactory", "dynamic_secret_create_artifactory"),
+        sdk_update=("DynamicSecretUpdateArtifactory", "dynamic_secret_update_artifactory"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

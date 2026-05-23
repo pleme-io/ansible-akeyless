@@ -63,6 +63,7 @@ options:
     rotated_password:
       description: "Rotated-username password (relevant only for rotator-type=password)"
       type: str
+      no_log: true
     rotated_username:
       description: "Username to be rotated"
       type: str
@@ -122,22 +123,22 @@ argument_spec = {
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
     'expiration_date': {'type': 'str'},
-    'hec_token': {'type': 'str', 'no_log': True},
+    'hec_token': {'type': 'str'},
     'hec_token_name': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'rotated_password': {'type': 'str', 'no_log': True},
     'rotated_username': {'type': 'str'},
     'rotation_event_in': {'type': 'list', 'elements': 'str'},
     'rotation_hour': {'type': 'int'},
     'rotation_interval': {'type': 'str'},
     'rotator_type': {'type': 'str', 'required': True},
-    'splunk_token': {'type': 'str', 'no_log': True},
+    'splunk_token': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str', 'required': True},
-    'token_owner': {'type': 'str', 'no_log': False},
+    'token_owner': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -148,11 +149,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='rotated_secret_splunk',
-        sdk_create=('RotatedSecretCreateSplunk', 'rotated_secret_create_splunk'),
-        sdk_update=('RotatedSecretUpdateSplunk', 'rotated_secret_update_splunk'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="rotated_secret_splunk",
+        sdk_create=("RotatedSecretCreateSplunk", "rotated_secret_create_splunk"),
+        sdk_update=("RotatedSecretUpdateSplunk", "rotated_secret_update_splunk"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

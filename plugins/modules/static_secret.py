@@ -35,6 +35,9 @@ options:
     format:
       description: "Secret format [text/json/key-value] (relevant only for type 'generic')"
       type: str
+    lock_during_sra_session:
+      description: "Lock this secret for read/update while an SRA session is active"
+      type: str
     max_versions:
       description: "Set the maximum number of versions, limited by the account settings defaults."
       type: str
@@ -53,11 +56,10 @@ options:
       description: "The secret sub type [generic/password]"
       type: str
     value:
-      description:
-        - The secret value.
-        - Required when I(state=present); not required when I(state=absent).
-          Enforced via the AnsibleModule C(required_if) gate; see EXAMPLES.
+      description: "The secret value"
       type: str
+      required: true
+      no_log: true
 '''
 
 EXAMPLES = r'''
@@ -84,12 +86,13 @@ argument_spec = {
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
     'format': {'type': 'str'},
+    'lock_during_sra_session': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'protection_key': {'type': 'str', 'no_log': False},
+    'protection_key': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'type': {'type': 'str'},
-    'value': {'type': 'str', 'no_log': True},
+    'value': {'type': 'str', 'required': True, 'no_log': True},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -100,12 +103,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='static_secret',
-        sdk_create=('CreateSecret', 'create_secret'),
-        sdk_update=('UpdateSecretVal', 'update_secret_val'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
-        required_if=[('state', 'present', ['value'])],
+        resource_label="static_secret",
+        sdk_create=("CreateSecret", "create_secret"),
+        sdk_update=("UpdateSecretVal", "update_secret_val"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

@@ -42,16 +42,12 @@ options:
       description: "Dynamic secret name"
       type: str
       required: true
-
     oracle_host:
       description: "Oracle Host"
       type: str
-      required: true
-
     oracle_password:
       description: "Oracle Password"
       type: str
-      required: true
     oracle_port:
       description: "Oracle Port"
       type: str
@@ -61,16 +57,12 @@ options:
     oracle_screation_statements:
       description: "Oracle Creation statements"
       type: str
-
     oracle_service_name:
       description: "Oracle DB Name"
       type: str
-      required: true
-
     oracle_username:
       description: "Oracle Username"
       type: str
-      required: true
     password_length:
       description: "The length of the password to be generated"
       type: str
@@ -115,14 +107,14 @@ argument_spec = {
     'delete_protection': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'oracle_host': {'type': 'str', 'required': True},
-    'oracle_password': {'type': 'str', 'required': True, 'no_log': True},
+    'oracle_host': {'type': 'str'},
+    'oracle_password': {'type': 'str'},
     'oracle_port': {'type': 'str'},
     'oracle_revocation_statements': {'type': 'str'},
     'oracle_screation_statements': {'type': 'str'},
-    'oracle_service_name': {'type': 'str', 'required': True},
-    'oracle_username': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'oracle_service_name': {'type': 'str'},
+    'oracle_username': {'type': 'str'},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -137,11 +129,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_oracle',
-        sdk_create=('GatewayCreateProducerOracleDb', 'gateway_create_producer_oracle_db'),
-        sdk_update=('GatewayUpdateProducerOracleDb', 'gateway_update_producer_oracle_db'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_oracle",
+        sdk_create=("GatewayCreateProducerOracleDb", "gateway_create_producer_oracle_db"),
+        sdk_update=("GatewayUpdateProducerOracleDb", "gateway_update_producer_oracle_db"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

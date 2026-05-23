@@ -18,11 +18,9 @@ extends_documentation_fragment:
 description:
   - Retrieve information about auth_method_info.
 options:
-
     name:
       description: "Auth Method name"
       type: str
-      required: true
 '''
 
 EXAMPLES = r'''
@@ -40,7 +38,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 )
 
 argument_spec = {
-    'name': {'required': True, 'type': 'str'},
+    'name': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -51,7 +49,7 @@ argument_spec = {
 def main():
     run_info_module(
         argument_spec=argument_spec,
-        sdk_call=('GetAuthMethod', 'get_auth_method'),
+        sdk_call=("GetAuthMethod", "get_auth_method"),
     )
 
 

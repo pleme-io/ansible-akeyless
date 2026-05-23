@@ -57,6 +57,7 @@ options:
     rotated_password:
       description: "Rotated-username password (relevant only for rotator-type=password)"
       type: str
+      no_log: true
     rotated_username:
       description: "Username to be rotated"
       type: str
@@ -108,11 +109,11 @@ argument_spec = {
     'auto_rotate': {'type': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
-    'private_key': {'type': 'str', 'no_log': True},
+    'password_length': {'type': 'str'},
+    'private_key': {'type': 'str'},
     'private_key_file_name': {'type': 'str'},
     'rotated_password': {'type': 'str', 'no_log': True},
     'rotated_username': {'type': 'str'},
@@ -132,11 +133,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='rotated_secret_snowflake',
-        sdk_create=('RotatedSecretCreateSnowflake', 'rotated_secret_create_snowflake'),
-        sdk_update=('RotatedSecretUpdateSnowflake', 'rotated_secret_update_snowflake'),
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
+        resource_label="rotated_secret_snowflake",
+        sdk_create=("RotatedSecretCreateSnowflake", "rotated_secret_create_snowflake"),
+        sdk_update=("RotatedSecretUpdateSnowflake", "rotated_secret_update_snowflake"),
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

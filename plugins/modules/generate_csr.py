@@ -127,7 +127,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('GenerateCsr', 'generate_csr'),
+        sdk_call=("GenerateCsr", "generate_csr"),
     )
 
 

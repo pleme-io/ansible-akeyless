@@ -26,11 +26,10 @@ options:
     description:
       description: "Target description"
       type: str
-
     gcp_key:
       description: "GCP service account key JSON (base64)"
       type: str
-      required: true
+      no_log: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -67,8 +66,8 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'description': {'type': 'str'},
-    'gcp_key': {'type': 'str', 'no_log': True, 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'gcp_key': {'type': 'str', 'no_log': True},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'use_gw_cloud_identity': {'type': 'bool'},
@@ -82,11 +81,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_gcp',
-        sdk_create=('TargetCreateGcp', 'target_create_gcp'),
-        sdk_update=('TargetUpdateGcp', 'target_update_gcp'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_gcp",
+        sdk_create=("TargetCreateGcp", "target_create_gcp"),
+        sdk_update=("TargetUpdateGcp", "target_update_gcp"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

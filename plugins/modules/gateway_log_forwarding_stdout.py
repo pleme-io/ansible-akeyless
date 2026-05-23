@@ -67,11 +67,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_stdout',
-        sdk_create=('GatewayUpdateLogForwardingStdout', 'gateway_update_log_forwarding_stdout'),
-        sdk_update=('GatewayUpdateLogForwardingStdout', 'gateway_update_log_forwarding_stdout'),
-        sdk_delete=('GatewayUpdateLogForwardingStdout', 'gateway_update_log_forwarding_stdout'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_stdout",
+        sdk_create=("GatewayUpdateLogForwardingStdout", "gateway_update_log_forwarding_stdout"),
+        sdk_update=("GatewayUpdateLogForwardingStdout", "gateway_update_log_forwarding_stdout"),
+        sdk_delete=("GatewayUpdateLogForwardingStdout", "gateway_update_log_forwarding_stdout"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

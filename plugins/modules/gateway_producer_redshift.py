@@ -45,29 +45,21 @@ options:
     producer_encryption_key:
       description: "Dynamic producer encryption key"
       type: str
-
     redshift_db_name:
       description: "Redshift DB Name"
       type: str
-      required: true
-
     redshift_host:
       description: "Redshift Host"
       type: str
-      required: true
-
     redshift_password:
       description: "Redshift Password"
       type: str
-      required: true
     redshift_port:
       description: "Redshift Port"
       type: str
-
     redshift_username:
       description: "Redshift Username"
       type: str
-      required: true
     ssl:
       description: "Enable/Disable SSL [true/false]"
       type: bool
@@ -108,13 +100,13 @@ argument_spec = {
     'delete_protection': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
-    'producer_encryption_key': {'type': 'str', 'no_log': False},
-    'redshift_db_name': {'type': 'str', 'required': True},
-    'redshift_host': {'type': 'str', 'required': True},
-    'redshift_password': {'type': 'str', 'required': True, 'no_log': True},
+    'password_length': {'type': 'str'},
+    'producer_encryption_key': {'type': 'str'},
+    'redshift_db_name': {'type': 'str'},
+    'redshift_host': {'type': 'str'},
+    'redshift_password': {'type': 'str'},
     'redshift_port': {'type': 'str'},
-    'redshift_username': {'type': 'str', 'required': True},
+    'redshift_username': {'type': 'str'},
     'ssl': {'type': 'bool'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -129,11 +121,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_redshift',
-        sdk_create=('GatewayCreateProducerRedshift', 'gateway_create_producer_redshift'),
-        sdk_update=('GatewayUpdateProducerRedshift', 'gateway_update_producer_redshift'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_redshift",
+        sdk_create=("GatewayCreateProducerRedshift", "gateway_create_producer_redshift"),
+        sdk_update=("GatewayUpdateProducerRedshift", "gateway_update_producer_redshift"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

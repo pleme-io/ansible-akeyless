@@ -23,30 +23,24 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
-
     account:
       description: "Account name"
       type: str
-      required: true
     account_password:
       description: "Database Password"
       type: str
-
     account_username:
       description: "Database Username"
       type: str
-      required: true
     auth_mode:
       description: "The authentication mode for the temporary user [password/key]"
       type: str
     custom_username_template:
       description: "Customize how temporary usernames are generated using go template"
       type: str
-
     db_name:
       description: "Database name"
       type: str
-      required: true
     delete_protection:
       description: "Enable delete protection"
       type: bool
@@ -66,11 +60,9 @@ options:
     password_length:
       description: "The length of the password to be generated"
       type: str
-
     private_key:
       description: "RSA Private key (base64 encoded)"
       type: str
-      required: true
     private_key_passphrase:
       description: "The Private key passphrase"
       type: str
@@ -112,20 +104,20 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'account': {'type': 'str', 'required': True},
-    'account_password': {'type': 'str', 'no_log': True},
-    'account_username': {'type': 'str', 'required': True},
+    'account': {'type': 'str'},
+    'account_password': {'type': 'str'},
+    'account_username': {'type': 'str'},
     'auth_mode': {'type': 'str'},
     'custom_username_template': {'type': 'str'},
-    'db_name': {'type': 'str', 'required': True},
+    'db_name': {'type': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
-    'key_algo': {'type': 'str', 'no_log': False},
+    'key_algo': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
-    'private_key': {'type': 'str', 'required': True, 'no_log': True},
-    'private_key_passphrase': {'type': 'str', 'no_log': True},
+    'password_length': {'type': 'str'},
+    'private_key': {'type': 'str'},
+    'private_key_passphrase': {'type': 'str'},
     'role': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -141,11 +133,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_snowflake',
-        sdk_create=('DynamicSecretCreateSnowflake', 'dynamic_secret_create_snowflake'),
-        sdk_update=('DynamicSecretUpdateSnowflake', 'dynamic_secret_update_snowflake'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_snowflake",
+        sdk_create=("DynamicSecretCreateSnowflake", "dynamic_secret_create_snowflake"),
+        sdk_update=("DynamicSecretUpdateSnowflake", "dynamic_secret_update_snowflake"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

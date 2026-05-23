@@ -35,24 +35,18 @@ options:
     k8s_allowed_namespaces:
       description: "Comma-separated list of allowed K8S namespaces for the generated ServiceAccount (relevant only for k8s-service-account-type=dynamic)"
       type: str
-
     k8s_cluster_ca_cert:
       description: "K8S cluster CA certificate"
       type: str
-      required: true
-
     k8s_cluster_endpoint:
       description: "K8S cluster URL endpoint"
       type: str
-      required: true
     k8s_cluster_name:
       description: "K8S cluster name"
       type: str
-
     k8s_cluster_token:
       description: "K8S cluster Bearer token"
       type: str
-      required: true
     k8s_namespace:
       description: "K8S Namespace where the ServiceAccount exists."
       type: str
@@ -132,10 +126,10 @@ argument_spec = {
     'delete_protection': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'k8s_allowed_namespaces': {'type': 'str'},
-    'k8s_cluster_ca_cert': {'type': 'str', 'required': True},
-    'k8s_cluster_endpoint': {'type': 'str', 'required': True},
-    'k8s_cluster_name': {'type': 'str', 'no_log': False},
-    'k8s_cluster_token': {'type': 'str', 'required': True, 'no_log': True},
+    'k8s_cluster_ca_cert': {'type': 'str'},
+    'k8s_cluster_endpoint': {'type': 'str'},
+    'k8s_cluster_name': {'type': 'str'},
+    'k8s_cluster_token': {'type': 'str'},
     'k8s_namespace': {'type': 'str'},
     'k8s_predefined_role_name': {'type': 'str'},
     'k8s_predefined_role_type': {'type': 'str'},
@@ -163,11 +157,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_k8s',
-        sdk_create=('GatewayCreateProducerNativeK8S', 'gateway_create_producer_native_k8_s'),
-        sdk_update=('GatewayUpdateProducerNativeK8S', 'gateway_update_producer_native_k8_s'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_k8s",
+        sdk_create=("GatewayCreateProducerNativeK8S", "gateway_create_producer_native_k8_s"),
+        sdk_update=("GatewayUpdateProducerNativeK8S", "gateway_update_producer_native_k8_s"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

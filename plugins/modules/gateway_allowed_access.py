@@ -45,7 +45,8 @@ options:
       type: str
     sub_claims:
       description: "Key/val of sub claims, e.g. group=admins,developers"
-      type: dict'''
+      type: dict
+'''
 
 EXAMPLES = r'''
 - name: Create gateway_allowed_access
@@ -75,6 +76,7 @@ argument_spec = {
     'permissions': {'type': 'str'},
     'sub_claims': {'type': 'dict'},
     'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
     'access_type': {'type': 'str', 'default': 'access_key'},
 }
@@ -83,11 +85,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_allowed_access',
-        sdk_create=('GatewayCreateAllowedAccess', 'gateway_create_allowed_access'),
-        sdk_update=('GatewayUpdateAllowedAccess', 'gateway_update_allowed_access'),
-        sdk_delete=('GatewayDeleteAllowedAccess', 'gateway_delete_allowed_access'),
-        sdk_read=('GatewayGetAllowedAccess', 'gateway_get_allowed_access'),
+        resource_label="gateway_allowed_access",
+        sdk_create=("GatewayCreateAllowedAccess", "gateway_create_allowed_access"),
+        sdk_update=("GatewayUpdateAllowedAccess", "gateway_update_allowed_access"),
+        sdk_delete=("GatewayDeleteAllowedAccess", "gateway_delete_allowed_access"),
+        sdk_read=("GatewayGetAllowedAccess", "gateway_get_allowed_access"),
     )
 
 

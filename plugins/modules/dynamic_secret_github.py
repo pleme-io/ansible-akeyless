@@ -35,6 +35,7 @@ options:
     github_app_private_key:
       description: "GitHub App private key (PEM)"
       type: str
+      no_log: true
     github_base_url:
       description: "GitHub base URL (for GitHub Enterprise)"
       type: str
@@ -96,7 +97,7 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
-    'github_app_id': {'type': 'int', 'no_log': False},
+    'github_app_id': {'type': 'int'},
     'github_app_private_key': {'type': 'str', 'no_log': True},
     'github_base_url': {'type': 'str'},
     'installation_id': {'type': 'int'},
@@ -106,9 +107,9 @@ argument_spec = {
     'name': {'type': 'str', 'required': True},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
-    'token_permissions': {'type': 'list', 'elements': 'str', 'no_log': False},
-    'token_repositories': {'type': 'list', 'elements': 'str', 'no_log': False},
-    'token_ttl': {'type': 'str', 'no_log': False},
+    'token_permissions': {'type': 'list', 'elements': 'str'},
+    'token_repositories': {'type': 'list', 'elements': 'str'},
+    'token_ttl': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -119,11 +120,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_github',
-        sdk_create=('DynamicSecretCreateGithub', 'dynamic_secret_create_github'),
-        sdk_update=('DynamicSecretUpdateGithub', 'dynamic_secret_update_github'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_github",
+        sdk_create=("DynamicSecretCreateGithub", "dynamic_secret_create_github"),
+        sdk_update=("DynamicSecretUpdateGithub", "dynamic_secret_update_github"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

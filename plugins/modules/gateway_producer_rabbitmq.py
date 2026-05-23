@@ -39,42 +39,30 @@ options:
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
-
     rabbitmq_admin_pwd:
       description: "RabbitMQ Admin password"
       type: str
-      required: true
-
     rabbitmq_admin_user:
       description: "RabbitMQ Admin User"
       type: str
-      required: true
-
     rabbitmq_server_uri:
       description: "Server URI"
       type: str
-      required: true
-
     rabbitmq_user_conf_permission:
       description: "User configuration permission"
       type: str
-      required: true
-
     rabbitmq_user_read_permission:
       description: "User read permission"
       type: str
-      required: true
     rabbitmq_user_tags:
       description: "User Tags"
       type: str
     rabbitmq_user_vhost:
       description: "User Virtual Host"
       type: str
-
     rabbitmq_user_write_permission:
       description: "User write permission"
       type: str
-      required: true
     tags:
       description: "Add tags attached to this object"
       type: list
@@ -110,16 +98,16 @@ argument_spec = {
     'delete_protection': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
-    'rabbitmq_admin_pwd': {'type': 'str', 'required': True},
-    'rabbitmq_admin_user': {'type': 'str', 'required': True},
-    'rabbitmq_server_uri': {'type': 'str', 'required': True},
-    'rabbitmq_user_conf_permission': {'type': 'str', 'required': True},
-    'rabbitmq_user_read_permission': {'type': 'str', 'required': True},
+    'rabbitmq_admin_pwd': {'type': 'str'},
+    'rabbitmq_admin_user': {'type': 'str'},
+    'rabbitmq_server_uri': {'type': 'str'},
+    'rabbitmq_user_conf_permission': {'type': 'str'},
+    'rabbitmq_user_read_permission': {'type': 'str'},
     'rabbitmq_user_tags': {'type': 'str'},
     'rabbitmq_user_vhost': {'type': 'str'},
-    'rabbitmq_user_write_permission': {'type': 'str', 'required': True},
+    'rabbitmq_user_write_permission': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
     'user_ttl': {'type': 'str'},
@@ -133,11 +121,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_rabbitmq',
-        sdk_create=('GatewayCreateProducerRabbitMQ', 'gateway_create_producer_rabbit_mq'),
-        sdk_update=('GatewayUpdateProducerRabbitMQ', 'gateway_update_producer_rabbit_mq'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_rabbitmq",
+        sdk_create=("GatewayCreateProducerRabbitMQ", "gateway_create_producer_rabbit_mq"),
+        sdk_update=("GatewayUpdateProducerRabbitMQ", "gateway_update_producer_rabbit_mq"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

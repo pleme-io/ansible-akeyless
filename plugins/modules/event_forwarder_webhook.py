@@ -76,20 +76,9 @@ options:
       description: "Targets Event sources"
       type: list
       elements: str
-
     url:
       description: "Webhook URL"
       type: str
-      required: true
-    password:
-      description: "Password."
-      type: str
-      required: true
-    username:
-      description: "Username."
-      type: str
-      required: true
-
 '''
 
 EXAMPLES = r'''
@@ -113,7 +102,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
-    'auth_token': {'type': 'str', 'no_log': True},
+    'auth_token': {'type': 'str'},
     'auth_type': {'type': 'str'},
     'client_cert_data': {'type': 'str'},
     'description': {'type': 'str'},
@@ -121,15 +110,13 @@ argument_spec = {
     'every': {'type': 'str'},
     'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
     'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password': {'type': 'str', 'no_log': True, 'required': True},
-    'private_key_data': {'type': 'str', 'no_log': True},
+    'private_key_data': {'type': 'str'},
     'runner_type': {'type': 'str', 'required': True},
-    'username': {'type': 'str', 'required': True},
     'server_certificates': {'type': 'str'},
     'targets_event_source_locations': {'type': 'list', 'elements': 'str'},
-    'url': {'type': 'str', 'required': True},
+    'url': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -140,11 +127,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='event_forwarder_webhook',
-        sdk_create=('EventForwarderCreateWebhook', 'event_forwarder_create_webhook'),
-        sdk_update=('EventForwarderUpdateWebhook', 'event_forwarder_update_webhook'),
-        sdk_delete=('EventForwarderDelete', 'event_forwarder_delete'),
-        sdk_read=('GetEventForwarder', 'get_event_forwarder'),
+        resource_label="event_forwarder_webhook",
+        sdk_create=("EventForwarderCreateWebhook", "event_forwarder_create_webhook"),
+        sdk_update=("EventForwarderUpdateWebhook", "event_forwarder_update_webhook"),
+        sdk_delete=("EventForwarderDelete", "event_forwarder_delete"),
+        sdk_read=("GetEventForwarder", "get_event_forwarder"),
     )
 
 

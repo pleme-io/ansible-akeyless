@@ -69,13 +69,18 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='kmip_environment_v2',
-        sdk_create=('KmipServerSetup', 'kmip_server_setup'),
+        resource_label="kmip_environment_v2",
+        sdk_create=("KmipServerSetup", "kmip_server_setup"),
+        # WARNING: The following fields are immutable after creation.
+        #   - certificate_ttl
+        #   - hostname
+        #   - root
+        # Changing them requires destroy + recreate.
         sdk_update=None,
-        sdk_delete=('KmipDeleteServer', 'kmip_delete_server'),
-        sdk_read=('KmipDescribeServer', 'kmip_describe_server'),
         immutable=True,
-        read_key='hostname',
+        sdk_delete=("KmipDeleteServer", "kmip_delete_server"),
+        sdk_read=("KmipDescribeServer", "kmip_describe_server"),
+        read_key="hostname",
     )
 
 

@@ -110,13 +110,13 @@ argument_spec = {
     'access_type': {'type': 'str'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
-    'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
+    'fixed_user_claim_keyname': {'type': 'str'},
     'gcp_cred_type': {'type': 'str'},
-    'gcp_key': {'type': 'str', 'no_log': True},
-    'gcp_key_algo': {'type': 'str', 'no_log': False},
+    'gcp_key': {'type': 'str'},
+    'gcp_key_algo': {'type': 'str'},
     'gcp_project_id': {'type': 'str'},
     'gcp_sa_email': {'type': 'str'},
-    'gcp_token_scopes': {'type': 'str', 'no_log': False},
+    'gcp_token_scopes': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
     'producer_encryption_key_name': {'type': 'str'},
@@ -137,11 +137,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_gcp',
-        sdk_create=('GatewayCreateProducerGcp', 'gateway_create_producer_gcp'),
-        sdk_update=('GatewayUpdateProducerGcp', 'gateway_update_producer_gcp'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_gcp",
+        sdk_create=("GatewayCreateProducerGcp", "gateway_create_producer_gcp"),
+        sdk_update=("GatewayUpdateProducerGcp", "gateway_update_producer_gcp"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

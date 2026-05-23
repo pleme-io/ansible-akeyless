@@ -17,6 +17,8 @@ extends_documentation_fragment:
   - drzln0.akeyless.auth
 description:
   - Retrieve information about account_custom_fields_info.
+options:
+
 '''
 
 EXAMPLES = r'''
@@ -43,7 +45,6 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 )
 
 argument_spec = {
-
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -54,7 +55,7 @@ argument_spec = {
 def main():
     run_info_module(
         argument_spec=argument_spec,
-        sdk_call=('AccountCustomFieldList', 'account_custom_field_list'),
+        sdk_call=("AccountCustomFieldList", "account_custom_field_list"),
     )
 
 

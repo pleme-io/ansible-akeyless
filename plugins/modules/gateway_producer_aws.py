@@ -29,16 +29,12 @@ options:
     admin_rotation_interval_days:
       description: "Admin credentials rotation interval (days)"
       type: int
-
     aws_access_key_id:
       description: "Access Key ID"
       type: str
-      required: true
-
     aws_access_secret_key:
       description: "Secret Access Key"
       type: str
-      required: true
     aws_external_id:
       description: "The AWS External ID associated with the AWS role (relevant only for assume_role mode)"
       type: str
@@ -51,11 +47,9 @@ options:
     aws_user_groups:
       description: "AWS User groups"
       type: str
-
     aws_user_policies:
       description: "AWS User policies"
       type: str
-      required: true
     aws_user_programmatic_access:
       description: "Enable AWS User programmatic access"
       type: bool
@@ -81,11 +75,9 @@ options:
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
-
     region:
       description: "Region"
       type: str
-      required: true
     secure_access_delay:
       description: "The delay duration, in seconds, to wait after generating just-in-time credentials. Accepted range: 0-120 seconds"
       type: int
@@ -129,27 +121,27 @@ argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'access_mode': {'type': 'str'},
     'admin_rotation_interval_days': {'type': 'int'},
-    'aws_access_key_id': {'type': 'str', 'required': True},
-    'aws_access_secret_key': {'type': 'str', 'required': True, 'no_log': True},
+    'aws_access_key_id': {'type': 'str'},
+    'aws_access_secret_key': {'type': 'str'},
     'aws_external_id': {'type': 'str'},
     'aws_role_arns': {'type': 'str'},
     'aws_user_console_access': {'type': 'bool'},
     'aws_user_groups': {'type': 'str'},
-    'aws_user_policies': {'type': 'str', 'required': True},
+    'aws_user_policies': {'type': 'str'},
     'aws_user_programmatic_access': {'type': 'bool'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
     'enable_admin_rotation': {'type': 'bool'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
-    'region': {'type': 'str', 'required': True},
+    'region': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'session_tags': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
-    'transitive_tag_keys': {'type': 'str', 'no_log': False},
+    'transitive_tag_keys': {'type': 'str'},
     'user_ttl': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
@@ -161,11 +153,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_aws',
-        sdk_create=('GatewayCreateProducerAws', 'gateway_create_producer_aws'),
-        sdk_update=('GatewayUpdateProducerAws', 'gateway_update_producer_aws'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_aws",
+        sdk_create=("GatewayCreateProducerAws", "gateway_create_producer_aws"),
+        sdk_update=("GatewayUpdateProducerAws", "gateway_update_producer_aws"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

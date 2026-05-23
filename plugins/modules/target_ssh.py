@@ -26,11 +26,9 @@ options:
     description:
       description: "Target description"
       type: str
-
     host:
       description: "SSH host address"
       type: str
-      required: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -47,17 +45,18 @@ options:
     private_key:
       description: "SSH private key (PEM)"
       type: str
+      no_log: true
     private_key_password:
       description: "SSH private key passphrase"
       type: str
+      no_log: true
     ssh_password:
       description: "SSH password"
       type: str
-
+      no_log: true
     ssh_username:
       description: "SSH username"
       type: str
-      required: true
 '''
 
 EXAMPLES = r'''
@@ -81,15 +80,15 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'description': {'type': 'str'},
-    'host': {'type': 'str', 'required': True},
-    'key': {'type': 'str', 'no_log': False},
+    'host': {'type': 'str'},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'port': {'type': 'str'},
     'private_key': {'type': 'str', 'no_log': True},
     'private_key_password': {'type': 'str', 'no_log': True},
     'ssh_password': {'type': 'str', 'no_log': True},
-    'ssh_username': {'type': 'str', 'required': True},
+    'ssh_username': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -100,12 +99,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_ssh',
-        sdk_create=('TargetCreateSsh', 'target_create_ssh'),
-        sdk_update=('TargetUpdateSsh', 'target_update_ssh'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
-        required_if=[('state', 'present', ['private_key', 'ssh_password'], True)],
+        resource_label="target_ssh",
+        sdk_create=("TargetCreateSsh", "target_create_ssh"),
+        sdk_update=("TargetUpdateSsh", "target_update_ssh"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

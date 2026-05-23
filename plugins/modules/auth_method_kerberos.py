@@ -76,6 +76,7 @@ options:
     keytab_file_data:
       description: "Kerberos keytab file data (base64)"
       type: str
+      no_log: true
     keytab_file_path:
       description: "Path to Kerberos keytab file on gateway"
       type: str
@@ -141,7 +142,7 @@ argument_spec = {
     'allowed_client_type': {'type': 'list', 'elements': 'str'},
     'audit_logs_claims': {'type': 'list', 'elements': 'str'},
     'bind_dn': {'type': 'str'},
-    'bind_dn_password': {'type': 'str', 'no_log': True},
+    'bind_dn_password': {'type': 'str'},
     'bound_ips': {'type': 'list', 'elements': 'str'},
     'delete_protection': {'type': 'bool'},
     'description': {'type': 'str'},
@@ -153,7 +154,7 @@ argument_spec = {
     'gw_bound_ips': {'type': 'list', 'elements': 'str'},
     'jwt_ttl': {'type': 'int'},
     'keytab_file_data': {'type': 'str', 'no_log': True},
-    'keytab_file_path': {'type': 'str', 'no_log': True},
+    'keytab_file_path': {'type': 'str'},
     'krb5_conf_data': {'type': 'str'},
     'krb5_conf_path': {'type': 'str'},
     'ldap_anonymous_search': {'type': 'bool'},
@@ -175,11 +176,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_kerberos',
-        sdk_create=('AuthMethodCreateKerberos', 'auth_method_create_kerberos'),
-        sdk_update=('AuthMethodUpdateKerberos', 'auth_method_update_kerberos'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_kerberos",
+        sdk_create=("AuthMethodCreateKerberos", "auth_method_create_kerberos"),
+        sdk_update=("AuthMethodUpdateKerberos", "auth_method_update_kerberos"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

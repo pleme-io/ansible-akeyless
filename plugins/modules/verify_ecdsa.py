@@ -24,12 +24,10 @@ options:
     item_id:
       description: "Item ID of the EC key"
       type: int
-
     key_name:
       description: "Name of the EC key"
       type: str
-      required: true
-    payload:
+    message:
       description: "Base64-encoded message"
       type: str
       required: true
@@ -65,8 +63,8 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'display_id': {'type': 'str'},
     'item_id': {'type': 'int'},
-    'key_name': {'type': 'str', 'required': True},
-    'payload': {'type': 'str', 'required': True},
+    'key_name': {'type': 'str'},
+    'message': {'type': 'str', 'required': True},
     'prehashed': {'type': 'bool'},
     'signature': {'type': 'str', 'required': True},
     'version': {'type': 'int'},
@@ -80,7 +78,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('VerifyEcDsa', 'verify_ec_dsa'),
+        sdk_call=("VerifyEcDsa", "verify_ec_dsa"),
     )
 
 

@@ -93,7 +93,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'delete_protection': {'type': 'str'},
-    'gke_account_key': {'type': 'str', 'no_log': True},
+    'gke_account_key': {'type': 'str'},
     'gke_cluster_cert': {'type': 'str'},
     'gke_cluster_endpoint': {'type': 'str'},
     'gke_cluster_name': {'type': 'str'},
@@ -117,11 +117,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_gke',
-        sdk_create=('GatewayCreateProducerGke', 'gateway_create_producer_gke'),
-        sdk_update=('GatewayUpdateProducerGke', 'gateway_update_producer_gke'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_gke",
+        sdk_create=("GatewayCreateProducerGke", "gateway_create_producer_gke"),
+        sdk_update=("GatewayUpdateProducerGke", "gateway_update_producer_gke"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

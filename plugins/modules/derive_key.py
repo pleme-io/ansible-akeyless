@@ -73,7 +73,7 @@ argument_spec = {
     'alg': {'type': 'str', 'required': True},
     'hash_function': {'type': 'str'},
     'iter': {'type': 'int', 'required': True},
-    'key_len': {'type': 'int', 'required': True, 'no_log': False},
+    'key_len': {'type': 'int', 'required': True},
     'mem': {'type': 'int'},
     'name': {'type': 'str', 'required': True},
     'parallelism': {'type': 'int'},
@@ -88,7 +88,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('DeriveKey', 'derive_key'),
+        sdk_call=("DeriveKey", "derive_key"),
     )
 
 

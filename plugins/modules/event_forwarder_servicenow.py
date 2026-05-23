@@ -23,16 +23,12 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
-
     admin_name:
       description: "Workstation Admin Name"
       type: str
-      required: true
-
     admin_pwd:
       description: "Workstation Admin Password"
       type: str
-      required: true
     app_private_key_base64:
       description: "The RSA Private Key to use when connecting with jwt authentication"
       type: str
@@ -64,11 +60,9 @@ options:
       type: list
       required: true
       elements: str
-
     host:
       description: "Workstation Host"
       type: str
-      required: true
     items_event_source_locations:
       description: "Items Event sources"
       type: list
@@ -113,20 +107,20 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'admin_name': {'type': 'str', 'required': True},
-    'admin_pwd': {'type': 'str', 'no_log': True, 'required': True},
-    'app_private_key_base64': {'type': 'str', 'no_log': True},
+    'admin_name': {'type': 'str'},
+    'admin_pwd': {'type': 'str'},
+    'app_private_key_base64': {'type': 'str'},
     'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
     'auth_type': {'type': 'str'},
     'client_id': {'type': 'str'},
-    'client_secret': {'type': 'str', 'no_log': True},
+    'client_secret': {'type': 'str'},
     'description': {'type': 'str'},
     'event_types': {'type': 'list', 'elements': 'str'},
     'every': {'type': 'str'},
     'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
-    'host': {'type': 'str', 'required': True},
+    'host': {'type': 'str'},
     'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'runner_type': {'type': 'str', 'required': True},
     'targets_event_source_locations': {'type': 'list', 'elements': 'str'},
@@ -141,11 +135,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='event_forwarder_servicenow',
-        sdk_create=('EventForwarderCreateServiceNow', 'event_forwarder_create_service_now'),
-        sdk_update=('EventForwarderUpdateServiceNow', 'event_forwarder_update_service_now'),
-        sdk_delete=('EventForwarderDelete', 'event_forwarder_delete'),
-        sdk_read=('GetEventForwarder', 'get_event_forwarder'),
+        resource_label="event_forwarder_servicenow",
+        sdk_create=("EventForwarderCreateServiceNow", "event_forwarder_create_service_now"),
+        sdk_update=("EventForwarderUpdateServiceNow", "event_forwarder_update_service_now"),
+        sdk_delete=("EventForwarderDelete", "event_forwarder_delete"),
+        sdk_read=("GetEventForwarder", "get_event_forwarder"),
     )
 
 

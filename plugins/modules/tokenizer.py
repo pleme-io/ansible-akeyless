@@ -111,12 +111,15 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='tokenizer',
-        sdk_create=('CreateTokenizer', 'create_tokenizer'),
+        resource_label="tokenizer",
+        sdk_create=("CreateTokenizer", "create_tokenizer"),
+        # WARNING: The following fields are immutable after creation.
+        #   - name
+        # Changing them requires destroy + recreate.
         sdk_update=None,
-        sdk_delete=('DeleteItem', 'delete_item'),
-        sdk_read=('DescribeItem', 'describe_item'),
         immutable=True,
+        sdk_delete=("DeleteItem", "delete_item"),
+        sdk_read=("DescribeItem", "describe_item"),
     )
 
 

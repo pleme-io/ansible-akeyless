@@ -29,12 +29,9 @@ options:
     bind_dn:
       description: "Bind DN"
       type: str
-      required: true
-
     bind_dn_password:
       description: "Bind DN Password"
       type: str
-      required: true
     custom_username_template:
       description: "Customize how temporary usernames are generated using go template"
       type: str
@@ -59,11 +56,9 @@ options:
     ldap_ca_cert:
       description: "CA Certificate File Content"
       type: str
-
     ldap_url:
       description: "LDAP Server URL"
       type: str
-      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -97,14 +92,13 @@ options:
     user_attribute:
       description: "User Attribute"
       type: str
-
     user_dn:
       description: "User DN"
       type: str
-      required: true
     user_ttl:
       description: "User TTL"
-      type: str'''
+      type: str
+'''
 
 EXAMPLES = r'''
 - name: Create gateway_producer_ldap
@@ -127,28 +121,28 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'ProviderType': {'type': 'str'},
-    'bind_dn': {'type': 'str', 'required': True},
-    'bind_dn_password': {'type': 'str', 'required': True, 'no_log': True},
+    'bind_dn': {'type': 'str'},
+    'bind_dn_password': {'type': 'str'},
     'custom_username_template': {'type': 'str'},
     'delete_protection': {'type': 'str'},
     'external_username': {'type': 'str'},
-    'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
+    'fixed_user_claim_keyname': {'type': 'str'},
     'group_dn': {'type': 'str'},
     'host_provider': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'ldap_ca_cert': {'type': 'str'},
-    'ldap_url': {'type': 'str', 'required': True},
+    'ldap_url': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'secure_access_delay': {'type': 'int'},
     'secure_access_rd_gateway_server': {'type': 'str'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
-    'token_expiration': {'type': 'str', 'no_log': False},
+    'token_expiration': {'type': 'str'},
     'user_attribute': {'type': 'str'},
-    'user_dn': {'type': 'str', 'required': True},
+    'user_dn': {'type': 'str'},
     'user_ttl': {'type': 'str'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
@@ -160,11 +154,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_ldap',
-        sdk_create=('GatewayCreateProducerLdap', 'gateway_create_producer_ldap'),
-        sdk_update=('GatewayUpdateProducerLdap', 'gateway_update_producer_ldap'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_ldap",
+        sdk_create=("GatewayCreateProducerLdap", "gateway_create_producer_ldap"),
+        sdk_update=("GatewayUpdateProducerLdap", "gateway_update_producer_ldap"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

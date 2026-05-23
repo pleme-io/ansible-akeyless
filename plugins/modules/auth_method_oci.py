@@ -121,11 +121,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_oci',
-        sdk_create=('AuthMethodCreateOCI', 'auth_method_create_oci'),
-        sdk_update=('AuthMethodUpdateOCI', 'auth_method_update_oci'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_oci",
+        sdk_create=("AuthMethodCreateOCI", "auth_method_create_oci"),
+        sdk_update=("AuthMethodUpdateOCI", "auth_method_update_oci"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

@@ -53,7 +53,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('UidGenerateToken', 'uid_generate_token'),
+        sdk_call=("UidGenerateToken", "uid_generate_token"),
     )
 
 

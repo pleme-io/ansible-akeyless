@@ -69,15 +69,12 @@ options:
       description: "Choose the relevant product type for the auth method [sm, sra, pm, dp, ca]"
       type: list
       elements: str
-
     public_key_data:
       description: "A public key generated for LDAP authentication method on Akeyless in base64 or PEM format
-      type: str
 [RSA2048]"
       type: str
     unique_identifier:
       description: "A unique identifier (ID) value should be configured for OAuth2,
-      type: str
 LDAP and SAML authentication method types and is usually a value such
 as the email, username, or upn for example.
 Whenever a user logs in with a token, these authentication types issue
@@ -116,7 +113,7 @@ argument_spec = {
     'description': {'type': 'str'},
     'expiration_event_in': {'type': 'list', 'elements': 'str'},
     'force_sub_claims': {'type': 'bool'},
-    'gen_key': {'type': 'str', 'no_log': False},
+    'gen_key': {'type': 'str'},
     'gw_bound_ips': {'type': 'list', 'elements': 'str'},
     'jwt_ttl': {'type': 'int'},
     'name': {'type': 'str', 'required': True},
@@ -133,11 +130,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='auth_method_ldap',
-        sdk_create=('AuthMethodCreateLdap', 'auth_method_create_ldap'),
-        sdk_update=('AuthMethodUpdateLdap', 'auth_method_update_ldap'),
-        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
-        sdk_read=('GetAuthMethod', 'get_auth_method'),
+        resource_label="auth_method_ldap",
+        sdk_create=("AuthMethodCreateLdap", "auth_method_create_ldap"),
+        sdk_update=("AuthMethodUpdateLdap", "auth_method_update_ldap"),
+        sdk_delete=("DeleteAuthMethod", "delete_auth_method"),
+        sdk_read=("GetAuthMethod", "get_auth_method"),
     )
 
 

@@ -27,10 +27,6 @@ options:
     with_manual_ack:
       description: "Disable automatic ack"
       type: bool
-    uid_token:
-      description: "Uid token."
-      type: str
-
 '''
 
 EXAMPLES = r'''
@@ -52,9 +48,8 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'fork': {'type': 'bool'},
-    'send_manual_ack_token': {'type': 'str', 'no_log': True},
+    'send_manual_ack_token': {'type': 'str'},
     'with_manual_ack': {'type': 'bool'},
-    'uid_token': {'type': 'str', 'no_log': True},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
     'access_key': {'type': 'str', 'no_log': True},
@@ -65,7 +60,7 @@ argument_spec = {
 def main():
     run_action_module(
         argument_spec=argument_spec,
-        sdk_call=('UidRotateToken', 'uid_rotate_token'),
+        sdk_call=("UidRotateToken", "uid_rotate_token"),
     )
 
 

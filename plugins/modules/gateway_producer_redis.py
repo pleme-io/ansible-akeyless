@@ -23,10 +23,8 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
-
     acl_rules:
       description: "A JSON array list of redis ACL rules to attach to the created user. For available rules see the ACL CAT command https://redis.io/commands/acl-cat
-      type: str
 By default the user will have permissions to read all keys '['~*', '+@read']'"
       type: str
     custom_username_template:
@@ -98,7 +96,7 @@ argument_spec = {
     'host': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
+    'password_length': {'type': 'str'},
     'port': {'type': 'str'},
     'producer_encryption_key_name': {'type': 'str'},
     'ssl': {'type': 'bool'},
@@ -116,11 +114,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_producer_redis',
-        sdk_create=('GatewayCreateProducerRedis', 'gateway_create_producer_redis'),
-        sdk_update=('GatewayUpdateProducerRedis', 'gateway_update_producer_redis'),
-        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
-        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
+        resource_label="gateway_producer_redis",
+        sdk_create=("GatewayCreateProducerRedis", "gateway_create_producer_redis"),
+        sdk_update=("GatewayUpdateProducerRedis", "gateway_update_producer_redis"),
+        sdk_delete=("GatewayDeleteProducer", "gateway_delete_producer"),
+        sdk_read=("GatewayGetProducer", "gateway_get_producer"),
     )
 
 

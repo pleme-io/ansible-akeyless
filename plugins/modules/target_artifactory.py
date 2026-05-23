@@ -31,6 +31,7 @@ options:
       description: "Artifactory admin password"
       type: str
       required: true
+      no_log: true
     base_url:
       description: "Artifactory base URL"
       type: str
@@ -38,10 +39,8 @@ options:
     description:
       description: "Target description"
       type: str
-
     key:
       description: "The name of a key used to encrypt the target secret value (if empty, the
-      type: str
 account default protectionKey key will be used)"
       type: str
     max_versions:
@@ -77,7 +76,7 @@ argument_spec = {
     'artifactory_admin_pwd': {'type': 'str', 'required': True, 'no_log': True},
     'base_url': {'type': 'str', 'required': True},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'gateway_url': {'type': 'str'},
@@ -90,11 +89,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_artifactory',
-        sdk_create=('TargetCreateArtifactory', 'target_create_artifactory'),
-        sdk_update=('TargetUpdateArtifactory', 'target_update_artifactory'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_artifactory",
+        sdk_create=("TargetCreateArtifactory", "target_create_artifactory"),
+        sdk_update=("TargetUpdateArtifactory", "target_update_artifactory"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

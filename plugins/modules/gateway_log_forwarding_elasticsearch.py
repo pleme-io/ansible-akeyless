@@ -81,7 +81,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'api_key': {'type': 'str', 'no_log': True},
+    'api_key': {'type': 'str'},
     'auth_type': {'type': 'str'},
     'cloud_id': {'type': 'str'},
     'enable': {'type': 'str'},
@@ -103,11 +103,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_elasticsearch',
-        sdk_create=('GatewayUpdateLogForwardingElasticsearch', 'gateway_update_log_forwarding_elasticsearch'),
-        sdk_update=('GatewayUpdateLogForwardingElasticsearch', 'gateway_update_log_forwarding_elasticsearch'),
-        sdk_delete=('GatewayUpdateLogForwardingElasticsearch', 'gateway_update_log_forwarding_elasticsearch'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_elasticsearch",
+        sdk_create=("GatewayUpdateLogForwardingElasticsearch", "gateway_update_log_forwarding_elasticsearch"),
+        sdk_update=("GatewayUpdateLogForwardingElasticsearch", "gateway_update_log_forwarding_elasticsearch"),
+        sdk_delete=("GatewayUpdateLogForwardingElasticsearch", "gateway_update_log_forwarding_elasticsearch"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 

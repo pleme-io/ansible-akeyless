@@ -77,20 +77,20 @@ argument_spec = {
 
 
 def main():
-    # SetRoleRule/DeleteRoleRule are content-addressable on the Akeyless
-    # side: re-applying the same rule is a no-change. We use GetRole as
-    # the existence probe (rules live as a sub-collection of the role);
-    # if the role is present we consider the rule's desired state met
-    # and skip both update and drift detection.
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='role_rule',
-        sdk_create=('SetRoleRule', 'set_role_rule'),
+        resource_label="role_rule",
+        sdk_create=("SetRoleRule", "set_role_rule"),
+        # WARNING: The following fields are immutable after creation.
+        #   - capability
+        #   - path
+        #   - role_name
+        # Changing them requires destroy + recreate.
         sdk_update=None,
-        sdk_delete=('DeleteRoleRule', 'delete_role_rule'),
-        sdk_read=('GetRole', 'get_role'),
-        read_key='role_name',
-        idempotent=True,
+        immutable=True,
+        sdk_delete=("DeleteRoleRule", "delete_role_rule"),
+        sdk_read=("GetRole", "get_role"),
+        read_key="role_name",
     )
 
 

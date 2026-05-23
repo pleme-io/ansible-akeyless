@@ -62,7 +62,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
     'description': {'type': 'str'},
-    'key': {'type': 'str', 'no_log': False},
+    'key': {'type': 'str'},
     'max_versions': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'url': {'type': 'str'},
@@ -76,11 +76,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='target_web',
-        sdk_create=('TargetCreateWeb', 'target_create_web'),
-        sdk_update=('TargetUpdateWeb', 'target_update_web'),
-        sdk_delete=('TargetDelete', 'target_delete'),
-        sdk_read=('TargetGet', 'target_get'),
+        resource_label="target_web",
+        sdk_create=("TargetCreateWeb", "target_create_web"),
+        sdk_update=("TargetUpdateWeb", "target_update_web"),
+        sdk_delete=("TargetDelete", "target_delete"),
+        sdk_read=("TargetGet", "target_get"),
     )
 
 

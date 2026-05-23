@@ -48,29 +48,22 @@ options:
     producer_encryption_key:
       description: "Dynamic producer encryption key"
       type: str
-
     redshift_db_name:
       description: "Redshift DB Name"
       type: str
-      required: true
-
     redshift_host:
       description: "Redshift host"
       type: str
-      required: true
-
     redshift_password:
       description: "Redshift admin password"
       type: str
-      required: true
+      no_log: true
     redshift_port:
       description: "Redshift port (default: 5439)"
       type: str
-
     redshift_username:
       description: "Redshift admin username"
       type: str
-      required: true
     ssl:
       description: "Enable SSL connection"
       type: bool
@@ -112,13 +105,13 @@ argument_spec = {
     'description': {'type': 'str'},
     'item_custom_fields': {'type': 'dict'},
     'name': {'type': 'str', 'required': True},
-    'password_length': {'type': 'str', 'no_log': False},
-    'producer_encryption_key': {'type': 'str', 'no_log': False},
-    'redshift_db_name': {'type': 'str', 'required': True},
-    'redshift_host': {'type': 'str', 'required': True},
-    'redshift_password': {'type': 'str', 'no_log': True, 'required': True},
+    'password_length': {'type': 'str'},
+    'producer_encryption_key': {'type': 'str'},
+    'redshift_db_name': {'type': 'str'},
+    'redshift_host': {'type': 'str'},
+    'redshift_password': {'type': 'str', 'no_log': True},
     'redshift_port': {'type': 'str'},
-    'redshift_username': {'type': 'str', 'required': True},
+    'redshift_username': {'type': 'str'},
     'ssl': {'type': 'bool'},
     'tags': {'type': 'list', 'elements': 'str'},
     'target_name': {'type': 'str'},
@@ -133,11 +126,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='dynamic_secret_redshift',
-        sdk_create=('DynamicSecretCreateRedshift', 'dynamic_secret_create_redshift'),
-        sdk_update=('DynamicSecretUpdateRedshift', 'dynamic_secret_update_redshift'),
-        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
-        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
+        resource_label="dynamic_secret_redshift",
+        sdk_create=("DynamicSecretCreateRedshift", "dynamic_secret_create_redshift"),
+        sdk_update=("DynamicSecretUpdateRedshift", "dynamic_secret_update_redshift"),
+        sdk_delete=("DynamicSecretDelete", "dynamic_secret_delete"),
+        sdk_read=("DynamicSecretGet", "dynamic_secret_get"),
     )
 
 

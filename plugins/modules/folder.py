@@ -81,11 +81,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='folder',
-        sdk_create=('FolderCreate', 'folder_create'),
-        sdk_update=('FolderUpdate', 'folder_update'),
-        sdk_delete=('FolderDelete', 'folder_delete'),
-        sdk_read=('FolderGet', 'folder_get'),
+        resource_label="folder",
+        sdk_create=("FolderCreate", "folder_create"),
+        sdk_update=("FolderUpdate", "folder_update"),
+        sdk_delete=("FolderDelete", "folder_delete"),
+        sdk_read=("FolderGet", "folder_get"),
     )
 
 

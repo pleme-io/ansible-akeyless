@@ -86,7 +86,7 @@ options:
       description: "Path location template for migrating domain servers as SSH/Windows Targets e.g.: .../Servers/{{COMPUTER_NAME}} (Relevant only for Active Directory migration)"
       type: str
     ad_targets_type:
-      description: "Set the target type of the domain servers (ssh / windows). Relevant only for Active Directory migration."
+      description: "Set the target type of the domain servers [ssh/windows](Relevant only for Active Directory migration)"
       type: str
     ad_user_base_dn:
       description: "Distinguished Name of User objects to search in Active Directory, e.g.: CN=Users,DC=example,DC=com (Relevant only for Active Directory migration)"
@@ -100,10 +100,8 @@ options:
     ad_winrm_port:
       description: "Set the WinRM Port for further connection to the domain servers. Default is 5986 (Relevant only for Active Directory migration)"
       type: str
-
     ad_discover_local_users:
       description: "Enable/Disable discovery of local users from each domain server and migrate them as SSH/Windows Rotated Secrets. Default is false: only domain users will be migrated. Discovery of local users might require further installation of SSH on the servers, based on the supplied computer base DN. This will be implemented automatically as part of the migration process (Relevant only for Active Directory migration)
-      type: str
 Deprecated: use AdDiscoverTypes"
       type: str
     ai_certificate_discovery:
@@ -136,16 +134,17 @@ Deprecated: use AdDiscoverTypes"
     conjur_api_key:
       description: "Conjur API Key for the specified user (relevant only for Conjur migration)."
       type: str
-
     conjur_url:
       description: "Conjur server base URL (relevant only for Conjur migration).
-      type: str
 If conjur-url is HTTPS and Conjur uses a private CA/self-signed certificate,
 make the CA bundle available on the Gateway and set CONJUR_SSL_CERT_PATH to its path."
       type: str
     conjur_username:
       description: "Conjur username used to authenticate (relevant only for Conjur migration)."
       type: str
+    delete_remote:
+      description: "Delete the secret from the remote target as well, relevant only when usc-name is not empty (relevant only for HasiCorp Vault migration)"
+      type: bool
     expiration_event_in:
       description: "How many days before the expiration of the certificate would you like to be notified."
       type: list
@@ -173,10 +172,8 @@ make the CA bundle available on the Gateway and set CONJUR_SSL_CERT_PATH to its 
       description: "A comma separated list of IPs, CIDR ranges, or DNS names to scan"
       type: str
       required: true
-
     k8s_ca_certificate:
       description: "For Certificate Authentication method
-      type: list
 K8s Cluster CA certificate (relevant only for K8s migration with Certificate Authentication method)"
       type: list
       elements: int
@@ -197,29 +194,23 @@ K8s Cluster CA certificate (relevant only for K8s migration with Certificate Aut
     k8s_skip_system:
       description: "K8s Skip Control Plane Secrets, This option allows to avoid importing secrets from system namespaces (relevant only for K8s migration)"
       type: bool
-
     k8s_token:
       description: "For Token Authentication method
-      type: str
 K8s Bearer Token with sufficient permission to list and get secrets in the namespace(s) you selected (relevant only for K8s migration with Token Authentication method)"
       type: str
     k8s_url:
       description: "K8s API Server URL, e.g. https://k8s-api.mycompany.com:6443 (relevant only for K8s migration)"
       type: str
-
     k8s_username:
       description: "For Password Authentication method
-      type: str
 K8s Client username with sufficient permission to list and get secrets in the namespace(s) you selected (relevant only for K8s migration with Password Authentication method)"
       type: str
     name:
       description: "Migration name"
       type: str
       required: true
-
     port_ranges:
       description: "A comma separated list of port ranges
-      type: str
 Examples: '80,443' or '80,443,8080-8090' or '443'"
       type: str
     protection_key:
@@ -258,9 +249,13 @@ Examples: '80,443' or '80,443,8080-8090' or '443'"
     type:
       description: "Migration type (hashi/aws/gcp/k8s/azure_kv/conjur/active_directory/server_inventory/certificate)"
       type: str
+    usc_name:
+      description: "Universal Secret Connector name"
+      type: str
     use_gw_cloud_identity:
       description: "Use the GW's Cloud IAM"
-      type: bool'''
+      type: bool
+'''
 
 EXAMPLES = r'''
 - name: Create gateway_migration
@@ -282,7 +277,7 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 argument_spec = {
     'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-    'ServiceAccountKeyDecoded': {'type': 'str', 'no_log': True},
+    'ServiceAccountKeyDecoded': {'type': 'str'},
     'ad_auto_rotate': {'type': 'str'},
     'ad_cert_expiration_event_in': {'type': 'list', 'elements': 'str'},
     'ad_certificates_path_template': {'type': 'str'},
@@ -309,37 +304,38 @@ argument_spec = {
     'ad_winrm_port': {'type': 'str'},
     'ad_discover_local_users': {'type': 'str'},
     'ai_certificate_discovery': {'type': 'str'},
-    'aws_key': {'type': 'str', 'no_log': True},
+    'aws_key': {'type': 'str'},
     'aws_key_id': {'type': 'str'},
     'aws_region': {'type': 'str'},
     'azure_client_id': {'type': 'str'},
     'azure_kv_name': {'type': 'str'},
-    'azure_secret': {'type': 'str', 'no_log': True},
+    'azure_secret': {'type': 'str'},
     'azure_tenant_id': {'type': 'str'},
     'conjur_account': {'type': 'str'},
-    'conjur_api_key': {'type': 'str', 'no_log': True},
+    'conjur_api_key': {'type': 'str'},
     'conjur_url': {'type': 'str'},
     'conjur_username': {'type': 'str'},
+    'delete_remote': {'type': 'bool'},
     'expiration_event_in': {'type': 'list', 'elements': 'str'},
-    'gcp_key': {'type': 'str', 'no_log': True},
+    'gcp_key': {'type': 'str'},
     'gcp_project_id': {'type': 'str'},
     'hashi_json': {'type': 'str'},
     'hashi_ns': {'type': 'list', 'elements': 'str'},
-    'hashi_token': {'type': 'str', 'no_log': True},
+    'hashi_token': {'type': 'str'},
     'hashi_url': {'type': 'str'},
     'hosts': {'type': 'str', 'required': True},
     'k8s_ca_certificate': {'type': 'list', 'elements': 'int'},
     'k8s_client_certificate': {'type': 'list', 'elements': 'int'},
-    'k8s_client_key': {'type': 'list', 'elements': 'int', 'no_log': True},
+    'k8s_client_key': {'type': 'list', 'elements': 'int'},
     'k8s_namespace': {'type': 'str'},
-    'k8s_password': {'type': 'str', 'no_log': True},
+    'k8s_password': {'type': 'str'},
     'k8s_skip_system': {'type': 'bool'},
-    'k8s_token': {'type': 'str', 'no_log': True},
+    'k8s_token': {'type': 'str'},
     'k8s_url': {'type': 'str'},
     'k8s_username': {'type': 'str'},
     'name': {'type': 'str', 'required': True},
     'port_ranges': {'type': 'str'},
-    'protection_key': {'type': 'str', 'no_log': False},
+    'protection_key': {'type': 'str'},
     'si_auto_rotate': {'type': 'str'},
     'si_rotation_hour': {'type': 'int'},
     'si_rotation_interval': {'type': 'int'},
@@ -350,6 +346,7 @@ argument_spec = {
     'si_users_path_template': {'type': 'str', 'required': True},
     'target_location': {'type': 'str', 'required': True},
     'type': {'type': 'str'},
+    'usc_name': {'type': 'str'},
     'use_gw_cloud_identity': {'type': 'bool'},
     'gateway_url': {'type': 'str'},
     'access_id': {'type': 'str'},
@@ -361,11 +358,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_migration',
-        sdk_create=('GatewayCreateMigration', 'gateway_create_migration'),
-        sdk_update=('GatewayUpdateMigration', 'gateway_update_migration'),
-        sdk_delete=('GatewayDeleteMigration', 'gateway_delete_migration'),
-        sdk_read=('GatewayGetMigration', 'gateway_get_migration'),
+        resource_label="gateway_migration",
+        sdk_create=("GatewayCreateMigration", "gateway_create_migration"),
+        sdk_update=("GatewayUpdateMigration", "gateway_update_migration"),
+        sdk_delete=("GatewayDeleteMigration", "gateway_delete_migration"),
+        sdk_read=("GatewayGetMigration", "gateway_get_migration"),
     )
 
 

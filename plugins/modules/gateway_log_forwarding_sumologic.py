@@ -79,11 +79,11 @@ argument_spec = {
 def main():
     run_standard_crud(
         argument_spec=argument_spec,
-        resource_label='gateway_log_forwarding_sumologic',
-        sdk_create=('GatewayUpdateLogForwardingSumologic', 'gateway_update_log_forwarding_sumologic'),
-        sdk_update=('GatewayUpdateLogForwardingSumologic', 'gateway_update_log_forwarding_sumologic'),
-        sdk_delete=('GatewayUpdateLogForwardingSumologic', 'gateway_update_log_forwarding_sumologic'),
-        sdk_read=('GatewayGetLogForwarding', 'gateway_get_log_forwarding'),
+        resource_label="gateway_log_forwarding_sumologic",
+        sdk_create=("GatewayUpdateLogForwardingSumologic", "gateway_update_log_forwarding_sumologic"),
+        sdk_update=("GatewayUpdateLogForwardingSumologic", "gateway_update_log_forwarding_sumologic"),
+        sdk_delete=("GatewayUpdateLogForwardingSumologic", "gateway_update_log_forwarding_sumologic"),
+        sdk_read=("GatewayGetLogForwarding", "gateway_get_log_forwarding"),
     )
 
 
