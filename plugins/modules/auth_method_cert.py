@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: auth_method_cert
 short_description: Manages a certificate authentication method
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage auth_method_cert resources.
 options:
@@ -64,7 +68,6 @@ options:
     certificate_data:
       description: "PEM certificate data for validation"
       type: str
-      no_log: true
     delete_protection:
       description: "Enable delete protection"
       type: bool
@@ -100,8 +103,11 @@ options:
       description: "Revoked certificate serial numbers"
       type: list
       elements: str
+
     unique_identifier:
       description: "A unique identifier (ID) value should be configured, such as common_name or organizational_unit
+      type: str
+      required: true
 Whenever a user logs in with a token, these authentication types issue
 a 'sub claim' that contains details uniquely identifying that user.
 This sub claim includes a key containing the ID value that you

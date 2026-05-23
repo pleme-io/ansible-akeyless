@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: verify_ecdsa
 short_description: Verify an ECDSA signature
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Verify an ECDSA signature
 options:
@@ -20,10 +24,12 @@ options:
     item_id:
       description: "Item ID of the EC key"
       type: int
+
     key_name:
       description: "Name of the EC key"
       type: str
-    message:
+      required: true
+    payload:
       description: "Base64-encoded message"
       type: str
       required: true
@@ -60,7 +66,11 @@ from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client im
 
 def run_action(module, client, token):
     """Invoke the action and return the SDK response."""
-    body = build_body("VerifyEcDsa", dict(module.params, token=token))
+    # argspec field is `payload` (avoid Ansible-reserved `message`);
+    # remap to the SDK model\'s `message` field name.
+    _p = dict(module.params, token=token)
+    _p["message"] = _p.pop("payload", None)
+    body = build_body("VerifyEcDsa", _p)
     return call_api(module, client, "verify_ec_dsa", body)
 
 
@@ -69,7 +79,7 @@ def main():
         'display_id': {'type': 'str'},
         'item_id': {'type': 'int'},
         'key_name': {'type': 'str', 'required': True},
-        'message': {'type': 'str', 'required': True},
+        'payload': {'type': 'str', 'required': True},
         'prehashed': {'type': 'bool'},
         'signature': {'type': 'str', 'required': True},
         'version': {'type': 'int'},

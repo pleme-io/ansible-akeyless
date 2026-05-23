@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: rotated_secret_dockerhub
 short_description: Manages a DockerHub rotated secret
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage rotated_secret_dockerhub resources.
 options:
@@ -121,10 +125,10 @@ def main():
         'auto_rotate': {'type': 'str'},
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'rotation_event_in': {'type': 'list', 'elements': 'str'},
         'rotation_hour': {'type': 'int'},
         'rotation_interval': {'type': 'str'},

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_k8s
 short_description: Manages a native Kubernetes gateway producer (deprecated; prefer akeyless_dynamic_secret_k8s)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_k8s resources.
 options:
@@ -31,18 +35,24 @@ options:
     k8s_allowed_namespaces:
       description: "Comma-separated list of allowed K8S namespaces for the generated ServiceAccount (relevant only for k8s-service-account-type=dynamic)"
       type: str
+
     k8s_cluster_ca_cert:
       description: "K8S cluster CA certificate"
       type: str
+      required: true
+
     k8s_cluster_endpoint:
       description: "K8S cluster URL endpoint"
       type: str
+      required: true
     k8s_cluster_name:
       description: "K8S cluster name"
       type: str
+
     k8s_cluster_token:
       description: "K8S cluster Bearer token"
       type: str
+      required: true
     k8s_namespace:
       description: "K8S Namespace where the ServiceAccount exists."
       type: str
@@ -157,8 +167,8 @@ def main():
         'k8s_allowed_namespaces': {'type': 'str'},
         'k8s_cluster_ca_cert': {'type': 'str', 'required': True},
         'k8s_cluster_endpoint': {'type': 'str', 'required': True},
-        'k8s_cluster_name': {'type': 'str'},
-        'k8s_cluster_token': {'type': 'str', 'required': True},
+        'k8s_cluster_name': {'type': 'str', 'no_log': False},
+        'k8s_cluster_token': {'type': 'str', 'required': True, 'no_log': True},
         'k8s_namespace': {'type': 'str'},
         'k8s_predefined_role_name': {'type': 'str'},
         'k8s_predefined_role_type': {'type': 'str'},

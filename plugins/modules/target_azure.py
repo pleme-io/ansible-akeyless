@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_azure
 short_description: Manages an Azure target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_azure resources.
 options:
@@ -28,7 +32,6 @@ options:
     client_secret:
       description: "Azure client secret"
       type: str
-      no_log: true
     connection_type:
       description: "Type of connection [credentials/cloud-identity]"
       type: str
@@ -120,7 +123,7 @@ def main():
         'client_secret': {'type': 'str', 'no_log': True},
         'connection_type': {'type': 'str'},
         'description': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'resource_group_name': {'type': 'str'},

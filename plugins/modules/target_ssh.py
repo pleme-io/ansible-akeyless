@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_ssh
 short_description: Manages an SSH target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_ssh resources.
 options:
@@ -22,9 +26,11 @@ options:
     description:
       description: "Target description"
       type: str
+
     host:
       description: "SSH host address"
       type: str
+      required: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -41,18 +47,17 @@ options:
     private_key:
       description: "SSH private key (PEM)"
       type: str
-      no_log: true
     private_key_password:
       description: "SSH private key passphrase"
       type: str
-      no_log: true
     ssh_password:
       description: "SSH password"
       type: str
-      no_log: true
+
     ssh_username:
       description: "SSH username"
       type: str
+      required: true
 '''
 
 EXAMPLES = r'''
@@ -110,7 +115,7 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'description': {'type': 'str'},
         'host': {'type': 'str', 'required': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'port': {'type': 'str'},

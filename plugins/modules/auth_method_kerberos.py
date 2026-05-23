@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: auth_method_kerberos
 short_description: Manages a Kerberos authentication method
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage auth_method_kerberos resources.
 options:
@@ -72,7 +76,6 @@ options:
     keytab_file_data:
       description: "Kerberos keytab file data (base64)"
       type: str
-      no_log: true
     keytab_file_path:
       description: "Path to Kerberos keytab file on gateway"
       type: str
@@ -171,7 +174,7 @@ def main():
         'allowed_client_type': {'type': 'list', 'elements': 'str'},
         'audit_logs_claims': {'type': 'list', 'elements': 'str'},
         'bind_dn': {'type': 'str'},
-        'bind_dn_password': {'type': 'str'},
+        'bind_dn_password': {'type': 'str', 'no_log': True},
         'bound_ips': {'type': 'list', 'elements': 'str'},
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
@@ -183,7 +186,7 @@ def main():
         'gw_bound_ips': {'type': 'list', 'elements': 'str'},
         'jwt_ttl': {'type': 'int'},
         'keytab_file_data': {'type': 'str', 'no_log': True},
-        'keytab_file_path': {'type': 'str'},
+        'keytab_file_path': {'type': 'str', 'no_log': True},
         'krb5_conf_data': {'type': 'str'},
         'krb5_conf_path': {'type': 'str'},
         'ldap_anonymous_search': {'type': 'bool'},

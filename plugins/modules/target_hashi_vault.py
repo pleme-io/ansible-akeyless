@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_hashi_vault
 short_description: Manages a HashiCorp Vault target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_hashi_vault resources.
 options:
@@ -22,9 +26,11 @@ options:
     description:
       description: "Target description"
       type: str
+
     hashi_url:
       description: "HashiCorp Vault API URL, e.g. https://vault-mgr01:8200"
       type: str
+      required: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -39,10 +45,11 @@ options:
       description: "Comma-separated list of vault namespaces"
       type: list
       elements: str
+
     vault_token:
       description: "HashiCorp Vault token"
       type: str
-      no_log: true
+      required: true
 '''
 
 EXAMPLES = r'''
@@ -100,7 +107,7 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'description': {'type': 'str'},
         'hashi_url': {'type': 'str', 'required': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'namespace': {'type': 'list', 'elements': 'str'},

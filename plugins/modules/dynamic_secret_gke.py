@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_gke
 short_description: Manages a Google GKE dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_gke resources.
 options:
@@ -28,11 +32,9 @@ options:
     gke_account_key:
       description: "GCP service account key JSON (base64)"
       type: str
-      no_log: true
     gke_cluster_cert:
       description: "GKE cluster CA certificate (PEM)"
       type: str
-      no_log: true
     gke_cluster_endpoint:
       description: "GKE cluster API server URL"
       type: str

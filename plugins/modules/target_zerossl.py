@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_zerossl
 short_description: Manages a ZeroSSL target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_zerossl resources.
 options:
@@ -23,7 +27,6 @@ options:
       description: "ZeroSSL API key"
       type: str
       required: true
-      no_log: true
     description:
       description: "Target description"
       type: str
@@ -35,7 +38,6 @@ options:
       description: "IMAP password"
       type: str
       required: true
-      no_log: true
     imap_port:
       description: "IMAP server port"
       type: str
@@ -121,7 +123,7 @@ def main():
         'imap_port': {'type': 'str'},
         'imap_target_email': {'type': 'str'},
         'imap_username': {'type': 'str', 'required': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'timeout': {'type': 'str'},

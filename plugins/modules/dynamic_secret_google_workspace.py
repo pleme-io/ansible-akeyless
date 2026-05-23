@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_google_workspace
 short_description: Manages a Google Workspace dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_google_workspace resources.
 options:
@@ -133,8 +137,8 @@ def main():
         'admin_email': {'type': 'str', 'required': True},
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
-        'fixed_user_claim_keyname': {'type': 'str'},
-        'gcp_key': {'type': 'str'},
+        'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
+        'gcp_key': {'type': 'str', 'no_log': True},
         'group_email': {'type': 'str'},
         'group_role': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},

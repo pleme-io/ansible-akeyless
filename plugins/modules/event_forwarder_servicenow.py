@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: event_forwarder_servicenow
 short_description: Manages a ServiceNow event forwarder in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage event_forwarder_servicenow resources.
 options:
@@ -19,12 +23,16 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
+
     admin_name:
       description: "Workstation Admin Name"
       type: str
+      required: true
+
     admin_pwd:
       description: "Workstation Admin Password"
       type: str
+      required: true
     app_private_key_base64:
       description: "The RSA Private Key to use when connecting with jwt authentication"
       type: str
@@ -56,9 +64,11 @@ options:
       type: list
       required: true
       elements: str
+
     host:
       description: "Workstation Host"
       type: str
+      required: true
     items_event_source_locations:
       description: "Items Event sources"
       type: list
@@ -138,18 +148,18 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'admin_name': {'type': 'str', 'required': True},
         'admin_pwd': {'type': 'str', 'no_log': True, 'required': True},
-        'app_private_key_base64': {'type': 'str'},
+        'app_private_key_base64': {'type': 'str', 'no_log': True},
         'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
         'auth_type': {'type': 'str'},
         'client_id': {'type': 'str'},
-        'client_secret': {'type': 'str'},
+        'client_secret': {'type': 'str', 'no_log': True},
         'description': {'type': 'str'},
         'event_types': {'type': 'list', 'elements': 'str'},
         'every': {'type': 'str'},
         'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
         'host': {'type': 'str', 'required': True},
         'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'name': {'type': 'str', 'required': True},
         'runner_type': {'type': 'str', 'required': True},
         'targets_event_source_locations': {'type': 'list', 'elements': 'str'},

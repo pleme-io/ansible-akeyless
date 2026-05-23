@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_gitlab
 short_description: Manages a GitLab dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_gitlab resources.
 options:
@@ -28,7 +32,6 @@ options:
     gitlab_access_token:
       description: "GitLab personal access token"
       type: str
-      no_log: true
     gitlab_access_type:
       description: "GitLab access type: personal or project"
       type: str
@@ -36,7 +39,6 @@ options:
     gitlab_certificate:
       description: "GitLab TLS certificate (PEM)"
       type: str
-      no_log: true
     gitlab_role:
       description: "GitLab role for dynamic tokens"
       type: str
@@ -131,7 +133,7 @@ def main():
         'gitlab_access_type': {'type': 'str', 'required': True},
         'gitlab_certificate': {'type': 'str', 'no_log': True},
         'gitlab_role': {'type': 'str'},
-        'gitlab_token_scopes': {'type': 'str', 'required': True},
+        'gitlab_token_scopes': {'type': 'str', 'required': True, 'no_log': False},
         'gitlab_url': {'type': 'str'},
         'group_name': {'type': 'str'},
         'installation_organization': {'type': 'str'},

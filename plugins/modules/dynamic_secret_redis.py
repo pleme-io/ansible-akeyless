@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_redis
 short_description: Manages a Redis dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_redis resources.
 options:
@@ -19,8 +23,10 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
+
     acl_rules:
       description: "A JSON array list of redis ACL rules to attach to the created user. For available rules see the ACL CAT command https://redis.io/commands/acl-cat
+      type: str
 By default the user will have permissions to read all keys '['~*', '+@read']'"
       type: str
     custom_username_template:
@@ -57,7 +63,6 @@ By default the user will have permissions to read all keys '['~*', '+@read']'"
     ssl_certificate:
       description: "SSL certificate (PEM)"
       type: str
-      no_log: true
     tags:
       description: "Tags for the producer"
       type: list
@@ -130,7 +135,7 @@ def main():
         'host': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'port': {'type': 'str'},
         'producer_encryption_key_name': {'type': 'str'},
         'ssl': {'type': 'bool'},

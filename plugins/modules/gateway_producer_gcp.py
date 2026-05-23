@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_gcp
 short_description: Manages a GCP gateway producer (deprecated; prefer akeyless_dynamic_secret_gcp)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_gcp resources.
 options:
@@ -139,13 +143,13 @@ def main():
         'access_type': {'type': 'str'},
         'custom_username_template': {'type': 'str'},
         'delete_protection': {'type': 'str'},
-        'fixed_user_claim_keyname': {'type': 'str'},
+        'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
         'gcp_cred_type': {'type': 'str'},
-        'gcp_key': {'type': 'str'},
-        'gcp_key_algo': {'type': 'str'},
+        'gcp_key': {'type': 'str', 'no_log': True},
+        'gcp_key_algo': {'type': 'str', 'no_log': False},
         'gcp_project_id': {'type': 'str'},
         'gcp_sa_email': {'type': 'str'},
-        'gcp_token_scopes': {'type': 'str'},
+        'gcp_token_scopes': {'type': 'str', 'no_log': False},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
         'producer_encryption_key_name': {'type': 'str'},

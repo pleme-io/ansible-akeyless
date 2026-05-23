@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_k8s_auth_config
 short_description: Manages a gateway Kubernetes auth config in Akeyless
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_k8s_auth_config resources.
 options:
@@ -32,9 +36,11 @@ options:
     k8s_auth_type:
       description: "K8S auth type [token/certificate]. (relevant for 'native_k8s' only)"
       type: str
+
     k8s_ca_cert:
       description: "The CA Certificate (base64 encoded) to use to call into the kubernetes API server"
       type: str
+      required: true
     k8s_client_certificate:
       description: "Content of the k8 client certificate (PEM format) in a Base64 format (relevant for 'native_k8s' only)"
       type: str
@@ -65,10 +71,15 @@ options:
     token_exp:
       description: "Time in seconds of expiration of the Akeyless Kube Auth Method token"
       type: int
+
     token_reviewer_jwt:
-      description: "A Kubernetes service account JWT used to access the TokenReview API to validate other JWTs (relevant for 'native_k8s' only).
-If not set, the JWT submitted in the authentication process will be used to access the Kubernetes TokenReview API."
+      description:
+        - A Kubernetes service account JWT used to access the TokenReview
+          API to validate other JWTs (relevant for 'native_k8s' only).
+        - If not set, the JWT submitted in the authentication process
+          will be used to access the Kubernetes TokenReview API.
       type: str
+      required: true
     use_gw_service_account:
       description: "Use the GW's service account"
       type: bool
@@ -133,15 +144,15 @@ def main():
         'k8s_auth_type': {'type': 'str'},
         'k8s_ca_cert': {'type': 'str', 'required': True},
         'k8s_client_certificate': {'type': 'str'},
-        'k8s_client_key': {'type': 'str'},
+        'k8s_client_key': {'type': 'str', 'no_log': True},
         'k8s_host': {'type': 'str', 'required': True},
         'k8s_issuer': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
-        'rancher_api_key': {'type': 'str'},
+        'rancher_api_key': {'type': 'str', 'no_log': True},
         'rancher_cluster_id': {'type': 'str'},
-        'signing_key': {'type': 'str', 'required': True},
-        'token_exp': {'type': 'int'},
-        'token_reviewer_jwt': {'type': 'str', 'required': True},
+        'signing_key': {'type': 'str', 'required': True, 'no_log': True},
+        'token_exp': {'type': 'int', 'no_log': False},
+        'token_reviewer_jwt': {'type': 'str', 'required': True, 'no_log': True},
         'use_gw_service_account': {'type': 'bool'},
         'gateway_url': {'type': 'str'},
         # NOTE: no auth-side `access_id` here -- the resource field above

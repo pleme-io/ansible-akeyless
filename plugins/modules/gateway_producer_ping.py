@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_ping
 short_description: Manages a Ping Identity gateway producer (deprecated; prefer akeyless_dynamic_secret_ping)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_ping resources.
 options:
@@ -52,7 +56,7 @@ options:
       type: list
       elements: str
     ping_issuer_dn:
-      description: "Issuer DN of trusted CA certificate that imported into Ping Federate server. You may select \'Trust Any\' to trust all the existing issuers in Ping Federate server. Used in conjunction with ping-cert-subject-dn (relevant for CLIENT_TLS_CERTIFICATE authentication method)"
+      description: "Issuer DN of trusted CA certificate that imported into Ping Federate server. You may select 'Trust Any' to trust all the existing issuers in Ping Federate server. Used in conjunction with ping-cert-subject-dn (relevant for CLIENT_TLS_CERTIFICATE authentication method)"
       type: str
     ping_jwks:
       description: "Base64-encoded JSON Web Key Set (JWKS). If no explicit value is given, the producer will create JWKs and matched signed JWT (Sign Algo: RS256) and return it as value (relevant for PRIVATE_KEY_JWT authentication method)"
@@ -161,7 +165,7 @@ def main():
         'ping_issuer_dn': {'type': 'str'},
         'ping_jwks': {'type': 'str'},
         'ping_jwks_url': {'type': 'str'},
-        'ping_password': {'type': 'str'},
+        'ping_password': {'type': 'str', 'no_log': True},
         'ping_privileged_user': {'type': 'str'},
         'ping_redirect_uris': {'type': 'list', 'elements': 'str'},
         'ping_restricted_scopes': {'type': 'list', 'elements': 'str'},

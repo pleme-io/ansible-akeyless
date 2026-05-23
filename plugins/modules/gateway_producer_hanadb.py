@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_hanadb
 short_description: Manages a SAP HANA DB gateway producer (deprecated; prefer akeyless_dynamic_secret_hanadb)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_hanadb resources.
 options:
@@ -25,27 +29,35 @@ options:
     delete_protection:
       description: "Protection from accidental deletion of this object [true/false]"
       type: str
+
     hana_dbname:
       description: "HanaDb Name"
       type: str
+      required: true
     hanadb_create_statements:
       description: "HanaDb Creation statements"
       type: str
+
     hanadb_host:
       description: "HanaDb Host"
       type: str
+      required: true
+
     hanadb_password:
       description: "HanaDb Password"
       type: str
+      required: true
     hanadb_port:
       description: "HanaDb Port"
       type: str
     hanadb_revocation_statements:
       description: "HanaDb Revocation statements"
       type: str
+
     hanadb_username:
       description: "HanaDb Username"
       type: str
+      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -129,13 +141,13 @@ def main():
         'hana_dbname': {'type': 'str', 'required': True},
         'hanadb_create_statements': {'type': 'str'},
         'hanadb_host': {'type': 'str', 'required': True},
-        'hanadb_password': {'type': 'str', 'required': True},
+        'hanadb_password': {'type': 'str', 'required': True, 'no_log': True},
         'hanadb_port': {'type': 'str'},
         'hanadb_revocation_statements': {'type': 'str'},
         'hanadb_username': {'type': 'str', 'required': True},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'tags': {'type': 'list', 'elements': 'str'},
         'target_name': {'type': 'str'},

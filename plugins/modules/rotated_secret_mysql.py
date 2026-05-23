@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: rotated_secret_mysql
 short_description: Manages a MySQL rotated secret
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage rotated_secret_mysql resources.
 options:
@@ -50,7 +54,6 @@ options:
     rotated_password:
       description: "Rotated-username password (relevant only for rotator-type=password)"
       type: str
-      no_log: true
     rotated_username:
       description: "Username to be rotated"
       type: str
@@ -135,10 +138,10 @@ def main():
         'auto_rotate': {'type': 'str'},
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'rotate_after_disconnect': {'type': 'str'},
         'rotated_password': {'type': 'str', 'no_log': True},
         'rotated_username': {'type': 'str'},

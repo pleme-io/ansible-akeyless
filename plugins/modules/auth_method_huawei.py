@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: auth_method_huawei
 short_description: Manages a Huawei authentication method in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage auth_method_huawei resources.
 options:
@@ -19,8 +23,10 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
+
     access_expires:
       description: "Access expiration date in Unix timestamp (select 0 for access without
+      type: int
 expiry date)"
       type: int
     allowed_client_type:

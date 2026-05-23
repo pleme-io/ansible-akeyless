@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_ldap
 short_description: Manages an LDAP target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_ldap resources.
 options:
@@ -27,7 +31,6 @@ options:
       description: "LDAP bind DN password"
       type: str
       required: true
-      no_log: true
     description:
       description: "Target description"
       type: str
@@ -112,13 +115,13 @@ def main():
         'bind_dn': {'type': 'str', 'required': True},
         'bind_dn_password': {'type': 'str', 'required': True, 'no_log': True},
         'description': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'ldap_ca_cert': {'type': 'str'},
         'ldap_url': {'type': 'str', 'required': True},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'server_type': {'type': 'str'},
-        'token_expiration': {'type': 'str'},
+        'token_expiration': {'type': 'str', 'no_log': False},
         'gateway_url': {'type': 'str'},
         'access_id': {'type': 'str'},
         'access_key': {'type': 'str', 'no_log': True},

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_custom
 short_description: Manages a custom gateway producer (deprecated; prefer akeyless_dynamic_secret_custom)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_custom resources.
 options:
@@ -22,8 +26,11 @@ options:
     admin_rotation_interval_days:
       description: "Define rotation interval in days"
       type: int
+
     create_sync_url:
       description: "URL of an endpoint that implements /sync/create method, for example
+      type: str
+      required: true
 https://webhook.example.com/sync/create"
       type: str
       required: true
@@ -46,13 +53,17 @@ https://webhook.example.com/sync/create"
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
+
     revoke_sync_url:
       description: "URL of an endpoint that implements /sync/revoke method, for example
+      type: str
+      required: true
 https://webhook.example.com/sync/revoke"
       type: str
       required: true
     rotate_sync_url:
       description: "URL of an endpoint that implements /sync/rotate method, for example
+      type: str
 https://webhook.example.com/sync/rotate"
       type: str
     tags:

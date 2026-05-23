@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_gcp
 short_description: Manages a GCP target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_gcp resources.
 options:
@@ -22,10 +26,11 @@ options:
     description:
       description: "Target description"
       type: str
+
     gcp_key:
       description: "GCP service account key JSON (base64)"
       type: str
-      no_log: true
+      required: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -96,7 +101,7 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'description': {'type': 'str'},
         'gcp_key': {'type': 'str', 'no_log': True, 'required': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'use_gw_cloud_identity': {'type': 'bool'},

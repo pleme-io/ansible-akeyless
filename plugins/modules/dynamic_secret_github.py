@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_github
 short_description: Manages a GitHub dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_github resources.
 options:
@@ -31,7 +35,6 @@ options:
     github_app_private_key:
       description: "GitHub App private key (PEM)"
       type: str
-      no_log: true
     github_base_url:
       description: "GitHub base URL (for GitHub Enterprise)"
       type: str
@@ -126,7 +129,7 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
-        'github_app_id': {'type': 'int'},
+        'github_app_id': {'type': 'int', 'no_log': False},
         'github_app_private_key': {'type': 'str', 'no_log': True},
         'github_base_url': {'type': 'str'},
         'installation_id': {'type': 'int'},
@@ -136,9 +139,9 @@ def main():
         'name': {'type': 'str', 'required': True},
         'tags': {'type': 'list', 'elements': 'str'},
         'target_name': {'type': 'str'},
-        'token_permissions': {'type': 'list', 'elements': 'str'},
-        'token_repositories': {'type': 'list', 'elements': 'str'},
-        'token_ttl': {'type': 'str'},
+        'token_permissions': {'type': 'list', 'elements': 'str', 'no_log': False},
+        'token_repositories': {'type': 'list', 'elements': 'str', 'no_log': False},
+        'token_ttl': {'type': 'str', 'no_log': False},
         'gateway_url': {'type': 'str'},
         'access_id': {'type': 'str'},
         'access_key': {'type': 'str', 'no_log': True},

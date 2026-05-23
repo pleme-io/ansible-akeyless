@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_artifactory
 short_description: Manages an Artifactory target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_artifactory resources.
 options:
@@ -27,7 +31,6 @@ options:
       description: "Artifactory admin password"
       type: str
       required: true
-      no_log: true
     base_url:
       description: "Artifactory base URL"
       type: str
@@ -35,8 +38,10 @@ options:
     description:
       description: "Target description"
       type: str
+
     key:
       description: "The name of a key used to encrypt the target secret value (if empty, the
+      type: str
 account default protectionKey key will be used)"
       type: str
     max_versions:
@@ -105,7 +110,7 @@ def main():
         'artifactory_admin_pwd': {'type': 'str', 'required': True, 'no_log': True},
         'base_url': {'type': 'str', 'required': True},
         'description': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'gateway_url': {'type': 'str'},

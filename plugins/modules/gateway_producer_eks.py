@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_eks
 short_description: Manages an EKS gateway producer (deprecated; prefer akeyless_dynamic_secret_eks)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_eks resources.
 options:
@@ -22,27 +26,39 @@ options:
     delete_protection:
       description: "Protection from accidental deletion of this object [true/false]"
       type: str
+
     eks_access_key_id:
       description: "Access Key ID"
       type: str
+      required: true
     eks_assume_role:
       description: "IAM assume role"
       type: str
+
     eks_cluster_ca_cert:
       description: "EKS cluster CA certificate"
       type: str
+      required: true
+
     eks_cluster_endpoint:
       description: "EKS cluster URL endpoint"
       type: str
+      required: true
+
     eks_cluster_name:
       description: "EKS cluster name"
       type: str
+      required: true
+
     eks_region:
       description: "Region"
       type: str
+      required: true
+
     eks_secret_access_key:
       description: "Secret Access Key"
       type: str
+      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -132,9 +148,9 @@ def main():
         'eks_assume_role': {'type': 'str'},
         'eks_cluster_ca_cert': {'type': 'str', 'required': True},
         'eks_cluster_endpoint': {'type': 'str', 'required': True},
-        'eks_cluster_name': {'type': 'str', 'required': True},
+        'eks_cluster_name': {'type': 'str', 'required': True, 'no_log': False},
         'eks_region': {'type': 'str', 'required': True},
-        'eks_secret_access_key': {'type': 'str', 'required': True},
+        'eks_secret_access_key': {'type': 'str', 'required': True, 'no_log': True},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
         'producer_encryption_key_name': {'type': 'str'},

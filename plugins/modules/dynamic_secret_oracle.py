@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_oracle
 short_description: Manages an Oracle dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_oracle resources.
 options:
@@ -25,7 +29,6 @@ options:
     db_server_certificates:
       description: "Database server certificates (PEM)"
       type: str
-      no_log: true
     db_server_name:
       description: "Database server name for TLS verification"
       type: str
@@ -42,13 +45,16 @@ options:
       description: "Dynamic secret name"
       type: str
       required: true
+
     oracle_host:
       description: "Oracle host"
       type: str
+      required: true
+
     oracle_password:
       description: "Oracle admin password"
       type: str
-      no_log: true
+      required: true
     oracle_port:
       description: "Oracle port (default: 1521)"
       type: str
@@ -58,12 +64,16 @@ options:
     oracle_screation_statements:
       description: "Oracle Creation statements"
       type: str
+
     oracle_service_name:
       description: "Oracle service name"
       type: str
+      required: true
+
     oracle_username:
       description: "Oracle admin username"
       type: str
+      required: true
     password_length:
       description: "The length of the password to be generated"
       type: str
@@ -149,7 +159,7 @@ def main():
         'oracle_screation_statements': {'type': 'str'},
         'oracle_service_name': {'type': 'str', 'required': True},
         'oracle_username': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'tags': {'type': 'list', 'elements': 'str'},
         'target_name': {'type': 'str'},

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: usc
 short_description: Manages a universal secrets connector (USC) in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage usc resources.
 options:
@@ -34,14 +38,12 @@ options:
     pfx_password:
       description: "Optional, the passphrase that protects the private key within the pfx certificate (Relevant only for Azure KV certificates)"
       type: str
+
     region:
-      description: "Optional, create secret in a specific region (GCP only).
-If empty, a global secret will be created (provider default)."
+      description:
+        - Optional, create secret in a specific region (GCP only).
+        - If empty, a global secret will be created (provider default).
       type: str
-    secret_name:
-      description: "Name for the new universal secrets"
-      type: str
-      required: true
     tags:
       description: "Tags for the universal secrets"
       type: dict
@@ -56,6 +58,11 @@ If empty, a global secret will be created (provider default)."
       description: "Value of the universal secrets item, either text or base64 encoded binary"
       type: str
       required: true
+    secret_id:
+      description: "Secret id."
+      type: str
+      required: true
+
 '''
 
 EXAMPLES = r'''
@@ -111,11 +118,11 @@ def main():
         'description': {'type': 'str'},
         'namespace': {'type': 'str'},
         'object_type': {'type': 'str'},
-        'pfx_password': {'type': 'str'},
+        'pfx_password': {'type': 'str', 'no_log': True},
         'region': {'type': 'str'},
         'secret_id': {'type': 'str', 'required': True},
         'tags': {'type': 'dict'},
-        'usc_encryption_key': {'type': 'str'},
+        'usc_encryption_key': {'type': 'str', 'no_log': True},
         'usc_name': {'type': 'str', 'required': True},
         'value': {'type': 'str', 'required': True},
         'gateway_url': {'type': 'str'},

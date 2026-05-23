@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_artifactory
 short_description: Manages an Artifactory dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_artifactory resources.
 options:
@@ -19,13 +23,16 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
+
     artifactory_admin_name:
       description: "Artifactory admin username"
       type: str
+      required: true
+
     artifactory_admin_pwd:
       description: "Artifactory admin password"
       type: str
-      no_log: true
+      required: true
     artifactory_token_audience:
       description: "Artifactory token audience"
       type: str
@@ -34,9 +41,11 @@ options:
       description: "Artifactory token scope"
       type: str
       required: true
+
     base_url:
       description: "Artifactory base URL"
       type: str
+      required: true
     custom_username_template:
       description: "Customize how temporary usernames are generated using go template"
       type: str
@@ -123,8 +132,8 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'artifactory_admin_name': {'type': 'str', 'required': True},
         'artifactory_admin_pwd': {'type': 'str', 'no_log': True, 'required': True},
-        'artifactory_token_audience': {'type': 'str', 'required': True},
-        'artifactory_token_scope': {'type': 'str', 'required': True},
+        'artifactory_token_audience': {'type': 'str', 'required': True, 'no_log': False},
+        'artifactory_token_scope': {'type': 'str', 'required': True, 'no_log': False},
         'base_url': {'type': 'str', 'required': True},
         'custom_username_template': {'type': 'str'},
         'delete_protection': {'type': 'bool'},

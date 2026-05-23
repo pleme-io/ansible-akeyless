@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_dockerhub
 short_description: Manages a Docker Hub gateway producer (deprecated; prefer akeyless_dynamic_secret_dockerhub)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_dockerhub resources.
 options:
@@ -22,16 +26,21 @@ options:
     delete_protection:
       description: "Protection from accidental deletion of this object [true/false]"
       type: str
+
     dockerhub_password:
       description: "DockerhubPassword is either the user's password access token to manage the repository"
       type: str
+      required: true
+
     dockerhub_token_scopes:
       description: "Access token scopes list (comma-separated) to give the dynamic secret
+      type: str
 valid options are in 'repo:admin', 'repo:write', 'repo:read', 'repo:public_read'"
       type: str
     dockerhub_username:
       description: "DockerhubUsername is the name of the user in dockerhub"
       type: str
+      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -108,8 +117,8 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'delete_protection': {'type': 'str'},
-        'dockerhub_password': {'type': 'str', 'required': True},
-        'dockerhub_token_scopes': {'type': 'str'},
+        'dockerhub_password': {'type': 'str', 'required': True, 'no_log': True},
+        'dockerhub_token_scopes': {'type': 'str', 'no_log': False},
         'dockerhub_username': {'type': 'str', 'required': True},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},

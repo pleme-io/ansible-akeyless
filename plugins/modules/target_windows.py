@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_windows
 short_description: Manages a Windows target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_windows resources.
 options:
@@ -22,7 +26,6 @@ options:
     certificate:
       description: "Client certificate (PEM)"
       type: str
-      no_log: true
     connection_type:
       description: "Type of connection to Windows Server [credentials/parent-target]"
       type: str
@@ -55,6 +58,15 @@ options:
     use_tls:
       description: "Use TLS for WinRM connection"
       type: bool
+    password:
+      description: "Password."
+      type: str
+      required: true
+    username:
+      description: "Username."
+      type: str
+      required: true
+
 '''
 
 EXAMPLES = r'''
@@ -115,7 +127,7 @@ def main():
         'description': {'type': 'str'},
         'domain': {'type': 'str'},
         'hostname': {'type': 'str', 'required': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'parent_target_name': {'type': 'str'},

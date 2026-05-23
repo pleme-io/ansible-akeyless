@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_snowflake
 short_description: Manages a Snowflake dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_snowflake resources.
 options:
@@ -19,24 +23,30 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
+
     account:
       description: "Account name"
       type: str
+      required: true
     account_password:
       description: "Database Password"
       type: str
+
     account_username:
       description: "Database Username"
       type: str
+      required: true
     auth_mode:
       description: "The authentication mode for the temporary user [password/key]"
       type: str
     custom_username_template:
       description: "Customize how temporary usernames are generated using go template"
       type: str
+
     db_name:
       description: "Database name"
       type: str
+      required: true
     delete_protection:
       description: "Enable delete protection"
       type: bool
@@ -56,9 +66,11 @@ options:
     password_length:
       description: "The length of the password to be generated"
       type: str
+
     private_key:
       description: "RSA Private key (base64 encoded)"
       type: str
+      required: true
     private_key_passphrase:
       description: "The Private key passphrase"
       type: str
@@ -134,7 +146,7 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'account': {'type': 'str', 'required': True},
-        'account_password': {'type': 'str'},
+        'account_password': {'type': 'str', 'no_log': True},
         'account_username': {'type': 'str', 'required': True},
         'auth_mode': {'type': 'str'},
         'custom_username_template': {'type': 'str'},
@@ -142,11 +154,11 @@ def main():
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
-        'key_algo': {'type': 'str'},
+        'key_algo': {'type': 'str', 'no_log': False},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
-        'private_key': {'type': 'str', 'required': True},
-        'private_key_passphrase': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
+        'private_key': {'type': 'str', 'required': True, 'no_log': True},
+        'private_key_passphrase': {'type': 'str', 'no_log': True},
         'role': {'type': 'str'},
         'tags': {'type': 'list', 'elements': 'str'},
         'target_name': {'type': 'str'},

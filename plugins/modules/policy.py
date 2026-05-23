@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: policy
 short_description: Manages a policy in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage policy resources.
 options:
@@ -94,8 +98,8 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'allowed_algorithms': {'type': 'list', 'elements': 'str'},
-        'allowed_key_names': {'type': 'list', 'elements': 'str'},
-        'allowed_key_types': {'type': 'list', 'elements': 'str'},
+        'allowed_key_names': {'type': 'list', 'elements': 'str', 'no_log': False},
+        'allowed_key_types': {'type': 'list', 'elements': 'str', 'no_log': False},
         'max_rotation_interval_days': {'type': 'int'},
         'object_types': {'type': 'list', 'elements': 'str'},
         'path': {'type': 'str', 'required': True},

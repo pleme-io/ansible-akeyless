@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_venafi
 short_description: Manages a Venafi dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_venafi resources.
 options:
@@ -79,7 +83,6 @@ options:
     venafi_api_key:
       description: "Venafi API key"
       type: str
-      no_log: true
     venafi_baseurl:
       description: "Venafi base URL"
       type: str
@@ -167,11 +170,11 @@ def main():
         'tags': {'type': 'list', 'elements': 'str'},
         'target_name': {'type': 'str'},
         'user_ttl': {'type': 'str'},
-        'venafi_access_token': {'type': 'str'},
+        'venafi_access_token': {'type': 'str', 'no_log': True},
         'venafi_api_key': {'type': 'str', 'no_log': True},
         'venafi_baseurl': {'type': 'str'},
         'venafi_client_id': {'type': 'str'},
-        'venafi_refresh_token': {'type': 'str'},
+        'venafi_refresh_token': {'type': 'str', 'no_log': True},
         'venafi_use_tpp': {'type': 'bool'},
         'venafi_zone': {'type': 'str'},
         'gateway_url': {'type': 'str'},

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: auth_method_ldap
 short_description: Manages an LDAP authentication method
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage auth_method_ldap resources.
 options:
@@ -65,12 +69,15 @@ options:
       description: "Choose the relevant product type for the auth method [sm, sra, pm, dp, ca]"
       type: list
       elements: str
+
     public_key_data:
       description: "A public key generated for LDAP authentication method on Akeyless in base64 or PEM format
+      type: str
 [RSA2048]"
       type: str
     unique_identifier:
       description: "A unique identifier (ID) value should be configured for OAuth2,
+      type: str
 LDAP and SAML authentication method types and is usually a value such
 as the email, username, or upn for example.
 Whenever a user logs in with a token, these authentication types issue
@@ -142,7 +149,7 @@ def main():
         'description': {'type': 'str'},
         'expiration_event_in': {'type': 'list', 'elements': 'str'},
         'force_sub_claims': {'type': 'bool'},
-        'gen_key': {'type': 'str'},
+        'gen_key': {'type': 'str', 'no_log': False},
         'gw_bound_ips': {'type': 'list', 'elements': 'str'},
         'jwt_ttl': {'type': 'int'},
         'name': {'type': 'str', 'required': True},

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_mssql
 short_description: Manages an MSSQL dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_mssql resources.
 options:
@@ -31,32 +35,41 @@ options:
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
+
     mssql_allowed_db_names:
       description: "CSV of allowed DB names for runtime selection when getting the secret value.
+      type: str
 Empty => use target DB only; '*' => any DB allowed; One or more names => user must choose from this list"
       type: str
     mssql_create_statements:
       description: "MSSQL Creation statements"
       type: str
+
     mssql_dbname:
       description: "MSSQL database name"
       type: str
+      required: true
+
     mssql_host:
       description: "MSSQL host"
       type: str
+      required: true
+
     mssql_password:
       description: "MSSQL admin password"
       type: str
-      no_log: true
+      required: true
     mssql_port:
       description: "MSSQL port (default: 1433)"
       type: str
     mssql_revocation_statements:
       description: "MSSQL revocation statements"
       type: str
+
     mssql_username:
       description: "MSSQL admin username"
       type: str
+      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -148,7 +161,7 @@ def main():
         'mssql_revocation_statements': {'type': 'str'},
         'mssql_username': {'type': 'str', 'required': True},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'secure_access_delay': {'type': 'int'},
         'tags': {'type': 'list', 'elements': 'str'},

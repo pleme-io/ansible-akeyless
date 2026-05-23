@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_db
 short_description: Manages a database target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_db resources.
 options:
@@ -47,7 +51,6 @@ options:
     db_server_certificates:
       description: "Database server TLS certificates (PEM)"
       type: str
-      no_log: true
     db_server_name:
       description: "Database server name for TLS verification"
       type: str
@@ -73,7 +76,6 @@ options:
     mongodb_atlas_api_private_key:
       description: "MongoDB Atlas API private key"
       type: str
-      no_log: true
     mongodb_atlas_api_public_key:
       description: "MongoDB Atlas API public key"
       type: str
@@ -111,7 +113,6 @@ options:
     pwd:
       description: "Database password"
       type: str
-      no_log: true
     snowflake_account:
       description: "Snowflake account identifier"
       type: str
@@ -127,7 +128,6 @@ options:
     ssl_certificate:
       description: "Client SSL certificate (PEM)"
       type: str
-      no_log: true
     user_name:
       description: "Database username"
       type: str
@@ -187,7 +187,7 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'azure_client_id': {'type': 'str'},
-        'azure_client_secret': {'type': 'str'},
+        'azure_client_secret': {'type': 'str', 'no_log': True},
         'azure_tenant_id': {'type': 'str'},
         'cloud_service_provider': {'type': 'str'},
         'cluster_mode': {'type': 'bool'},
@@ -199,7 +199,7 @@ def main():
         'db_type': {'type': 'str', 'required': True},
         'description': {'type': 'str'},
         'host': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'mongodb_atlas': {'type': 'bool'},
         'mongodb_atlas_api_private_key': {'type': 'str', 'no_log': True},
@@ -216,8 +216,8 @@ def main():
         'port': {'type': 'str'},
         'pwd': {'type': 'str', 'no_log': True},
         'snowflake_account': {'type': 'str'},
-        'snowflake_api_private_key': {'type': 'str'},
-        'snowflake_api_private_key_password': {'type': 'str'},
+        'snowflake_api_private_key': {'type': 'str', 'no_log': True},
+        'snowflake_api_private_key_password': {'type': 'str', 'no_log': True},
         'ssl': {'type': 'bool'},
         'ssl_certificate': {'type': 'str', 'no_log': True},
         'user_name': {'type': 'str'},

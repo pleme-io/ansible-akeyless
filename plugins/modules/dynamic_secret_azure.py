@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_azure
 short_description: Manages an Azure dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_azure resources.
 options:
@@ -31,7 +35,6 @@ options:
     azure_client_secret:
       description: "Azure client secret"
       type: str
-      no_log: true
     azure_tenant_id:
       description: "Azure tenant ID"
       type: str
@@ -151,11 +154,11 @@ def main():
         'custom_username_template': {'type': 'str'},
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
-        'fixed_user_claim_keyname': {'type': 'str'},
+        'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
         'fixed_user_only': {'type': 'bool'},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'tags': {'type': 'list', 'elements': 'str'},
         'target_name': {'type': 'str'},

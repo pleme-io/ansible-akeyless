@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: event_forwarder_webhook
 short_description: Manages a Webhook event forwarder in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage event_forwarder_webhook resources.
 options:
@@ -72,9 +76,20 @@ options:
       description: "Targets Event sources"
       type: list
       elements: str
+
     url:
       description: "Webhook URL"
       type: str
+      required: true
+    password:
+      description: "Password."
+      type: str
+      required: true
+    username:
+      description: "Username."
+      type: str
+      required: true
+
 '''
 
 EXAMPLES = r'''
@@ -131,7 +146,7 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
-        'auth_token': {'type': 'str'},
+        'auth_token': {'type': 'str', 'no_log': True},
         'auth_type': {'type': 'str'},
         'client_cert_data': {'type': 'str'},
         'description': {'type': 'str'},
@@ -139,10 +154,10 @@ def main():
         'every': {'type': 'str'},
         'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
         'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'name': {'type': 'str', 'required': True},
         'password': {'type': 'str', 'no_log': True, 'required': True},
-        'private_key_data': {'type': 'str'},
+        'private_key_data': {'type': 'str', 'no_log': True},
         'runner_type': {'type': 'str', 'required': True},
         'username': {'type': 'str', 'required': True},
         'server_certificates': {'type': 'str'},

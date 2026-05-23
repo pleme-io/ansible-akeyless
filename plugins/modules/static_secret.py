@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: static_secret
 short_description: Manages a static secret in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage static_secret resources.
 options:
@@ -49,10 +53,11 @@ options:
       description: "The secret sub type [generic/password]"
       type: str
     value:
-      description: "The secret value"
+      description:
+        - The secret value.
+        - Required when I(state=present); not required when I(state=absent).
+          Enforced via the AnsibleModule C(required_if) gate; see EXAMPLES.
       type: str
-      required: true
-      no_log: true
 '''
 
 EXAMPLES = r'''
@@ -114,7 +119,7 @@ def main():
         'format': {'type': 'str'},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
-        'protection_key': {'type': 'str'},
+        'protection_key': {'type': 'str', 'no_log': False},
         'tags': {'type': 'list', 'elements': 'str'},
         'type': {'type': 'str'},
         # value is only required for create/update — not for delete.

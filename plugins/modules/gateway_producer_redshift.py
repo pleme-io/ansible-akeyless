@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_redshift
 short_description: Manages a Redshift gateway producer (deprecated; prefer akeyless_dynamic_secret_redshift)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_redshift resources.
 options:
@@ -41,21 +45,29 @@ options:
     producer_encryption_key:
       description: "Dynamic producer encryption key"
       type: str
+
     redshift_db_name:
       description: "Redshift DB Name"
       type: str
+      required: true
+
     redshift_host:
       description: "Redshift Host"
       type: str
+      required: true
+
     redshift_password:
       description: "Redshift Password"
       type: str
+      required: true
     redshift_port:
       description: "Redshift Port"
       type: str
+
     redshift_username:
       description: "Redshift Username"
       type: str
+      required: true
     ssl:
       description: "Enable/Disable SSL [true/false]"
       type: bool
@@ -129,11 +141,11 @@ def main():
         'delete_protection': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
-        'producer_encryption_key': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
+        'producer_encryption_key': {'type': 'str', 'no_log': False},
         'redshift_db_name': {'type': 'str', 'required': True},
         'redshift_host': {'type': 'str', 'required': True},
-        'redshift_password': {'type': 'str', 'required': True},
+        'redshift_password': {'type': 'str', 'required': True, 'no_log': True},
         'redshift_port': {'type': 'str'},
         'redshift_username': {'type': 'str', 'required': True},
         'ssl': {'type': 'bool'},

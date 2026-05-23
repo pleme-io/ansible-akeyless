@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: role
 short_description: Manages a role in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage role resources.
 options:
@@ -34,8 +38,10 @@ options:
     description:
       description: "Role description"
       type: str
+
     event_center_access:
       description: "Allow this role to view Event Center. Currently only 'none', 'scoped' and 'all'
+      type: str
 values are supported"
       type: str
     event_forwarders_access:
@@ -58,8 +64,10 @@ values are supported"
     sra_reports_access:
       description: "Allow this role to view SRA reports"
       type: str
+
     usage_reports_access:
       description: "Allow this role to view Usage Report. Currently only 'none' and
+      type: str
 'all' values are supported."
       type: str
 '''

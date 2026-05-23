@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_mysql
 short_description: Manages a MySQL dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_mysql resources.
 options:
@@ -25,7 +29,6 @@ options:
     db_server_certificates:
       description: "Database server certificates (PEM)"
       type: str
-      no_log: true
     db_server_name:
       description: "Database server name for TLS verification"
       type: str
@@ -38,16 +41,21 @@ options:
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
+
     mysql_dbname:
       description: "MySQL database name"
       type: str
+      required: true
+
     mysql_host:
       description: "MySQL host"
       type: str
+      required: true
+
     mysql_password:
       description: "MySQL admin password"
       type: str
-      no_log: true
+      required: true
     mysql_port:
       description: "MySQL port (default: 3306)"
       type: str
@@ -57,9 +65,11 @@ options:
     mysql_screation_statements:
       description: "MySQL Creation statements"
       type: str
+
     mysql_username:
       description: "MySQL admin username"
       type: str
+      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -79,7 +89,6 @@ options:
     ssl_certificate:
       description: "SSL certificate (PEM)"
       type: str
-      no_log: true
     tags:
       description: "Tags for the producer"
       type: list
@@ -159,7 +168,7 @@ def main():
         'mysql_screation_statements': {'type': 'str'},
         'mysql_username': {'type': 'str', 'required': True},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'secure_access_delay': {'type': 'int'},
         'ssl': {'type': 'bool'},
