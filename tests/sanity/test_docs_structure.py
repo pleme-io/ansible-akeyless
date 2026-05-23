@@ -253,6 +253,26 @@ def test_architecture_page_has_diagrams():
 # ---------------------------------------------------------------------------
 
 
+@pytest.mark.parametrize("walkthrough", REQUIRED_WALKTHROUGHS)
+def test_walkthrough_does_not_use_reserved_ansible_var_prefix(walkthrough):
+    """The `ansible_*` var prefix is reserved by Ansible itself for
+    inventory / connection vars (`ansible_host`, `ansible_user`, etc).
+    The lookups in this collection declare their playbook-var names
+    as `akeyless_*` (no `ansible_` prefix) -- a walkthrough that
+    suggests `ansible_akeyless_access_id` would silently not work
+    (the lookup ignores it).
+
+    This test caught a real bug in the quickstart walkthrough where
+    `ansible_akeyless_*` had been written instead of `akeyless_*`."""
+    body = (WALKTHROUGHS_DIR / walkthrough).read_text()
+    bad = re.findall(r"ansible_akeyless_\w+", body)
+    assert not bad, (
+        f"docs/walkthroughs/{walkthrough} references reserved-prefix "
+        f"vars: {bad}. The lookups in this collection use bare "
+        f"`akeyless_*` names; the `ansible_*` prefix is reserved."
+    )
+
+
 @pytest.mark.parametrize("link_substring", [
     "CONTRIBUTING.md",
     "SECURITY.md",
