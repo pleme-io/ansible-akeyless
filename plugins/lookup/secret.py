@@ -87,63 +87,38 @@ _raw:
   elements: str
 """
 
-from typing import Any, Dict, List, Optional
-
-from ansible.errors import AnsibleError, AnsibleLookupError
+from ansible.errors import AnsibleLookupError
 from ansible.plugins.lookup import LookupBase
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_lookup_auth import (
-    DEFAULT_ACCESS_TYPE,
-    DEFAULT_GATEWAY_URL,
     HAS_AKEYLESS,
     AKEYLESS_IMPORT_ERROR,
-    authenticated_client as _authenticated_client,
+)
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    akeyless_lookup,
+    normalize_sdk_result,
 )
 
-# akeyless + ApiException re-imported locally for the get_secret_value
-# dispatch + ApiException catch below. (The shared helper handles auth
-# but doesn't dispatch SDK calls; that stays per-lookup so each lookup
-# can shape the body / error context to its endpoint.)
 try:
     import akeyless
-    from akeyless.exceptions import ApiException
 except ImportError:  # pragma: no cover - HAS_AKEYLESS handles this
     pass
 
 
+@akeyless_lookup(per_term=False)
 class LookupModule(LookupBase):
     """Fetch static secret values from Akeyless Vault."""
 
-    def run(self, terms: List[str], variables: Optional[Dict[str, Any]] = None, **kwargs: Any) -> List[Any]:
-        self.set_options(var_options=variables, direct=kwargs)
-        opts = {k: self.get_option(k) for k in (
-            "gateway_url", "access_id", "access_key", "access_type", "token",
-        )}
-
-        client, token = _authenticated_client(opts)
-
-        # Akeyless /get-secret-value accepts a list of names and returns
-        # a {name: value} mapping. We send all terms in one call for
-        # efficiency, then reorder the result to match the input.
+    def fetch(self, client, token, opts, terms):
+        # /get-secret-value batches: send the full name list in one call,
+        # then re-shape the returned {name: value} dict into a list
+        # aligned to input order so terms[i] -> out[i].
         body = akeyless.GetSecretValue(names=list(terms), token=token)
-        try:
-            result = client.get_secret_value(body)
-        except ApiException as exc:
-            status = getattr(exc, "status", "?")
-            raise AnsibleLookupError(
-                f"Akeyless get_secret_value failed ({status}): "
-                f"{exc.body or exc.reason}"
-            ) from exc
-
-        # The SDK returns a model with `.to_dict()` or a plain dict
-        # depending on version; normalise.
-        if hasattr(result, "to_dict"):
-            result = result.to_dict()
+        result = normalize_sdk_result(client.get_secret_value(body))
         if not isinstance(result, dict):
             raise AnsibleLookupError(
                 f"Unexpected get_secret_value response type: {type(result).__name__}"
             )
-
-        out: List[Any] = []
+        out = []
         for term in terms:
             if term not in result:
                 raise AnsibleLookupError(

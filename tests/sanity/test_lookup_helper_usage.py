@@ -105,23 +105,59 @@ def test_helper_exports_authenticated_client():
 # ---------------------------------------------------------------------------
 
 
+_DECORATOR_RE = re.compile(r"@akeyless_lookup\b")
+_DECORATOR_IMPORT_RE = re.compile(
+    r"from\s+ansible_collections\.drzln0\.akeyless\.plugins\.module_utils"
+    r"\.akeyless_plugin_helpers\s+import\s+(?:\(\s*([^)]+)\)|([^\n]+))",
+    re.DOTALL,
+)
+
+
 @pytest.mark.parametrize(
     "path",
     list(_lookup_files()),
     ids=lambda p: p.name,
 )
-def test_lookup_imports_shared_helper(path):
-    """Each lookup plugin must import authenticated_client from the
-    shared helper. Inlining the auth call -> two divergent auth paths
-    -> the DRY guarantee dies silently."""
-    names = _import_names(path.read_text())
+def test_lookup_uses_decorator_or_imports_helper(path):
+    """Each lookup must either use the @akeyless_lookup class decorator
+    (preferred -- the decorator calls authenticated_client transitively)
+    OR import authenticated_client directly. Inlining the auth call ->
+    two divergent auth paths -> the DRY guarantee dies silently.
+
+    The decorator path is the modern shape (lookups land via
+    @akeyless_lookup(per_term=...) from
+    plugins/module_utils/akeyless_plugin_helpers.py). The direct-import
+    path remains supported for special cases that need to bypass the
+    standard per-term loop."""
+    text = path.read_text()
+    if _DECORATOR_RE.search(text):
+        # Decorator-using lookup must also import the decorator.
+        helper_match = _DECORATOR_IMPORT_RE.search(text)
+        assert helper_match, (
+            f"{path.name}: uses @akeyless_lookup but does not import it "
+            f"from ansible_collections.<...>.akeyless_plugin_helpers"
+        )
+        body = helper_match.group(1) or helper_match.group(2) or ""
+        names = {
+            n.strip().split(" as ", 1)[0].strip()
+            for n in body.split(",")
+            if n.strip()
+        }
+        assert "akeyless_lookup" in names, (
+            f"{path.name}: imports from akeyless_plugin_helpers but "
+            f"doesn't pull in akeyless_lookup (got {names})"
+        )
+        return
+
+    # Fallback: direct authenticated_client import path.
+    names = _import_names(text)
     assert names is not None, (
-        f"{path.name}: expected `from ansible_collections.drzln0.akeyless"
-        f".plugins.module_utils.akeyless_lookup_auth import ...`"
+        f"{path.name}: must EITHER use @akeyless_lookup (preferred) OR "
+        f"import `authenticated_client` from akeyless_lookup_auth directly"
     )
     assert EXPECTED_HELPER_NAME in names, (
-        f"{path.name}: imports from helper but doesn't pull in "
-        f"`{EXPECTED_HELPER_NAME}` (got {names})"
+        f"{path.name}: imports from akeyless_lookup_auth but doesn't "
+        f"pull in `{EXPECTED_HELPER_NAME}` (got {names})"
     )
 
 

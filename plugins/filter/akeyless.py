@@ -7,7 +7,17 @@
 """Jinja2 filters for transforming Akeyless secret payloads.
 
 Filters are registered via FilterModule and addressed as
-`{{ value | drzln0.akeyless.<filter_name> }}` in playbooks.
+`{{ value | drzln0.akeyless.<filter_name> }}`.
+
+Every filter is wrapped by `@akeyless_filter(...)` from
+`plugins/module_utils/akeyless_plugin_helpers.py`. The decorator
+enforces two invariants:
+  1. Input type matches `expects=...` (str by default, dict for
+     secret_keys_to_env). Wrong type -> uniform AnsibleFilterError.
+  2. Any unexpected exception is translated to AnsibleFilterError
+     so playbook errors stay in Ansible's idiom.
+
+Filter bodies stay focused on the transformation, not the boilerplate.
 """
 
 from __future__ import absolute_import, division, print_function
@@ -15,37 +25,33 @@ __metaclass__ = type
 
 import base64
 import json
-from typing import Any, Dict, List, Optional, Tuple
+import math
+from collections import Counter
+from typing import Any, Dict, List
 
 from ansible.errors import AnsibleFilterError
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    akeyless_filter,
+)
 
 
+@akeyless_filter
 def b64decode_secret(value: str) -> str:
     """Base64-decode a string secret value. Akeyless returns binary
     blobs (keys, certs, .pfx contents) as base64-encoded strings;
     this filter unwraps them to bytes-as-text.
 
-    Raises AnsibleFilterError on invalid base64 input rather than
-    silently returning garbage.
+    validate=True rejects non-base64 alphabet chars rather than
+    silently stripping them (Python's default). For a secret-handling
+    filter the strict failure is the safe default.
 
     Usage:
         cert_pem: "{{ lookup('drzln0.akeyless.secret', '/certs/app') | drzln0.akeyless.b64decode_secret }}"
     """
-    if not isinstance(value, str):
-        raise AnsibleFilterError(
-            f"b64decode_secret expects a string, got {type(value).__name__}"
-        )
-    try:
-        # validate=True rejects non-base64 alphabet chars rather than
-        # silently stripping them (Python's default behavior). For a
-        # secret-handling filter the strict failure is the safe default.
-        return base64.b64decode(value, validate=True).decode("utf-8")
-    except (ValueError, UnicodeDecodeError, base64.binascii.Error) as exc:
-        raise AnsibleFilterError(
-            f"b64decode_secret failed: {exc}"
-        ) from exc
+    return base64.b64decode(value, validate=True).decode("utf-8")
 
 
+@akeyless_filter
 def parse_dotenv_secret(value: str) -> Dict[str, str]:
     """Parse a dotenv-formatted secret value into a {key: value} dict.
 
@@ -68,10 +74,6 @@ def parse_dotenv_secret(value: str) -> Dict[str, str]:
     Usage:
         environment: "{{ lookup('drzln0.akeyless.secret', '/app/.env') | drzln0.akeyless.parse_dotenv_secret }}"
     """
-    if not isinstance(value, str):
-        raise AnsibleFilterError(
-            f"parse_dotenv_secret expects a string, got {type(value).__name__}"
-        )
     out: Dict[str, str] = {}
     for lineno, raw in enumerate(value.splitlines(), start=1):
         line = raw.strip()
@@ -93,20 +95,16 @@ def parse_dotenv_secret(value: str) -> Dict[str, str]:
     return out
 
 
+@akeyless_filter
 def secret_to_json(value: str) -> Any:
     """Parse a secret value as JSON. Akeyless stores complex structures
-    (auth configs, KV maps, embedded certs) as JSON strings;
-    callers want them as native dicts/lists in Ansible. Wraps
-    json.loads with a clearer error message than the default
-    JSONDecodeError stack.
+    (auth configs, KV maps, embedded certs) as JSON strings; callers
+    want them as native dicts/lists in Ansible. Wraps json.loads with
+    a clearer error message than the default JSONDecodeError stack.
 
     Usage:
         config: "{{ lookup('drzln0.akeyless.secret', '/app/config') | drzln0.akeyless.secret_to_json }}"
     """
-    if not isinstance(value, str):
-        raise AnsibleFilterError(
-            f"secret_to_json expects a string, got {type(value).__name__}"
-        )
     try:
         return json.loads(value)
     except (TypeError, ValueError) as exc:
@@ -119,6 +117,7 @@ def secret_to_json(value: str) -> Any:
         ) from exc
 
 
+@akeyless_filter
 def split_pem_bundle(value: str) -> List[str]:
     """Split a multi-cert PEM bundle into a list of individual PEM
     blocks. Useful for processing CA bundles where each cert needs
@@ -131,10 +130,6 @@ def split_pem_bundle(value: str) -> List[str]:
     Usage:
         ca_certs: "{{ lookup('drzln0.akeyless.secret', '/ca/bundle') | drzln0.akeyless.split_pem_bundle }}"
     """
-    if not isinstance(value, str):
-        raise AnsibleFilterError(
-            f"split_pem_bundle expects a string, got {type(value).__name__}"
-        )
     blocks: List[str] = []
     current: List[str] = []
     in_block = False
@@ -162,6 +157,7 @@ def split_pem_bundle(value: str) -> List[str]:
     return blocks
 
 
+@akeyless_filter(expects=dict)
 def secret_keys_to_env(value: Dict[str, Any], prefix: str = "") -> Dict[str, str]:
     """Convert a {key: value} dict (e.g. from secret_to_json) into the
     UPPER_SNAKE_CASE env-var shape Ansible's `environment:` block
@@ -170,10 +166,6 @@ def secret_keys_to_env(value: Dict[str, Any], prefix: str = "") -> Dict[str, str
     Usage:
         environment: "{{ config_dict | drzln0.akeyless.secret_keys_to_env(prefix='APP_') }}"
     """
-    if not isinstance(value, dict):
-        raise AnsibleFilterError(
-            f"secret_keys_to_env expects a dict, got {type(value).__name__}"
-        )
     if not isinstance(prefix, str):
         raise AnsibleFilterError(
             f"secret_keys_to_env prefix must be a string, got {type(prefix).__name__}"
@@ -185,6 +177,7 @@ def secret_keys_to_env(value: Dict[str, Any], prefix: str = "") -> Dict[str, str
     return out
 
 
+@akeyless_filter
 def mask_secret(value: str, show_first: int = 4, show_last: int = 0,
                 mask_char: str = "*") -> str:
     """Partial-reveal mask for log-safe secret display. Shows the first
@@ -201,10 +194,6 @@ def mask_secret(value: str, show_first: int = 4, show_last: int = 0,
         - debug:
             msg: "Token: {{ tok | drzln0.akeyless.mask_secret(show_first=6, show_last=4) }}"
     """
-    if not isinstance(value, str):
-        raise AnsibleFilterError(
-            f"mask_secret expects a string, got {type(value).__name__}"
-        )
     if not isinstance(show_first, int) or not isinstance(show_last, int):
         raise AnsibleFilterError("mask_secret show_first/show_last must be ints")
     if show_first < 0 or show_last < 0:
@@ -224,6 +213,7 @@ def mask_secret(value: str, show_first: int = 4, show_last: int = 0,
     return f"{head}{mask_char * 8}{tail}"
 
 
+@akeyless_filter
 def secret_strength(value: str) -> Dict[str, Any]:
     """Compute a Shannon-entropy + heuristic strength score for a
     secret string. Returns `{length, entropy_bits, classification}`
@@ -241,13 +231,6 @@ def secret_strength(value: str) -> Dict[str, Any]:
             that:
               - (rotated_password | drzln0.akeyless.secret_strength).classification != 'weak'
     """
-    import math
-    from collections import Counter
-
-    if not isinstance(value, str):
-        raise AnsibleFilterError(
-            f"secret_strength expects a string, got {type(value).__name__}"
-        )
     length = len(value)
     if length == 0:
         return {"length": 0, "entropy_bits": 0.0, "classification": "weak"}

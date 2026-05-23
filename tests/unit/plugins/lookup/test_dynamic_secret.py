@@ -68,16 +68,18 @@ def _install_ansible_lookup_stubs():
     ):
         if name not in sys.modules:
             sys.modules[name] = types.ModuleType(name)
-    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
-            ".akeyless_lookup_auth")
-    # Force fresh load so the helper's `import akeyless` rebinds to
-    # the current test's fake_akeyless stub.
-    sys.modules.pop(full, None)
-    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
-    spec = importlib.util.spec_from_file_location(full, helper_path)
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[full] = mod
-    spec.loader.exec_module(mod)
+    for stem in ("akeyless_lookup_auth", "akeyless_plugin_helpers"):
+        full = (
+            f"ansible_collections.drzln0.akeyless.plugins.module_utils.{stem}"
+        )
+        # Force fresh load so the helper's `import akeyless` rebinds to
+        # the current test's fake_akeyless stub.
+        sys.modules.pop(full, None)
+        helper_path = REPO_ROOT / "plugins" / "module_utils" / f"{stem}.py"
+        spec = importlib.util.spec_from_file_location(full, helper_path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[full] = mod
+        spec.loader.exec_module(mod)
 
 
 def _load(fake_akeyless):
@@ -110,23 +112,9 @@ def test_lookup_module_class_exists(lookup):
 
 
 # ---------------------------------------------------------------------------
-# Auth path (mirrors static-secret lookup; verify identical behaviour)
-# ---------------------------------------------------------------------------
-
-
-class TestAuth:
-
-    def test_pre_issued_token_skips_auth(self, lookup):
-        client, token = lookup._authenticated_client({"token": "pre-issued"})
-        assert token == "pre-issued"
-        assert not client.auth.called
-
-    def test_requires_access_id_without_token(self, lookup):
-        from ansible.errors import AnsibleError
-        with pytest.raises(AnsibleError, match="access_id is required"):
-            lookup._authenticated_client({"token": None, "access_id": None})
-
-
+# Auth path -- covered once for all lookups in
+# tests/unit/plugins/module_utils/test_lookup_auth.py (the helper is
+# shared via @akeyless_lookup, no per-lookup auth code remains).
 # ---------------------------------------------------------------------------
 # run() dispatch
 # ---------------------------------------------------------------------------

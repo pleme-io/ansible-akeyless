@@ -78,51 +78,28 @@ _raw:
   elements: dict
 """
 
-from typing import Any, Dict, List, Optional
-
-from ansible.errors import AnsibleError, AnsibleLookupError
 from ansible.plugins.lookup import LookupBase
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_lookup_auth import (
-    DEFAULT_ACCESS_TYPE,
-    DEFAULT_GATEWAY_URL,
     HAS_AKEYLESS,
     AKEYLESS_IMPORT_ERROR,
-    authenticated_client as _authenticated_client,
+)
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    akeyless_lookup,
 )
 
 try:
     import akeyless
-    from akeyless.exceptions import ApiException
 except ImportError:  # pragma: no cover - HAS_AKEYLESS handles this
     pass
 
 
+@akeyless_lookup()
 class LookupModule(LookupBase):
     """Mint dynamic secret values from Akeyless Vault."""
 
-    def run(self, terms: List[str], variables: Optional[Dict[str, Any]] = None,
-            **kwargs: Any) -> List[Any]:
-        self.set_options(var_options=variables, direct=kwargs)
-        opts = {k: self.get_option(k) for k in (
-            "gateway_url", "access_id", "access_key", "access_type", "token",
-        )}
-
-        client, token = _authenticated_client(opts)
-
-        out: List[Any] = []
+    def fetch(self, client, token, opts, term):
         # Dynamic-secret endpoints are per-secret (unlike static
-        # get_secret_value which batches). Loop is intentional.
-        for term in terms:
-            body = akeyless.GetDynamicSecretValue(name=term, token=token)
-            try:
-                result = client.get_dynamic_secret_value(body)
-            except ApiException as exc:
-                status = getattr(exc, "status", "?")
-                raise AnsibleLookupError(
-                    f"Akeyless get_dynamic_secret_value({term!r}) failed "
-                    f"({status}): {exc.body or exc.reason}"
-                ) from exc
-            if hasattr(result, "to_dict"):
-                result = result.to_dict()
-            out.append(result)
-        return out
+        # get_secret_value which batches). Loop is handled by the
+        # @akeyless_lookup decorator.
+        body = akeyless.GetDynamicSecretValue(name=term, token=token)
+        return client.get_dynamic_secret_value(body)

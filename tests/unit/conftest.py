@@ -12,11 +12,45 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+import importlib.util
 import sys
 import types
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def install_collection_module_util(stem: str) -> types.ModuleType:
+    """Load `plugins/module_utils/<stem>.py` under its canonical
+    `ansible_collections.drzln0.akeyless.plugins.module_utils.<stem>`
+    FQ name. Idempotent on re-call -- pops + reloads so each call
+    picks up whatever fake_akeyless the current test has installed.
+
+    Used by tests that load production plugins (filters / tests /
+    lookups / etc.) whose imports reference these helpers at module
+    scope.
+    """
+    # Ensure the parent package skeleton exists in sys.modules.
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        sys.modules.setdefault(name, types.ModuleType(name))
+
+    full = f"ansible_collections.drzln0.akeyless.plugins.module_utils.{stem}"
+    sys.modules.pop(full, None)  # force re-import so SDK rebinds
+    helper_path = _REPO_ROOT.parent / "plugins" / "module_utils" / f"{stem}.py"
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
+    return mod
 
 
 class _FakeApiException(Exception):

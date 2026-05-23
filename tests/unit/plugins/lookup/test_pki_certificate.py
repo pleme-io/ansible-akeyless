@@ -65,14 +65,16 @@ def _install_ansible_lookup_stubs():
     ):
         if name not in sys.modules:
             sys.modules[name] = types.ModuleType(name)
-    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
-            ".akeyless_lookup_auth")
-    sys.modules.pop(full, None)
-    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
-    spec = importlib.util.spec_from_file_location(full, helper_path)
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[full] = mod
-    spec.loader.exec_module(mod)
+    for stem in ("akeyless_lookup_auth", "akeyless_plugin_helpers"):
+        full = (
+            f"ansible_collections.drzln0.akeyless.plugins.module_utils.{stem}"
+        )
+        sys.modules.pop(full, None)
+        helper_path = REPO_ROOT / "plugins" / "module_utils" / f"{stem}.py"
+        spec = importlib.util.spec_from_file_location(full, helper_path)
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[full] = mod
+        spec.loader.exec_module(mod)
 
 
 def _load(fake_akeyless):
@@ -104,10 +106,8 @@ def test_lookup_module_class_exists(lookup):
     assert issubclass(lookup.LookupModule, LookupBase)
 
 
-def test_pre_issued_token_skips_auth(lookup):
-    client, token = lookup._authenticated_client({"token": "pre"})
-    assert token == "pre"
-    assert not client.auth.called
+# Auth path -- covered once for all lookups in
+# tests/unit/plugins/module_utils/test_lookup_auth.py.
 
 
 # ---------------------------------------------------------------------------
