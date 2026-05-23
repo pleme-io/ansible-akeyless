@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 #
-# Auto-generated module utility for the Akeyless V2 API.
-# This file ships at plugins/module_utils/akeyless_client.py.
-# All generated resource modules import get_client, call_api, build_body
-# from here -- it is the only place that touches the akeyless SDK directly.
+# Module utility for the Akeyless V2 API.
+# Distributed at plugins/module_utils/akeyless_client.py in this collection.
+# Every generated module imports one of the run_*_module lifecycle helpers
+# (or the lower-level get_client / call_api / build_body primitives) from
+# here -- this is the single Akeyless-SDK boundary in the collection.
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
+import functools
 import inspect
 import os
+from typing import NamedTuple, Optional, Tuple
 
 try:
     import akeyless
@@ -24,6 +27,23 @@ except ImportError as exc:  # pragma: no cover - exercised by Ansible at runtime
 
 DEFAULT_GATEWAY_URL = "https://api.akeyless.io"
 DEFAULT_ACCESS_TYPE = "access_key"
+
+
+class SdkCall(NamedTuple):
+    """Typed (model_class_name, snake_case_method) pair handed to the
+    lifecycle helpers. Backwards-compatible with the legacy plain-tuple
+    form: callers can still pass `("ModelName", "method_name")` and the
+    helpers iterate-unpack them identically -- NamedTuple is a tuple.
+
+    Construction in generated modules looks like:
+        run_action_module(sdk_call=SdkCall("Encrypt", "encrypt"), ...)
+    or, equivalently for backward compatibility:
+        run_action_module(sdk_call=("Encrypt", "encrypt"), ...)
+    """
+
+    model: str
+    method: str
+
 
 # Registry of public lifecycle helpers (the symbols a generated module
 # is allowed to import from this file as its `main` entrypoint glue).
@@ -94,27 +114,57 @@ def get_client(module):
     try:
         auth_res = client.auth(auth_body)
     except ApiException as exc:
-        module.fail_json(msg="Akeyless auth failed: %s" % (exc.body or exc.reason), status=getattr(exc, "status", None))
+        module.fail_json(
+            msg=f"Akeyless auth failed: {exc.body or exc.reason}",
+            status=getattr(exc, "status", None),
+        )
     token = getattr(auth_res, "token", None)
     if not token:
         module.fail_json(msg="Akeyless auth returned no token")
     return client, token
 
 
-def build_body(model_class_name, params):
-    """Instantiate akeyless.<model_class_name>(**filtered_params).
+@functools.lru_cache(maxsize=None)
+def _model_accepted_kwargs(model_class_name):
+    """Return the frozenset of kwarg names a given SDK model accepts.
 
-    Filters params to those the model accepts AND drops None values.
+    Cached because every CRUD module invokes build_body up to four times
+    per run (create/update/delete/read), and the SDK has ~340 model
+    classes -- without the cache, every invocation walks inspect.signature
+    and reflects attribute_map. The cache key is the class name string,
+    so cache state is bounded and doesn't pin model class objects in
+    memory beyond the SDK module's own lifetime.
+
+    Returns frozenset() rather than raising on unknown models so the
+    caller's KeyError path can distinguish "model doesn't exist" from
+    "model exists but accepts nothing".
     """
     _ensure_sdk_loaded()
     model_cls = getattr(akeyless, model_class_name, None)
     if model_cls is None:
-        raise ValueError("Unknown Akeyless model: %s" % model_class_name)
+        return None
     try:
-        accepted = set(inspect.signature(model_cls.__init__).parameters)
+        return frozenset(inspect.signature(model_cls.__init__).parameters)
     except (TypeError, ValueError):
-        accepted = set(getattr(model_cls, "attribute_map", {}).keys())
-    filtered = {k: v for k, v in (params or {}).items() if v is not None and k in accepted}
+        return frozenset(getattr(model_cls, "attribute_map", {}).keys())
+
+
+def build_body(model_class_name, params):
+    """Instantiate akeyless.<model_class_name>(**filtered_params).
+
+    Filters params to those the model accepts AND drops None values.
+    Raises ValueError on unknown model names so codegen-side regressions
+    (e.g. spec drift, generator emitting a renamed model) surface
+    immediately at the right layer.
+    """
+    accepted = _model_accepted_kwargs(model_class_name)
+    if accepted is None:
+        raise ValueError(f"Unknown Akeyless model: {model_class_name}")
+    model_cls = getattr(akeyless, model_class_name)
+    filtered = {
+        k: v for k, v in (params or {}).items()
+        if v is not None and k in accepted
+    }
     return model_cls(**filtered)
 
 
@@ -131,7 +181,7 @@ def call_api(module, client, method_name, body, swallow_404=False):
     """
     method = getattr(client, method_name, None)
     if method is None:
-        module.fail_json(msg="Akeyless V2Api has no method '%s'" % method_name)
+        module.fail_json(msg=f"Akeyless V2Api has no method '{method_name}'")
     try:
         result = _invoke_sdk_method(method, method_name, body)
     except ApiException as exc:
@@ -139,7 +189,7 @@ def call_api(module, client, method_name, body, swallow_404=False):
         if swallow_404 and status == 404:
             return None
         module.fail_json(
-            msg="Akeyless API call %s failed: %s" % (method_name, exc.body or exc.reason),
+            msg=f"Akeyless API call {method_name} failed: {exc.body or exc.reason}",
             status=status,
         )
     return _to_dict(result)
@@ -182,7 +232,7 @@ def _to_dict(result):
 
 def _ensure_sdk_loaded():
     if not HAS_AKEYLESS:
-        raise RuntimeError("akeyless SDK not importable: %s" % AKEYLESS_IMPORT_ERROR)
+        raise RuntimeError(f"akeyless SDK not importable: {AKEYLESS_IMPORT_ERROR}")
 
 
 # Keys present on every module's argspec for auth/meta plumbing -- never
