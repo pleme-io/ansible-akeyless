@@ -1,0 +1,88 @@
+name: docs-publish
+
+# Builds the mkdocs-material site from docs/ + the auto-generated
+# reference pages (sourced from every plugin/module's DOCUMENTATION
+# YAML) and deploys to GitHub Pages.
+#
+# On push to main: full build + deploy.
+# On PR: build only (smoke-test the rendered site, no deploy).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'scripts/build_reference_docs.py'
+      - 'plugins/**/*.py'      # auto-reference pages source from these
+      - '.github/workflows/docs-publish.yml'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'scripts/build_reference_docs.py'
+      - 'plugins/**/*.py'
+      - '.github/workflows/docs-publish.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Avoid concurrent deploys clobbering each other.
+concurrency:
+  group: docs-publish
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build mkdocs site
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # mkdocs git-revision-date plugin needs history
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install mkdocs + plugins
+        run: |
+          python -m pip install --upgrade pip
+          pip install \
+            mkdocs \
+            mkdocs-material \
+            mkdocs-gen-files \
+            mkdocs-literate-nav \
+            mkdocs-section-index \
+            pyyaml
+
+      - name: Build the site
+        run: |
+          mkdocs build --strict --site-dir site
+
+      - name: Upload site as artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+          retention-days: 7
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

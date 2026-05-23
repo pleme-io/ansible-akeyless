@@ -1,0 +1,81 @@
+site_name: drzln0.akeyless
+site_description: Full-service Ansible integration for Akeyless Vault
+site_url: https://pleme-io.github.io/ansible-akeyless/
+repo_url: https://github.com/pleme-io/ansible-akeyless
+repo_name: pleme-io/ansible-akeyless
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tabs
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.action.edit
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  # `gen-files` runs scripts/build_reference_docs.py at build time;
+  # the script reads every plugin/module's DOCUMENTATION block and
+  # writes a per-page markdown file into docs/reference/. We don't
+  # check those generated files into the repo -- they regenerate
+  # on every build, sourced from the YAML that ships in the code.
+  - gen-files:
+      scripts:
+        - scripts/build_reference_docs.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - section-index
+
+nav:
+  - Home: index.md
+  - Walkthroughs:
+      - Quickstart: walkthroughs/quickstart.md
+      - Auth once via action_groups: walkthroughs/module-defaults.md
+      - Bootstrap a host with secrets: walkthroughs/bootstrap-host.md
+      - Install a TLS certificate: walkthroughs/install-tls-cert.md
+      - Inventory from Akeyless: walkthroughs/inventory-from-akeyless.md
+      - Atomic secret-to-file: walkthroughs/secret-to-file.md
+      - Skip per-task auth: walkthroughs/token-caching.md
+      - Dynamic + rotated secrets: walkthroughs/dynamic-secrets.md
+      - AWX / AAP integration: walkthroughs/awx-aap-integration.md
+  - Reference:
+      - Architecture: reference/architecture.md
+      - Authentication: reference/authentication.md
+      - Plugins (auto-generated): reference/plugins/
+      - Modules (auto-generated): reference/modules/
