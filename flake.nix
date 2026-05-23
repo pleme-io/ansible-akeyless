@@ -85,6 +85,19 @@
           touch $out
         '';
 
+        # Mock-driven SDK tests -- spin up a fake akeyless package via
+        # conftest and drive each module's main() against it. These were
+        # historically run locally only; promoting them to a flake check
+        # means every PR has to pass them before merge.
+        mockCheck = pkgs.runCommand "mock-tests" {
+          nativeBuildInputs = [ pythonEnv pkgs.ansible ];
+          src = self;
+        } ''
+          cp -r $src ./work && cd work && chmod -R +w .
+          python3 -m pytest tests/mock/ -q
+          touch $out
+        '';
+
         openapiCheck = pkgs.runCommand "openapi-coverage" {
           nativeBuildInputs = [ pythonEnv ];
           src = self;
@@ -101,6 +114,7 @@
           checks = {
             smoke = smokeCheck;
             unit = unitCheck;
+            mock = mockCheck;
             openapi = openapiCheck;
           };
 
