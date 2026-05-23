@@ -93,53 +93,42 @@ result:
   returned: success
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body,
+    run_action_module,
 )
 
-
-def run_action(module, client, token):
-    """Invoke the action and return the SDK response."""
-    body = build_body("GenerateCsr", dict(module.params, token=token))
-    return call_api(module, client, "generate_csr", body)
+argument_spec = {
+    'alg': {'type': 'str'},
+    'alt_names': {'type': 'str'},
+    'certificate_type': {'type': 'str'},
+    'city': {'type': 'str'},
+    'common_name': {'type': 'str', 'required': True},
+    'country': {'type': 'str'},
+    'critical': {'type': 'bool'},
+    'dep': {'type': 'str'},
+    'email_addresses': {'type': 'str'},
+    'export_private_key': {'type': 'bool'},
+    'generate_key': {'type': 'bool'},
+    'hash_algorithm': {'type': 'str'},
+    'ip_addresses': {'type': 'str'},
+    'key_type': {'type': 'str', 'required': True},
+    'name': {'type': 'str', 'required': True},
+    'org': {'type': 'str'},
+    'split_level': {'type': 'int'},
+    'state': {'type': 'str'},
+    'uri_sans': {'type': 'str'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'alg': {'type': 'str'},
-        'alt_names': {'type': 'str'},
-        'certificate_type': {'type': 'str'},
-        'city': {'type': 'str'},
-        'common_name': {'type': 'str', 'required': True},
-        'country': {'type': 'str'},
-        'critical': {'type': 'bool'},
-        'dep': {'type': 'str'},
-        'email_addresses': {'type': 'str'},
-        'export_private_key': {'type': 'bool'},
-        'generate_key': {'type': 'bool'},
-        'hash_algorithm': {'type': 'str'},
-        'ip_addresses': {'type': 'str'},
-        'key_type': {'type': 'str', 'required': True},
-        'name': {'type': 'str', 'required': True},
-        'org': {'type': 'str'},
-        'split_level': {'type': 'int'},
-        'state': {'type': 'str'},
-        'uri_sans': {'type': 'str'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
-
-    client, token = get_client(module)
-    result = run_action(module, client, token)
-    # Mask sensitive response fields before echoing back to the user.
-    _sensitive = {'data'}
-    masked = { k: ('***' if k in _sensitive else v) for k, v in (result or {}).items() }
-    module.exit_json(changed=True, result=masked)
+    run_action_module(
+        argument_spec=argument_spec,
+        sdk_call=('GenerateCsr', 'generate_csr'),
+    )
 
 
 if __name__ == '__main__':

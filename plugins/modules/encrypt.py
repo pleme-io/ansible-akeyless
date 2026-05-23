@@ -55,41 +55,30 @@ result:
   returned: success
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body,
+    run_action_module,
 )
 
-
-def run_action(module, client, token):
-    """Invoke the action and return the SDK response."""
-    body = build_body("Encrypt", dict(module.params, token=token))
-    return call_api(module, client, "encrypt", body)
+argument_spec = {
+    'display_id': {'type': 'str'},
+    'encryption_context': {'type': 'dict'},
+    'input_format': {'type': 'str'},
+    'item_id': {'type': 'int'},
+    'key_name': {'type': 'str', 'required': True},
+    'plaintext': {'type': 'str'},
+    'version': {'type': 'int'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'display_id': {'type': 'str'},
-        'encryption_context': {'type': 'dict'},
-        'input_format': {'type': 'str'},
-        'item_id': {'type': 'int'},
-        'key_name': {'type': 'str', 'required': True},
-        'plaintext': {'type': 'str'},
-        'version': {'type': 'int'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
-
-    client, token = get_client(module)
-    result = run_action(module, client, token)
-    # Mask sensitive response fields before echoing back to the user.
-    _sensitive = {'result'}
-    masked = { k: ('***' if k in _sensitive else v) for k, v in (result or {}).items() }
-    module.exit_json(changed=True, result=masked)
+    run_action_module(
+        argument_spec=argument_spec,
+        sdk_call=('Encrypt', 'encrypt'),
+    )
 
 
 if __name__ == '__main__':

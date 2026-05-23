@@ -54,41 +54,30 @@ result:
   returned: success
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body,
+    run_action_module,
 )
 
-
-def run_action(module, client, token):
-    """Invoke the action and return the SDK response."""
-    body = build_body("UidCreateChildToken", dict(module.params, token=token))
-    return call_api(module, client, "uid_create_child_token", body)
+argument_spec = {
+    'auth_method_name': {'type': 'str'},
+    'child_deny_inheritance': {'type': 'bool'},
+    'child_deny_rotate': {'type': 'bool'},
+    'child_ttl': {'type': 'int'},
+    'comment': {'type': 'str'},
+    'description': {'type': 'str'},
+    'uid_token_id': {'type': 'str'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'auth_method_name': {'type': 'str'},
-        'child_deny_inheritance': {'type': 'bool'},
-        'child_deny_rotate': {'type': 'bool'},
-        'child_ttl': {'type': 'int'},
-        'comment': {'type': 'str'},
-        'description': {'type': 'str'},
-        'uid_token_id': {'type': 'str'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
-
-    client, token = get_client(module)
-    result = run_action(module, client, token)
-    # Return token value as-is; playbook author may add no_log: yes
-    # to the task to keep it out of the log. Masking here would
-    # destroy the value subsequent tasks need.
-    module.exit_json(changed=True, result=result)
+    run_action_module(
+        argument_spec=argument_spec,
+        sdk_call=('UidCreateChildToken', 'uid_create_child_token'),
+    )
 
 
 if __name__ == '__main__':

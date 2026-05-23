@@ -36,35 +36,24 @@ result:
   returned: success
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body,
+    run_action_module,
 )
 
-
-def run_action(module, client, token):
-    """Invoke the action and return the SDK response."""
-    body = build_body("UidListChildren", dict(module.params, token=token))
-    return call_api(module, client, "uid_list_children", body)
+argument_spec = {
+    'auth_method_name': {'type': 'str'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'auth_method_name': {'type': 'str'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=False)
-
-    client, token = get_client(module)
-    result = run_action(module, client, token)
-    # Mask sensitive response fields before echoing back to the user.
-    _sensitive = set()
-    masked = { k: ('***' if k in _sensitive else v) for k, v in (result or {}).items() }
-    module.exit_json(changed=False, result=masked)
+    run_action_module(
+        argument_spec=argument_spec,
+        sdk_call=('UidListChildren', 'uid_list_children'),
+    )
 
 
 if __name__ == '__main__':
