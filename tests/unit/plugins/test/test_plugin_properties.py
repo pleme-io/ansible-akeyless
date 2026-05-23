@@ -17,7 +17,13 @@ import pytest
 from hypothesis import HealthCheck, given, settings, strategies as st
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-TEST_PLUGIN_PATH = REPO_ROOT / "plugins" / "test" / "akeyless.py"
+TEST_PLUGIN_DIR = REPO_ROOT / "plugins" / "test"
+PER_TEST_FILES = {
+    "is_akeyless_path": TEST_PLUGIN_DIR / "is_akeyless_path.py",
+    "is_akeyless_access_id": TEST_PLUGIN_DIR / "is_akeyless_access_id.py",
+    "is_pem_block": TEST_PLUGIN_DIR / "is_pem_block.py",
+    "is_base64": TEST_PLUGIN_DIR / "is_base64.py",
+}
 
 _PROP_SETTINGS = dict(deadline=None,
                        suppress_health_check=[HealthCheck.function_scoped_fixture])
@@ -25,13 +31,18 @@ _PROP_SETTINGS = dict(deadline=None,
 
 @pytest.fixture(scope="module")
 def tests():
-    spec = importlib.util.spec_from_file_location(
-        "akeyless_test_plugin_properties", TEST_PLUGIN_PATH
-    )
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules["akeyless_test_plugin_properties"] = mod
-    spec.loader.exec_module(mod)
-    return mod
+    """Merge per-test-file exports onto one object so existing test
+    methods reach them as `tests.<test_name>`."""
+    merged = type("MergedTestPlugins", (), {})()
+    for name, path in PER_TEST_FILES.items():
+        spec = importlib.util.spec_from_file_location(
+            f"_prop_test_under_test_{name}", path
+        )
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = mod
+        spec.loader.exec_module(mod)
+        setattr(merged, name, getattr(mod, name))
+    return merged
 
 
 # Strategies for generating "looks-real" akeyless paths and identifiers.
