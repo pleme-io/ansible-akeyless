@@ -25,6 +25,36 @@ except ImportError as exc:  # pragma: no cover - exercised by Ansible at runtime
 DEFAULT_GATEWAY_URL = "https://api.akeyless.io"
 DEFAULT_ACCESS_TYPE = "access_key"
 
+# Registry of public lifecycle helpers (the symbols a generated module
+# is allowed to import from this file as its `main` entrypoint glue).
+# Populated by the @lifecycle_helper decorator below. Test code reads
+# this set via `LIFECYCLE_HELPERS` instead of maintaining its own copy.
+LIFECYCLE_HELPERS = set()
+
+
+def lifecycle_helper(fn):
+    """Decorator that registers `fn` as a public lifecycle helper.
+
+    Eliminates the duplicate-source-of-truth that previously lived in
+    tests/unit/plugins/modules/test_module_shape.py's HELPER_NAMES set:
+    adding a new helper here (e.g. `run_batch_module`) is the only step
+    -- the test harness picks it up automatically via the registry.
+    Lower-level primitives (get_client / call_api / build_body) are NOT
+    registered here; they're separately exposed via PRIMITIVES below for
+    backward-compatible imports from legacy / hand-written modules.
+    """
+    LIFECYCLE_HELPERS.add(fn.__name__)
+    return fn
+
+
+# Lower-level primitives that legacy / hand-written modules may import
+# directly when they need finer control than the lifecycle helpers
+# provide. Generated modules don't touch these directly anymore (they
+# go through `run_*_module` helpers), but we keep the set explicit
+# so the structural test for "module is wired to the helper" can accept
+# either route as valid evidence.
+PRIMITIVES = frozenset({"get_client", "call_api", "build_body"})
+
 
 def _require_sdk(module):
     if not HAS_AKEYLESS:
@@ -250,6 +280,7 @@ def drift_to_diff(drift):
     }
 
 
+@lifecycle_helper
 def run_standard_crud(
     argument_spec,
     resource_label,
@@ -396,6 +427,7 @@ def run_standard_crud(
     module.exit_json(changed=True, result=result, diff=diff)
 
 
+@lifecycle_helper
 def run_action_module(argument_spec, sdk_call, supports_check_mode=False):
     """Drive a one-shot non-CRUD module. Replaces the run_action +
     main() boilerplate that the ~26 action modules (uid_generate_token,
@@ -426,6 +458,7 @@ def run_action_module(argument_spec, sdk_call, supports_check_mode=False):
     module.exit_json(changed=True, result=result)
 
 
+@lifecycle_helper
 def run_info_module(argument_spec, sdk_call):
     """Drive a read-only `*_info` module. Replaces the read_resource +
     main() boilerplate that the 25 info modules (role_info, items_info,
