@@ -86,7 +86,7 @@ options:
       description: "Path location template for migrating domain servers as SSH/Windows Targets e.g.: .../Servers/{{COMPUTER_NAME}} (Relevant only for Active Directory migration)"
       type: str
     ad_targets_type:
-      description: "Set the target type of the domain servers [ssh/windows](Relevant only for Active Directory migration)"
+      description: "Set the target type of the domain servers (ssh / windows). Relevant only for Active Directory migration."
       type: str
     ad_user_base_dn:
       description: "Distinguished Name of User objects to search in Active Directory, e.g.: CN=Users,DC=example,DC=com (Relevant only for Active Directory migration)"

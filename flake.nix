@@ -46,7 +46,7 @@
         };
 
         pythonEnv = pkgs.python3.withPackages (ps: with ps; [
-          pytest pyyaml jsonschema
+          pytest pyyaml jsonschema hypothesis
         ]);
 
         # Shared bootstrap for any flake app whose body wants to invoke
