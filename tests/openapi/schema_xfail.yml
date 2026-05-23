@@ -65,3 +65,8 @@ xfail:
     missing_required:
       - message
     reason: "Argspec renamed `message` → `payload` (Ansible-reserved). See sign_pkcs1. Track upstream in ansible-forge."
+
+  usc:
+    missing_required:
+      - secret_name
+    reason: "USC follows the Akeyless split-CRUD shape (UscCreate uses secret_name; UscGet/Update/Delete use secret_id). The module's argspec carries secret_id only; documented under tests/live/coverage_matrix.py _SKIP_MODULES with the full rationale. Track upstream in ansible-forge to model the split."
