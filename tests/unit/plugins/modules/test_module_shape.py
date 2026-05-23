@@ -24,7 +24,13 @@ MODULES_DIR = REPO_ROOT / "plugins" / "modules"
 HELPER_IMPORT = (
     "from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client"
 )
-HELPER_NAMES = {"get_client", "call_api", "build_body"}
+HELPER_NAMES = {
+    "get_client", "call_api", "build_body",
+    # Standard-CRUD modules now collapse to `run_standard_crud`, which
+    # itself uses the three lower-level primitives internally. Either
+    # form is valid for "the module is wired to the helper".
+    "run_standard_crud",
+}
 AUTH_KEYS = {"gateway_url", "access_id", "access_key", "access_type"}
 
 
@@ -187,20 +193,51 @@ def test_module_imports_helper_functions(module_path):
 
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)
 def test_crud_modules_use_pascal_and_snake(module_path):
-    tree = ast.parse(module_path.read_text())
+    """Every CRUD-shaped module must reference its SDK models in
+    PascalCase and methods in snake_case. Catches typos that would
+    pass python parsing but fail at SDK dispatch.
+
+    Two CRUD shapes to handle:
+      - Legacy boilerplate: 4 separate create/update/delete/read_resource
+        functions with build_body + call_api literals.
+      - Post-refactor: a single `run_standard_crud(...)` call with
+        sdk_create/update/delete/read=(Model, snake_method) tuples.
+    """
+    src = module_path.read_text()
+    tree = ast.parse(src)
     fns = _function_defs(tree)
-    if "create_resource" not in fns:
+
+    if "create_resource" in fns:
+        # Legacy CRUD module — extract from build_body / call_api literals.
+        for model in _build_body_model_args(tree):
+            assert _is_pascal_case(model), (
+                f"{module_path.name}: build_body model {model!r} not PascalCase")
+        for method in _call_api_invocations(tree):
+            assert _is_snake_case(method), (
+                f"{module_path.name}: call_api method {method!r} not snake_case")
+        return
+
+    # Post-refactor CRUD module — extract from the sdk_create/update/etc.
+    # tuples passed to run_standard_crud.
+    if "run_standard_crud" not in src:
         pytest.skip("not a CRUD module")
-    # Every build_body model arg should be PascalCase; every call_api method
-    # arg should be snake_case.
-    for model in _build_body_model_args(tree):
+
+    sdk_tuples = []
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "run_standard_crud"):
+            for kw in node.keywords:
+                if (kw.arg in {"sdk_create", "sdk_update", "sdk_delete", "sdk_read"}
+                    and isinstance(kw.value, ast.Tuple)
+                    and len(kw.value.elts) == 2
+                    and all(isinstance(e, ast.Constant) for e in kw.value.elts)):
+                    sdk_tuples.append((kw.arg, kw.value.elts[0].value, kw.value.elts[1].value))
+    for arg, model, method in sdk_tuples:
         assert _is_pascal_case(model), (
-            f"{module_path.name}: build_body model {model!r} not PascalCase"
-        )
-    for method in _call_api_invocations(tree):
+            f"{module_path.name}: {arg} model {model!r} not PascalCase")
         assert _is_snake_case(method), (
-            f"{module_path.name}: call_api method {method!r} not snake_case"
-        )
+            f"{module_path.name}: {arg} method {method!r} not snake_case")
 
 
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)

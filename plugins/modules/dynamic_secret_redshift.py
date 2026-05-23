@@ -100,103 +100,45 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("DynamicSecretCreateRedshift", dict(module.params, token=token))
-    return call_api(module, client, "dynamic_secret_create_redshift", body)
-
-
-def update_resource(module, client, token):
-    """Update the resource."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    # Changing them requires destroy + recreate.
-
-    # TODO(phase-1b): use read_mapping for honest diff
-    body = build_body("DynamicSecretUpdateRedshift", dict(module.params, token=token))
-    return call_api(module, client, "dynamic_secret_update_redshift", body)
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("DynamicSecretDelete", dict(module.params, token=token))
-    return call_api(module, client, "dynamic_secret_delete", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("DynamicSecretGet", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "dynamic_secret_get", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'creation_statements': {'type': 'str'},
+    'custom_username_template': {'type': 'str'},
+    'delete_protection': {'type': 'bool'},
+    'description': {'type': 'str'},
+    'item_custom_fields': {'type': 'dict'},
+    'name': {'type': 'str', 'required': True},
+    'password_length': {'type': 'str', 'no_log': False},
+    'producer_encryption_key': {'type': 'str', 'no_log': False},
+    'redshift_db_name': {'type': 'str', 'required': True},
+    'redshift_host': {'type': 'str', 'required': True},
+    'redshift_password': {'type': 'str', 'no_log': True, 'required': True},
+    'redshift_port': {'type': 'str'},
+    'redshift_username': {'type': 'str', 'required': True},
+    'ssl': {'type': 'bool'},
+    'tags': {'type': 'list', 'elements': 'str'},
+    'target_name': {'type': 'str'},
+    'user_ttl': {'type': 'str'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'creation_statements': {'type': 'str'},
-        'custom_username_template': {'type': 'str'},
-        'delete_protection': {'type': 'bool'},
-        'description': {'type': 'str'},
-        'item_custom_fields': {'type': 'dict'},
-        'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str', 'no_log': False},
-        'producer_encryption_key': {'type': 'str', 'no_log': False},
-        'redshift_db_name': {'type': 'str', 'required': True},
-        'redshift_host': {'type': 'str', 'required': True},
-        'redshift_password': {'type': 'str', 'no_log': True, 'required': True},
-        'redshift_port': {'type': 'str'},
-        'redshift_username': {'type': 'str', 'required': True},
-        'ssl': {'type': 'bool'},
-        'tags': {'type': 'list', 'elements': 'str'},
-        'target_name': {'type': 'str'},
-        'user_ttl': {'type': 'str'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='dynamic_secret_redshift',
+        sdk_create=('DynamicSecretCreateRedshift', 'dynamic_secret_create_redshift'),
+        sdk_update=('DynamicSecretUpdateRedshift', 'dynamic_secret_update_redshift'),
+        sdk_delete=('DynamicSecretDelete', 'dynamic_secret_delete'),
+        sdk_read=('DynamicSecretGet', 'dynamic_secret_get'),
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="dynamic_secret_redshift already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="dynamic_secret_redshift already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':

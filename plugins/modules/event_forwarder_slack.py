@@ -81,97 +81,39 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("EventForwarderCreateSlack", dict(module.params, token=token))
-    return call_api(module, client, "event_forwarder_create_slack", body)
-
-
-def update_resource(module, client, token):
-    """Update the resource."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    # Changing them requires destroy + recreate.
-
-    # TODO(phase-1b): use read_mapping for honest diff
-    body = build_body("EventForwarderUpdateSlack", dict(module.params, token=token))
-    return call_api(module, client, "event_forwarder_update_slack", body)
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("EventForwarderDelete", dict(module.params, token=token))
-    return call_api(module, client, "event_forwarder_delete", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("GetEventForwarder", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "get_event_forwarder", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
+    'description': {'type': 'str'},
+    'event_types': {'type': 'list', 'elements': 'str'},
+    'every': {'type': 'str'},
+    'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
+    'items_event_source_locations': {'type': 'list', 'elements': 'str'},
+    'key': {'type': 'str', 'no_log': False},
+    'name': {'type': 'str', 'required': True},
+    'runner_type': {'type': 'str', 'required': True},
+    'targets_event_source_locations': {'type': 'list', 'elements': 'str'},
+    'url': {'type': 'str', 'required': True},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'auth_methods_event_source_locations': {'type': 'list', 'elements': 'str'},
-        'description': {'type': 'str'},
-        'event_types': {'type': 'list', 'elements': 'str'},
-        'every': {'type': 'str'},
-        'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
-        'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-        'key': {'type': 'str', 'no_log': False},
-        'name': {'type': 'str', 'required': True},
-        'runner_type': {'type': 'str', 'required': True},
-        'targets_event_source_locations': {'type': 'list', 'elements': 'str'},
-        'url': {'type': 'str', 'required': True},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='event_forwarder_slack',
+        sdk_create=('EventForwarderCreateSlack', 'event_forwarder_create_slack'),
+        sdk_update=('EventForwarderUpdateSlack', 'event_forwarder_update_slack'),
+        sdk_delete=('EventForwarderDelete', 'event_forwarder_delete'),
+        sdk_read=('GetEventForwarder', 'get_event_forwarder'),
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="event_forwarder_slack already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="event_forwarder_slack already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':

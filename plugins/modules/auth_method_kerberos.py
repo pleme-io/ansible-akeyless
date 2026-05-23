@@ -131,114 +131,56 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("AuthMethodCreateKerberos", dict(module.params, token=token))
-    return call_api(module, client, "auth_method_create_kerberos", body)
-
-
-def update_resource(module, client, token):
-    """Update the resource."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    # Changing them requires destroy + recreate.
-
-    # TODO(phase-1b): use read_mapping for honest diff
-    body = build_body("AuthMethodUpdateKerberos", dict(module.params, token=token))
-    return call_api(module, client, "auth_method_update_kerberos", body)
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("DeleteAuthMethod", dict(module.params, token=token))
-    return call_api(module, client, "delete_auth_method", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("GetAuthMethod", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "get_auth_method", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'access_expires': {'type': 'int'},
+    'allowed_client_type': {'type': 'list', 'elements': 'str'},
+    'audit_logs_claims': {'type': 'list', 'elements': 'str'},
+    'bind_dn': {'type': 'str'},
+    'bind_dn_password': {'type': 'str', 'no_log': True},
+    'bound_ips': {'type': 'list', 'elements': 'str'},
+    'delete_protection': {'type': 'bool'},
+    'description': {'type': 'str'},
+    'expiration_event_in': {'type': 'list', 'elements': 'str'},
+    'force_sub_claims': {'type': 'bool'},
+    'group_attr': {'type': 'str'},
+    'group_dn': {'type': 'str'},
+    'group_filter': {'type': 'str'},
+    'gw_bound_ips': {'type': 'list', 'elements': 'str'},
+    'jwt_ttl': {'type': 'int'},
+    'keytab_file_data': {'type': 'str', 'no_log': True},
+    'keytab_file_path': {'type': 'str', 'no_log': True},
+    'krb5_conf_data': {'type': 'str'},
+    'krb5_conf_path': {'type': 'str'},
+    'ldap_anonymous_search': {'type': 'bool'},
+    'ldap_ca_cert': {'type': 'str'},
+    'ldap_url': {'type': 'str'},
+    'name': {'type': 'str', 'required': True},
+    'product_type': {'type': 'list', 'elements': 'str'},
+    'subclaims_delimiters': {'type': 'list', 'elements': 'str'},
+    'unique_identifier': {'type': 'str'},
+    'user_attribute': {'type': 'str'},
+    'user_dn': {'type': 'str'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'access_expires': {'type': 'int'},
-        'allowed_client_type': {'type': 'list', 'elements': 'str'},
-        'audit_logs_claims': {'type': 'list', 'elements': 'str'},
-        'bind_dn': {'type': 'str'},
-        'bind_dn_password': {'type': 'str', 'no_log': True},
-        'bound_ips': {'type': 'list', 'elements': 'str'},
-        'delete_protection': {'type': 'bool'},
-        'description': {'type': 'str'},
-        'expiration_event_in': {'type': 'list', 'elements': 'str'},
-        'force_sub_claims': {'type': 'bool'},
-        'group_attr': {'type': 'str'},
-        'group_dn': {'type': 'str'},
-        'group_filter': {'type': 'str'},
-        'gw_bound_ips': {'type': 'list', 'elements': 'str'},
-        'jwt_ttl': {'type': 'int'},
-        'keytab_file_data': {'type': 'str', 'no_log': True},
-        'keytab_file_path': {'type': 'str', 'no_log': True},
-        'krb5_conf_data': {'type': 'str'},
-        'krb5_conf_path': {'type': 'str'},
-        'ldap_anonymous_search': {'type': 'bool'},
-        'ldap_ca_cert': {'type': 'str'},
-        'ldap_url': {'type': 'str'},
-        'name': {'type': 'str', 'required': True},
-        'product_type': {'type': 'list', 'elements': 'str'},
-        'subclaims_delimiters': {'type': 'list', 'elements': 'str'},
-        'unique_identifier': {'type': 'str'},
-        'user_attribute': {'type': 'str'},
-        'user_dn': {'type': 'str'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='auth_method_kerberos',
+        sdk_create=('AuthMethodCreateKerberos', 'auth_method_create_kerberos'),
+        sdk_update=('AuthMethodUpdateKerberos', 'auth_method_update_kerberos'),
+        sdk_delete=('DeleteAuthMethod', 'delete_auth_method'),
+        sdk_read=('GetAuthMethod', 'get_auth_method'),
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="auth_method_kerberos already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="auth_method_kerberos already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':

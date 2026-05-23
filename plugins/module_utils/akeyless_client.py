@@ -248,3 +248,133 @@ def drift_to_diff(drift):
         "before": {k: b for k, b, _ in drift},
         "after":  {k: a for k, _, a in drift},
     }
+
+
+def run_standard_crud(
+    argument_spec,
+    resource_label,
+    sdk_create,
+    sdk_update,
+    sdk_delete,
+    sdk_read,
+    read_key="name",
+    required_if=None,
+    immutable=False,
+):
+    """Drive the full create/read/update/delete lifecycle for a
+    standard-shape Akeyless resource module. Replaces the ~80 lines of
+    boilerplate that used to live in every plugins/modules/*.py.
+
+    Per-module callers supply:
+
+      argument_spec    AnsibleModule argument spec dict (incl. the
+                       auth shim: gateway_url/access_id/access_key/
+                       access_type, and the state choice).
+      resource_label   Human-readable name used in the
+                       "already absent"/"already in desired state"
+                       messages (e.g. "auth_method_oidc").
+      sdk_create       Tuple ("ModelClassName", "snake_method_name")
+                       that build_body and call_api hand off to.
+      sdk_update       Same shape; some resources reuse a generic
+                       update model (e.g. "TargetUpdate" / variant).
+      sdk_delete       Same shape; many resources route to a shared
+                       delete endpoint ("delete_item" /
+                       "delete_auth_method" / "target_delete").
+      sdk_read         Same shape; the get/describe endpoint that
+                       returns the resource's current state.
+      read_key         Argspec field whose value identifies the
+                       resource on the read call. Defaults to "name";
+                       a tiny number of modules (e.g. target_windows)
+                       use "hostname".
+      required_if      Forwarded verbatim to AnsibleModule(); pass
+                       e.g. [("state", "present", ["value"])] for
+                       modules where a field is mandatory only on
+                       create/update.
+      immutable        When True, the resource has no upstream Update
+                       endpoint -- drift triggers fail_json("delete+
+                       recreate required") instead of an update call.
+                       Pass `sdk_update=None` in that case; the helper
+                       won't dereference it.
+
+    Behavior:
+      - Reads current state via sdk_read (404 → resource absent).
+      - state=absent: deletes if present, else changed=False with
+        "<resource_label> already absent".
+      - state=present + absent: creates via sdk_create.
+      - state=present + present + no drift: changed=False with
+        "<resource_label> already in desired state".
+      - state=present + present + drift: updates via sdk_update and
+        emits Ansible-shape diff metadata ({before, after}).
+      - check_mode is honored at every write point.
+    """
+    from ansible.module_utils.basic import AnsibleModule
+
+    module_kwargs = {"argument_spec": argument_spec, "supports_check_mode": True}
+    if required_if:
+        module_kwargs["required_if"] = required_if
+    module = AnsibleModule(**module_kwargs)
+
+    client, token = get_client(module)
+    state = module.params.get("state", "present")
+
+    # Read current state. read_key isolates which *argspec field*
+    # carries the resource identifier (most modules use "name", a few
+    # like role_auth_method_assoc use "role_name"). The SDK Get model
+    # itself always names the field `name`, so we pass the value through
+    # under `name` regardless of read_key. build_body will then filter
+    # to whatever the specific model's __init__ accepts.
+    create_model, create_method = sdk_create
+    delete_model, delete_method = sdk_delete
+    read_model,   read_method   = sdk_read
+    if immutable:
+        update_model = update_method = None
+    else:
+        update_model, update_method = sdk_update
+
+    read_body = build_body(read_model, {
+        "name": module.params.get(read_key),
+        read_key: module.params.get(read_key),  # tolerate models that use the same name as the argspec field
+        "token": token,
+    })
+    current = call_api(module, client, read_method, read_body, swallow_404=True)
+
+    if state == "absent":
+        if current is None:
+            module.exit_json(changed=False, msg=f"{resource_label} already absent")
+        if module.check_mode:
+            module.exit_json(changed=True)
+        body = build_body(delete_model, dict(module.params, token=token))
+        result = call_api(module, client, delete_method, body)
+        module.exit_json(changed=True, result=result)
+
+    # state == "present"
+    if current is None:
+        if module.check_mode:
+            module.exit_json(changed=True)
+        body = build_body(create_model, dict(module.params, token=token))
+        result = call_api(module, client, create_method, body)
+        module.exit_json(changed=True, result=result)
+
+    # Resource exists -- only update if any desired field differs from
+    # what's in the SDK Get response. Honest convergence:
+    # no drift => no API call => changed=False.
+    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
+    if not drift:
+        module.exit_json(changed=False,
+                         msg=f"{resource_label} already in desired state")
+    diff = drift_to_diff(drift)
+    if immutable:
+        # Resource exists, drift detected, but no upstream Update
+        # endpoint. Surface the diff so the user can see what would
+        # change, then fail with explicit guidance.
+        module.fail_json(
+            msg=(f"{resource_label}: drift detected but the resource is "
+                 "immutable after creation; delete and re-create with the "
+                 "new values"),
+            diff=diff,
+        )
+    if module.check_mode:
+        module.exit_json(changed=True, diff=diff)
+    body = build_body(update_model, dict(module.params, token=token))
+    result = call_api(module, client, update_method, body)
+    module.exit_json(changed=True, result=result, diff=diff)

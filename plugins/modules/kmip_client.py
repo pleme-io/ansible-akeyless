@@ -49,87 +49,32 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("KmipCreateClient", dict(module.params, token=token))
-    return call_api(module, client, "kmip_create_client", body)
-
-
-def update_resource(module, client, token):
-    """Update not supported by the upstream API -- delete + recreate instead."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    # Changing them requires destroy + recreate.
-
-    module.fail_json(msg="kmip_client: update not supported, delete+recreate")
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("KmipDeleteClient", dict(module.params, token=token))
-    return call_api(module, client, "kmip_delete_client", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("KmipDescribeClient", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "kmip_describe_client", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'activate_keys_on_creation': {'type': 'str', 'no_log': False},
+    'certificate_ttl': {'type': 'int'},
+    'name': {'type': 'str', 'required': True},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'activate_keys_on_creation': {'type': 'str', 'no_log': False},
-        'certificate_ttl': {'type': 'int'},
-        'name': {'type': 'str', 'required': True},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='kmip_client',
+        sdk_create=('KmipCreateClient', 'kmip_create_client'),
+        sdk_update=None,
+        sdk_delete=('KmipDeleteClient', 'kmip_delete_client'),
+        sdk_read=('KmipDescribeClient', 'kmip_describe_client'),
+        immutable=True,
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="kmip_client already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="kmip_client already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':

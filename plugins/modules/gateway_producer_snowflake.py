@@ -103,104 +103,46 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body, compute_diff, drift_to_diff,
-    IDEMPOTENCY_IGNORE_KEYS,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("GatewayCreateProducerSnowflake", dict(module.params, token=token))
-    return call_api(module, client, "gateway_create_producer_snowflake", body)
-
-
-def update_resource(module, client, token):
-    """Update the resource."""
-    # WARNING: The following fields are immutable after creation.
-    #   - name
-    # Changing them requires destroy + recreate.
-
-    # TODO(phase-1b): use read_mapping for honest diff
-    body = build_body("GatewayUpdateProducerSnowflake", dict(module.params, token=token))
-    return call_api(module, client, "gateway_update_producer_snowflake", body)
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("GatewayDeleteProducer", dict(module.params, token=token))
-    return call_api(module, client, "gateway_delete_producer", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("GatewayGetProducer", {"name": module.params.get("name"), "token": token})
-    return call_api(module, client, "gateway_get_producer", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'account': {'type': 'str', 'required': True},
+    'account_password': {'type': 'str', 'no_log': True},
+    'account_username': {'type': 'str', 'required': True},
+    'auth_mode': {'type': 'str'},
+    'custom_username_template': {'type': 'str'},
+    'db_name': {'type': 'str', 'required': True},
+    'delete_protection': {'type': 'str'},
+    'item_custom_fields': {'type': 'dict'},
+    'key_algo': {'type': 'str', 'no_log': False},
+    'name': {'type': 'str', 'required': True},
+    'password_length': {'type': 'str', 'no_log': False},
+    'private_key': {'type': 'str', 'required': True, 'no_log': True},
+    'private_key_passphrase': {'type': 'str', 'no_log': True},
+    'role': {'type': 'str'},
+    'tags': {'type': 'list', 'elements': 'str'},
+    'target_name': {'type': 'str'},
+    'user_ttl': {'type': 'str'},
+    'warehouse': {'type': 'str'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'account': {'type': 'str', 'required': True},
-        'account_password': {'type': 'str', 'no_log': True},
-        'account_username': {'type': 'str', 'required': True},
-        'auth_mode': {'type': 'str'},
-        'custom_username_template': {'type': 'str'},
-        'db_name': {'type': 'str', 'required': True},
-        'delete_protection': {'type': 'str'},
-        'item_custom_fields': {'type': 'dict'},
-        'key_algo': {'type': 'str', 'no_log': False},
-        'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str', 'no_log': False},
-        'private_key': {'type': 'str', 'required': True, 'no_log': True},
-        'private_key_passphrase': {'type': 'str', 'no_log': True},
-        'role': {'type': 'str'},
-        'tags': {'type': 'list', 'elements': 'str'},
-        'target_name': {'type': 'str'},
-        'user_ttl': {'type': 'str'},
-        'warehouse': {'type': 'str'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='gateway_producer_snowflake',
+        sdk_create=('GatewayCreateProducerSnowflake', 'gateway_create_producer_snowflake'),
+        sdk_update=('GatewayUpdateProducerSnowflake', 'gateway_update_producer_snowflake'),
+        sdk_delete=('GatewayDeleteProducer', 'gateway_delete_producer'),
+        sdk_read=('GatewayGetProducer', 'gateway_get_producer'),
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if state == 'absent':
-        if current is None:
-            module.exit_json(changed=False, msg="gateway_producer_snowflake already absent")
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = delete_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # state == 'present'
-    if current is None:
-        if module.check_mode:
-            module.exit_json(changed=True)
-        result = create_resource(module, client, token)
-        module.exit_json(changed=True, result=result)
-
-    # Resource exists -- only update if any desired field differs
-    # from what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
-    drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
-    if not drift:
-        module.exit_json(changed=False, msg="gateway_producer_snowflake already in desired state")
-    diff = drift_to_diff(drift)
-    if module.check_mode:
-        module.exit_json(changed=True, diff=diff)
-    result = update_resource(module, client, token)
-    module.exit_json(changed=True, result=result, diff=diff)
 
 
 if __name__ == '__main__':
