@@ -4,4 +4,7 @@ jobs:
   matrix:
     uses: pleme-io/substrate/.github/workflows/ansible-collection-matrix.yml@main
     with:
-      openapi-spec-url: https://raw.githubusercontent.com/akeylesslabs/akeyless-go/master/api/openapi.yaml
+      # pleme-io fork has the full 604-op spec; akeylesslabs upstream
+      # master is currently at 256 (older / pruned) and would fail our
+      # module-to-operationId mapping check for ~300 modules.
+      openapi-spec-url: https://raw.githubusercontent.com/pleme-io/akeyless-go/main/api/openapi.yaml
