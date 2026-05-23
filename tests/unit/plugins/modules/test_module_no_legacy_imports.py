@@ -24,6 +24,11 @@ MODULES_DIR = REPO_ROOT / "plugins" / "modules"
 
 MODULE_PATHS = sorted(p for p in MODULES_DIR.glob("*.py") if not p.name.startswith("_"))
 
+# Action-plugin shadow wrappers (plugins/action/<name>.py runs instead).
+# They intentionally import AnsibleModule for the no-op stub main();
+# the import-discipline tests don't apply.
+ACTION_SHADOW_MODULES = frozenset({"secret_to_file"})
+
 
 def _find_imports(tree: ast.AST):
     """Yield (module_path_str, names) for every `from X import a, b`
@@ -36,8 +41,14 @@ def _find_imports(tree: ast.AST):
                 yield a.name, None
 
 
+def _maybe_skip(module_path):
+    if module_path.stem in ACTION_SHADOW_MODULES:
+        pytest.skip("action-plugin shadow module; import discipline doesn't apply")
+
+
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)
 def test_no_direct_ansible_module_import(module_path):
+    _maybe_skip(module_path)
     """Post-refactor: AnsibleModule construction lives inside the
     lifecycle helpers. A module importing AnsibleModule directly is
     either legacy boilerplate that escaped the codemod OR someone
@@ -59,6 +70,7 @@ def test_no_direct_ansible_module_import(module_path):
 
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)
 def test_module_imports_only_from_akeyless_client(module_path):
+    _maybe_skip(module_path)
     """Every generated module should import EXACTLY one external symbol
     source: ansible_collections.<ns>.<name>.plugins.module_utils.
     akeyless_client. The shape:

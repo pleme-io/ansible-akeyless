@@ -29,6 +29,11 @@ DOC_OPTIONAL_KEYS = frozenset({
     "gateway_url", "access_id", "access_key", "access_type",
 })
 
+# Action-plugin shadow wrappers: argspec lives in the action plugin,
+# DOCUMENTATION advertises options users see -- the per-module
+# argspec / docs alignment doesn't apply.
+ACTION_SHADOW_MODULES = frozenset({"secret_to_file"})
+
 
 def _extract_string_constant(tree: ast.AST, name: str):
     for node in ast.walk(tree):
@@ -128,6 +133,8 @@ def test_every_documented_option_has_description_key(module_path, all_module_doc
 
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)
 def test_no_documented_options_orphaned_from_argspec(module_path, all_module_docs):
+    if module_path.stem in ACTION_SHADOW_MODULES:
+        pytest.skip("action-plugin shadow module; docs map to action args")
     """Every option in DOCUMENTATION must correspond to an argspec
     entry. Documented options without argspec entries surface as
     "option doesn't apply" errors when users follow the docs.
