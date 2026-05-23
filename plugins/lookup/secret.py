@@ -87,6 +87,8 @@ _raw:
   elements: str
 """
 
+from typing import Any, Dict, List, Optional, Tuple
+
 from ansible.errors import AnsibleError, AnsibleLookupError
 from ansible.plugins.lookup import LookupBase
 
@@ -94,30 +96,33 @@ try:
     import akeyless
     from akeyless.exceptions import ApiException
     HAS_AKEYLESS = True
-    AKEYLESS_IMPORT_ERROR = None
+    AKEYLESS_IMPORT_ERROR: Optional[ImportError] = None
 except ImportError as exc:
     HAS_AKEYLESS = False
     AKEYLESS_IMPORT_ERROR = exc
 
+DEFAULT_GATEWAY_URL = "https://api.akeyless.io"
+DEFAULT_ACCESS_TYPE = "access_key"
 
-def _authenticated_client(opts):
+
+def _authenticated_client(opts: Dict[str, Any]) -> Tuple[Any, str]:
     """Build a V2Api client + token from lookup options."""
     if not HAS_AKEYLESS:
         raise AnsibleError(
             "The 'akeyless' Python package is required. "
             "Install with: pip install 'akeyless>=5.0.22'. "
-            "Original error: %s" % AKEYLESS_IMPORT_ERROR
+            f"Original error: {AKEYLESS_IMPORT_ERROR}"
         )
 
-    gateway_url = opts.get('gateway_url') or 'https://api.akeyless.io'
+    gateway_url = opts.get("gateway_url") or DEFAULT_GATEWAY_URL
     config = akeyless.Configuration(host=gateway_url)
     client = akeyless.V2Api(akeyless.ApiClient(config))
 
-    pre_issued = opts.get('token')
+    pre_issued = opts.get("token")
     if pre_issued:
         return client, pre_issued
 
-    access_id = opts.get('access_id')
+    access_id = opts.get("access_id")
     if not access_id:
         raise AnsibleError(
             "access_id is required when no pre-issued token is provided "
@@ -126,20 +131,18 @@ def _authenticated_client(opts):
 
     auth_body = akeyless.Auth(
         access_id=access_id,
-        access_key=opts.get('access_key'),
-        access_type=opts.get('access_type') or 'access_key',
+        access_key=opts.get("access_key"),
+        access_type=opts.get("access_type") or DEFAULT_ACCESS_TYPE,
     )
     try:
         auth_res = client.auth(auth_body)
     except ApiException as exc:
+        status = getattr(exc, "status", "?")
         raise AnsibleError(
-            "Akeyless auth failed (%s): %s" % (
-                getattr(exc, 'status', '?'),
-                exc.body or exc.reason,
-            )
+            f"Akeyless auth failed ({status}): {exc.body or exc.reason}"
         )
 
-    token = getattr(auth_res, 'token', None)
+    token = getattr(auth_res, "token", None)
     if not token:
         raise AnsibleError("Akeyless auth succeeded but returned no token")
     return client, token
@@ -148,10 +151,10 @@ def _authenticated_client(opts):
 class LookupModule(LookupBase):
     """Fetch static secret values from Akeyless Vault."""
 
-    def run(self, terms, variables=None, **kwargs):
+    def run(self, terms: List[str], variables: Optional[Dict[str, Any]] = None, **kwargs: Any) -> List[Any]:
         self.set_options(var_options=variables, direct=kwargs)
         opts = {k: self.get_option(k) for k in (
-            'gateway_url', 'access_id', 'access_key', 'access_type', 'token',
+            "gateway_url", "access_id", "access_key", "access_type", "token",
         )}
 
         client, token = _authenticated_client(opts)
@@ -163,27 +166,26 @@ class LookupModule(LookupBase):
         try:
             result = client.get_secret_value(body)
         except ApiException as exc:
+            status = getattr(exc, "status", "?")
             raise AnsibleLookupError(
-                "Akeyless get_secret_value failed (%s): %s" % (
-                    getattr(exc, 'status', '?'),
-                    exc.body or exc.reason,
-                )
+                f"Akeyless get_secret_value failed ({status}): "
+                f"{exc.body or exc.reason}"
             )
 
         # The SDK returns a model with `.to_dict()` or a plain dict
         # depending on version; normalise.
-        if hasattr(result, 'to_dict'):
+        if hasattr(result, "to_dict"):
             result = result.to_dict()
         if not isinstance(result, dict):
             raise AnsibleLookupError(
-                "Unexpected get_secret_value response type: %s" % type(result).__name__
+                f"Unexpected get_secret_value response type: {type(result).__name__}"
             )
 
-        out = []
+        out: List[Any] = []
         for term in terms:
             if term not in result:
                 raise AnsibleLookupError(
-                    "Secret %r not found in Akeyless response" % term
+                    f"Secret {term!r} not found in Akeyless response"
                 )
             out.append(result[term])
         return out
