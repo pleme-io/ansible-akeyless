@@ -43,6 +43,13 @@ def _install_action_stubs():
         loader_mod = types.ModuleType("ansible.plugins.loader")
 
         class _StubActionBase:
+            """Same shape as test_secret_to_file.py's stub --
+            sibling test files install whichever installer fires
+            first, so the contract must match (in particular both
+            _last_module_name and _last_module_args attributes).
+            Without this match, running the two test files
+            sequentially fails on AttributeError."""
+
             def __init__(self):
                 self._task = None
                 self._templar = None
@@ -52,6 +59,7 @@ def _install_action_stubs():
                 return {}
 
             def _execute_module(self, module_name=None, module_args=None, task_vars=None):
+                self._last_module_name = module_name
                 self._last_module_args = module_args
                 return {
                     "changed": True,

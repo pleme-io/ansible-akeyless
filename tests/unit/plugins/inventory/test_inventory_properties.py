@@ -95,28 +95,47 @@ def inventory_mod(fake_akeyless):
 class _FakeInventory:
     """Minimal inventory recorder that mimics the BaseInventoryPlugin
     interface used by _merge_inventory_tree. Captures the sequence of
-    calls so tests can assert on the merged result."""
+    calls so tests can assert on the merged result.
+
+    Important: Ansible's real Inventory namespaces hosts and groups
+    separately -- a host named "demo" and a group named "demo" can
+    coexist. To mirror that here we track WHICH namespace a target
+    was most-recently added to (`_last_added_as`) and route
+    set_variable() to that namespace. Without this distinction, a
+    payload like {hosts: {0: {}}, groups: {0: {vars: {0: None}}}}
+    silently routes group-var writes to the host's var dict and the
+    idempotency property test catches the discrepancy on the second
+    merge pass."""
 
     def __init__(self):
         self.hosts = {}        # host_name -> {var: value}
         self.groups = {}       # group_name -> {hosts: [...], vars: {}}
+        self._last_added_as = {}  # name -> "host" | "group"
         self._all_calls = []
 
     def add_host(self, name, group=None):
         self._all_calls.append(("add_host", name, group))
         self.hosts.setdefault(name, {})
+        self._last_added_as[name] = "host"
         if group is not None:
             self.groups.setdefault(group, {"hosts": [], "vars": {}})
+            self._last_added_as[group] = "group"
             if name not in self.groups[group]["hosts"]:
                 self.groups[group]["hosts"].append(name)
 
     def add_group(self, name):
         self._all_calls.append(("add_group", name))
         self.groups.setdefault(name, {"hosts": [], "vars": {}})
+        self._last_added_as[name] = "group"
 
     def set_variable(self, target, key, value):
         self._all_calls.append(("set_variable", target, key, value))
-        if target in self.hosts:
+        ns = self._last_added_as.get(target)
+        if ns == "group" and target in self.groups:
+            self.groups[target]["vars"][key] = value
+        elif ns == "host" and target in self.hosts:
+            self.hosts[target][key] = value
+        elif target in self.hosts:
             self.hosts[target][key] = value
         elif target in self.groups:
             self.groups[target]["vars"][key] = value
