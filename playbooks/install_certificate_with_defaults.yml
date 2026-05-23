@@ -1,0 +1,84 @@
+---
+# playbooks/install_certificate_with_defaults.yml
+#
+# Showcase: full Galaxy surface + module_defaults via action_groups.
+# Set Akeyless auth ONCE at the play level; every module / role task
+# below inherits it via group/drzln0.akeyless.all without per-task
+# repetition.
+#
+# Demonstrates:
+#   - module_defaults via action_groups (new in v0.2.x)
+#   - pki_certificate lookup (issue a fresh cert)
+#   - filter pipeline (split a CA bundle into per-cert files)
+#   - drzln0.akeyless.akeyless_install_certificate role
+#   - drzln0.akeyless.is_pem_block test for validation
+#
+# Run:
+#   ansible-playbook -i hosts.ini drzln0.akeyless.install_certificate_with_defaults
+
+- name: Install issued PKI certificates with one set of credentials
+  hosts: web
+
+  module_defaults:
+    # Every drzln0.akeyless.* module inherits these defaults via the
+    # action group declared in meta/runtime.yml. No per-task auth args.
+    group/drzln0.akeyless.all:
+      gateway_url: "{{ lookup('env', 'AKEYLESS_GATEWAY_URL') | default('https://api.akeyless.io', true) }}"
+      access_id: "{{ lookup('env', 'AKEYLESS_ACCESS_ID') }}"
+      access_key: "{{ lookup('env', 'AKEYLESS_ACCESS_KEY') }}"
+
+  vars:
+    pki_issuer: /pki/server-issuer
+    cert_path: /etc/ssl/akeyless/server.crt
+    key_path: /etc/ssl/akeyless/server.key
+    ca_bundle_secret: /pki/ca-bundle
+
+  tasks:
+    - name: Issue a fresh server certificate from the PKI issuer
+      ansible.builtin.set_fact:
+        new_cert: "{{ lookup('drzln0.akeyless.pki_certificate', pki_issuer,
+                      common_name=inventory_hostname,
+                      alt_names=inventory_hostname + ',' + ansible_default_ipv4.address,
+                      ttl=86400) }}"
+      no_log: true
+
+    - name: Validate the cert is a PEM block before writing
+      ansible.builtin.assert:
+        that:
+          - new_cert.cert is drzln0.akeyless.is_pem_block
+        fail_msg: "PKI issuer returned a non-PEM cert"
+
+    - name: Install the cert + key on the host
+      ansible.builtin.copy:
+        dest: "{{ item.dest }}"
+        content: "{{ item.content }}"
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - {dest: "{{ cert_path }}", content: "{{ new_cert.cert }}", mode: '0644'}
+        - {dest: "{{ key_path }}",  content: "{{ new_cert.private_key }}", mode: '0600'}
+      loop_control:
+        label: "{{ item.dest }}"
+      no_log: true
+
+    - name: Split CA bundle into per-cert files
+      ansible.builtin.copy:
+        dest: "/etc/ssl/akeyless/ca-{{ index }}.pem"
+        content: "{{ item }}"
+        mode: '0644'
+      loop: "{{ lookup('drzln0.akeyless.secret', ca_bundle_secret)
+                | drzln0.akeyless.split_pem_bundle }}"
+      loop_control:
+        index_var: index
+        label: "ca-{{ index }}.pem"
+      no_log: true
+
+    # No need to repeat gateway_url / access_id / access_key on any of
+    # the drzln0.akeyless tasks below -- they're inherited from
+    # module_defaults at the top of the play.
+    - name: Record the issuance event as a fact via secret_value_info
+      drzln0.akeyless.secret_value_info:
+        names: ["/audit/cert-issuance-log"]
+      register: audit
+      ignore_errors: true  # audit log is optional infrastructure

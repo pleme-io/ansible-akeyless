@@ -1,1 +1,236 @@
+---
 requires_ansible: '>=2.14.0'
+
+# Action groups: every module under drzln0.akeyless joins the `all`
+# action group so users can set auth + transport options ONCE via
+# `module_defaults` instead of repeating them on every task.
+#
+# Usage:
+#   - hosts: all
+#     module_defaults:
+#       group/drzln0.akeyless.all:
+#         gateway_url: https://gw.example.com
+#         access_id: "{{ lookup('env', 'AKEYLESS_ACCESS_ID') }}"
+#         access_key: "{{ lookup('env', 'AKEYLESS_ACCESS_KEY') }}"
+#         access_type: aws_iam
+#     tasks:
+#       - drzln0.akeyless.role:
+#           state: present
+#           name: deployer-role
+#       # No need to repeat gateway_url/access_id/access_key/access_type
+#       # on this task -- the group default supplies them.
+#
+# tests/sanity/test_action_groups_sync.py asserts every plugins/modules
+# entry is in the list (and no stale entries remain) on every CI run.
+
+action_groups:
+  all:
+    - account_custom_field
+    - account_custom_fields_info
+    - auth_method_api_key
+    - auth_method_aws_iam
+    - auth_method_azure_ad
+    - auth_method_cert
+    - auth_method_email
+    - auth_method_gcp
+    - auth_method_huawei
+    - auth_method_info
+    - auth_method_k8s
+    - auth_method_kerberos
+    - auth_method_ldap
+    - auth_method_oauth2
+    - auth_method_oci
+    - auth_method_oidc
+    - auth_method_saml
+    - auth_method_universal_identity
+    - auth_methods_info
+    - certificate
+    - classic_key
+    - decrypt
+    - decrypt_batch
+    - derive_key
+    - dfc_key
+    - dynamic_secret_artifactory
+    - dynamic_secret_aws
+    - dynamic_secret_azure
+    - dynamic_secret_cassandra
+    - dynamic_secret_custom
+    - dynamic_secret_dockerhub
+    - dynamic_secret_eks
+    - dynamic_secret_gcp
+    - dynamic_secret_github
+    - dynamic_secret_gitlab
+    - dynamic_secret_gke
+    - dynamic_secret_google_workspace
+    - dynamic_secret_hanadb
+    - dynamic_secret_k8s
+    - dynamic_secret_ldap
+    - dynamic_secret_mongodb
+    - dynamic_secret_mssql
+    - dynamic_secret_mysql
+    - dynamic_secret_openai
+    - dynamic_secret_oracle
+    - dynamic_secret_ping
+    - dynamic_secret_postgresql
+    - dynamic_secret_rabbitmq
+    - dynamic_secret_rdp
+    - dynamic_secret_redis
+    - dynamic_secret_redshift
+    - dynamic_secret_snowflake
+    - dynamic_secret_venafi
+    - dynamic_secrets_info
+    - encrypt
+    - encrypt_batch
+    - esm
+    - esm_info
+    - event_forwarder_email
+    - event_forwarder_info
+    - event_forwarder_servicenow
+    - event_forwarder_slack
+    - event_forwarder_teams
+    - event_forwarder_webhook
+    - folder
+    - gateway_allowed_access
+    - gateway_customer_fragments_info
+    - gateway_k8s_auth_config
+    - gateway_log_forwarding_aws_s3
+    - gateway_log_forwarding_azure_analytics
+    - gateway_log_forwarding_datadog
+    - gateway_log_forwarding_elasticsearch
+    - gateway_log_forwarding_google_chronicle
+    - gateway_log_forwarding_logstash
+    - gateway_log_forwarding_logz_io
+    - gateway_log_forwarding_splunk
+    - gateway_log_forwarding_stdout
+    - gateway_log_forwarding_sumologic
+    - gateway_log_forwarding_syslog
+    - gateway_migration
+    - gateway_migrations_info
+    - gateway_producer_artifactory
+    - gateway_producer_aws
+    - gateway_producer_azure
+    - gateway_producer_cassandra
+    - gateway_producer_custom
+    - gateway_producer_dockerhub
+    - gateway_producer_eks
+    - gateway_producer_gcp
+    - gateway_producer_github
+    - gateway_producer_gke
+    - gateway_producer_hanadb
+    - gateway_producer_k8s
+    - gateway_producer_ldap
+    - gateway_producer_mongo
+    - gateway_producer_mssql
+    - gateway_producer_mysql
+    - gateway_producer_oracle
+    - gateway_producer_ping
+    - gateway_producer_postgresql
+    - gateway_producer_rabbitmq
+    - gateway_producer_rdp
+    - gateway_producer_redis
+    - gateway_producer_redshift
+    - gateway_producer_snowflake
+    - gateway_producer_venafi
+    - gateway_producers_info
+    - gateway_rotated_secrets_info
+    - gateways_info
+    - generate_ca
+    - generate_csr
+    - get_cert_challenge
+    - group
+    - group_info
+    - groups_info
+    - hmac
+    - item_info
+    - items_info
+    - kmip_client
+    - kmip_client_v2
+    - kmip_clients_info
+    - kmip_environment
+    - kmip_environment_v2
+    - oidc_app
+    - pki_cert_issuer
+    - policies_info
+    - policy
+    - provision_certificate
+    - renew_certificate
+    - revoke_certificate
+    - role
+    - role_auth_method_assoc
+    - role_info
+    - role_rule
+    - roles_info
+    - rotated_secret_aws
+    - rotated_secret_azure
+    - rotated_secret_cassandra
+    - rotated_secret_custom
+    - rotated_secret_delete_sync
+    - rotated_secret_dockerhub
+    - rotated_secret_gcp
+    - rotated_secret_hanadb
+    - rotated_secret_ldap
+    - rotated_secret_mongodb
+    - rotated_secret_mssql
+    - rotated_secret_mysql
+    - rotated_secret_openai
+    - rotated_secret_oracledb
+    - rotated_secret_postgresql
+    - rotated_secret_redis
+    - rotated_secret_redshift
+    - rotated_secret_snowflake
+    - rotated_secret_splunk
+    - rotated_secret_ssh
+    - rotated_secret_sync
+    - rotated_secret_windows
+    - rotated_secrets_info
+    - secret_to_file
+    - secret_value_info
+    - sign_data_with_classic_key
+    - sign_ecdsa
+    - sign_jwt_with_classic_key
+    - sign_pkcs1
+    - sra_bastions_info
+    - ssh_cert_issuer
+    - static_secret
+    - target_artifactory
+    - target_aws
+    - target_azure
+    - target_db
+    - target_dockerhub
+    - target_eks
+    - target_gcp
+    - target_gemini
+    - target_github
+    - target_gitlab
+    - target_gke
+    - target_globalsign
+    - target_globalsign_atlas
+    - target_godaddy
+    - target_hashi_vault
+    - target_info
+    - target_k8s
+    - target_ldap
+    - target_lets_encrypt
+    - target_linked
+    - target_openai
+    - target_ping
+    - target_rabbitmq
+    - target_salesforce
+    - target_sectigo
+    - target_splunk
+    - target_ssh
+    - target_web
+    - target_windows
+    - target_zerossl
+    - targets_info
+    - tokenizer
+    - uid_create_child_token
+    - uid_generate_token
+    - uid_list_children
+    - uid_revoke_token
+    - uid_rotate_token
+    - usc
+    - usc_info
+    - validate_certificate_challenge
+    - verify_ecdsa
+    - verify_pkcs1
