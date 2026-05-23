@@ -133,6 +133,7 @@ def test_lookup_has_wire_level_integration_test(lookup_name):
     ("target_*",               "target_get"),
     ("auth_method_*",          "get_auth_method"),
     ("dynamic_secret_*",       "dynamic_secret_get"),
+    ("rotated_secret_*",       "rotated_secret_create_postgresql"),
 ])
 def test_module_family_has_lifecycle(mock_corpus, family, representative_sdk_call):
     """The 5 most-used CRUD families each must have a representative
