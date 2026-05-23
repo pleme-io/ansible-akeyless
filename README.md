@@ -1,9 +1,201 @@
-# drzln0.akeyless
+# `drzln0.akeyless` — Full-service Ansible integration for Akeyless Vault
 
-Auto-generated Ansible collection wrapping the Akeyless Python SDK.
-Each module proxies one Akeyless V2 API endpoint with create/read/update/delete
-semantics derived from the upstream OpenAPI specification.
-Do not edit generated modules — they will be overwritten.
+Auto-generated Ansible Collection wrapping the entire Akeyless V2 API,
+plus hand-tuned lookup / inventory / filter / test plugins and ready-to-use
+roles. 208 modules at 100% V2 SDK method coverage.
 
-Regenerate with: `iac-forge-cli generate --backend ansible`.
+## Install
 
+```bash
+ansible-galaxy collection install drzln0.akeyless
+```
+
+## What ships
+
+| Content | Count | Where |
+|---|---|---|
+| Modules (CRUD, action, info) | **208** | `plugins/modules/` |
+| Lookup plugin | 1 | `plugins/lookup/secret.py` |
+| Inventory plugin | 1 | `plugins/inventory/akeyless.py` |
+| Filter plugins | 5 | `plugins/filter/akeyless.py` |
+| Test plugins | 4 | `plugins/test/akeyless.py` |
+| Roles | 2 | `roles/akeyless_bootstrap/`, `roles/akeyless_install_certificate/` |
+| Playbooks | 1 | `playbooks/fetch_secrets_into_env_file.yml` |
+| Doc fragments | 1 | `plugins/doc_fragments/auth.py` (shared auth options) |
+
+## Quick starts
+
+### Fetch a secret via lookup
+
+```yaml
+- name: Connect to DB
+  community.mysql.mysql_db:
+    login_password: "{{ lookup('drzln0.akeyless.secret', '/app/db/password') }}"
+```
+
+### Manage an Akeyless resource via a module
+
+```yaml
+- name: Ensure role exists
+  drzln0.akeyless.role:
+    state: present
+    name: "{{ role_name }}"
+    description: "Managed by ansible"
+
+- name: Attach an auth method to the role
+  drzln0.akeyless.role_auth_method_assoc:
+    state: present
+    role_name: "{{ role_name }}"
+    am_name: "{{ auth_method_name }}"
+```
+
+### Treat Akeyless as your inventory source
+
+`inventory.akeyless.yml`:
+
+```yaml
+plugin: drzln0.akeyless.akeyless
+secrets:
+  - /platform/prod/inventory   # stored as a JSON-shaped secret
+```
+
+The plugin loads JSON-shaped secrets of the form
+`{hosts: {name: {vars}}, groups: {name: {hosts: [], vars: {}}}}` into the
+inventory tree so playbooks reference values via standard
+`host_vars` / `group_vars` without per-task lookup boilerplate.
+
+### Use the bootstrap role
+
+```yaml
+- hosts: web
+  roles:
+    - role: drzln0.akeyless.akeyless_bootstrap
+      vars:
+        akeyless_bootstrap_secrets:
+          - /platform/prod/db/password
+          - /platform/prod/api/jwt-key
+  # akeyless_secrets is now {password: ..., jwt-key: ...} on every host
+```
+
+### Install a certificate (and matching key)
+
+```yaml
+- hosts: nginx
+  roles:
+    - role: drzln0.akeyless.akeyless_install_certificate
+      vars:
+        akeyless_install_certificate_cert_secret: /pki/web/cert
+        akeyless_install_certificate_key_secret: /pki/web/key
+        akeyless_install_certificate_cert_path: /etc/nginx/ssl/web.crt
+        akeyless_install_certificate_key_path: /etc/nginx/ssl/web.key
+        akeyless_install_certificate_notify: "reload nginx"
+```
+
+### Transform secret payloads with filters
+
+```yaml
+# Parse a dotenv-formatted secret into an environment block
+- name: Run app with secrets-from-vault env
+  ansible.builtin.command: ./app
+  environment: "{{ lookup('drzln0.akeyless.secret', '/app/.env')
+                   | drzln0.akeyless.parse_dotenv_secret }}"
+
+# Split a CA bundle into individual PEM blocks
+- name: Install each trust root separately
+  ansible.builtin.copy:
+    content: "{{ item }}"
+    dest: "/etc/ssl/certs/akeyless-{{ index }}.pem"
+  loop: "{{ lookup('drzln0.akeyless.secret', '/ca/bundle')
+            | drzln0.akeyless.split_pem_bundle }}"
+  loop_control:
+    index_var: index
+```
+
+Available filters: `b64decode_secret`, `parse_dotenv_secret`,
+`secret_to_json`, `split_pem_bundle`, `secret_keys_to_env`.
+
+### Branch on content shape with tests
+
+```yaml
+- name: Verify access_id format before auth
+  ansible.builtin.assert:
+    that: lookup('env', 'AKEYLESS_ACCESS_ID')
+          is drzln0.akeyless.is_akeyless_access_id
+
+- name: Decode only when value is base64
+  ansible.builtin.set_fact:
+    decoded: "{{ secret | drzln0.akeyless.b64decode_secret
+                 if secret is drzln0.akeyless.is_base64
+                 else secret }}"
+```
+
+Available tests: `is_akeyless_path`, `is_akeyless_access_id`,
+`is_pem_block`, `is_base64`.
+
+## Authentication
+
+The lookup, inventory plugin, role tasks, and every module accept the
+standard set of auth options. Each falls back to its `AKEYLESS_*`
+environment variable.
+
+| Option / env var | Default |
+|---|---|
+| `gateway_url` / `AKEYLESS_GATEWAY_URL` | `https://api.akeyless.io` |
+| `access_id` / `AKEYLESS_ACCESS_ID` | (required) |
+| `access_key` / `AKEYLESS_ACCESS_KEY` | (required for `access_key` type) |
+| `access_type` / `AKEYLESS_ACCESS_TYPE` | `access_key` |
+| `token` / `AKEYLESS_TOKEN` | (skips auth call when set) |
+
+## Architecture (load-bearing)
+
+The collection is generated by [`ansible-forge`](https://github.com/pleme-io/ansible-forge)
+reading TOML specs from
+[`akeyless-terraform-resources`](https://github.com/pleme-io/akeyless-terraform-resources).
+Modules don't carry boilerplate — each declares an `argument_spec` dict
+and delegates to one of three lifecycle helpers
+(`run_standard_crud`, `run_action_module`, `run_info_module`) in
+`plugins/module_utils/akeyless_client.py`. The helper module exports a
+typed public API (`AkeylessConfig`, `AkeylessError` hierarchy,
+`HttpStatus` enum, `SdkCall` NamedTuple, `@lifecycle_helper`,
+`@requires_sdk` decorators) for advanced callers.
+
+A regen-vs-collection backstop in `ansible-forge` enforces structural
+equivalence between the generator output and the live collection on
+every PR — the next `iac-forge generate --backend ansible` produces
+the same shape that ships.
+
+## Test pyramid
+
+`nix flake check` runs:
+- **smoke** — AST sweep, 100% V2 SDK method coverage
+- **unit** — module shape, load, license header, YAML block, lifecycle
+  helper behaviour, property tests, public API pinning
+- **mock** — SDK-mocked module main() invocations
+- **sanity** — galaxy.yml + meta + doc fragments + playbook YAML
+- **openapi** — live OpenAPI coverage check
+
+Plus dedicated CI workflows: ansible-test sanity, CodeQL, docs-lint,
+matrix coverage (Py 3.10/3.11/3.12/3.13), ansible-lint
+(playbooks/ + roles/), integration-live (real gateway), published-install.
+
+Current test count: **5500+ passing**.
+
+## Versioning
+
+`v0.x` is pre-1.0; module names, argspecs, and return shapes may change
+as the upstream OpenAPI spec evolves. Pin in `requirements.yml`:
+
+```yaml
+collections:
+  - name: drzln0.akeyless
+    version: '==0.2.5'
+```
+
+After `v1.0`, breaking changes only in major bumps.
+
+## License
+
+GPL-3.0-or-later (per-module headers, matching ansible-core's runtime
+license). Collection-level metadata in `galaxy.yml` lists MIT for the
+overall project; the modules carry GPL3 individually as Galaxy
+convention.
