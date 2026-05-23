@@ -185,6 +185,96 @@ def secret_keys_to_env(value: Dict[str, Any], prefix: str = "") -> Dict[str, str
     return out
 
 
+def mask_secret(value: str, show_first: int = 4, show_last: int = 0,
+                mask_char: str = "*") -> str:
+    """Partial-reveal mask for log-safe secret display. Shows the first
+    `show_first` chars + last `show_last` chars, replacing the middle
+    with a fixed-length block of `mask_char`.
+
+    Defaults (show_first=4, show_last=0) mirror the common "p-abcd***"
+    shape that surfaces enough of the value to recognize it without
+    leaking the whole thing.
+
+    Usage:
+        - debug:
+            msg: "Auth ID: {{ access_id | drzln0.akeyless.mask_secret }}"
+        - debug:
+            msg: "Token: {{ tok | drzln0.akeyless.mask_secret(show_first=6, show_last=4) }}"
+    """
+    if not isinstance(value, str):
+        raise AnsibleFilterError(
+            f"mask_secret expects a string, got {type(value).__name__}"
+        )
+    if not isinstance(show_first, int) or not isinstance(show_last, int):
+        raise AnsibleFilterError("mask_secret show_first/show_last must be ints")
+    if show_first < 0 or show_last < 0:
+        raise AnsibleFilterError("mask_secret show_first/show_last must be >= 0")
+    if not isinstance(mask_char, str) or len(mask_char) != 1:
+        raise AnsibleFilterError(
+            f"mask_secret mask_char must be a single character, got {mask_char!r}"
+        )
+    # When reveal windows overlap the entire value (e.g. show_first +
+    # show_last >= len(value)), fall back to a fully-masked result so
+    # we never leak the entire secret. Returning a short fixed-length
+    # mask of `*` is safer than echoing the original.
+    if show_first + show_last >= len(value):
+        return mask_char * 8
+    head = value[:show_first]
+    tail = value[-show_last:] if show_last else ""
+    return f"{head}{mask_char * 8}{tail}"
+
+
+def secret_strength(value: str) -> Dict[str, Any]:
+    """Compute a Shannon-entropy + heuristic strength score for a
+    secret string. Returns `{length, entropy_bits, classification}`
+    where classification is one of "weak"/"moderate"/"strong"/"vault".
+
+    The entropy estimate is Shannon over the character distribution,
+    multiplied by length to approximate total bits. Cutoffs:
+      - < 40 bits   -> weak (passwords, dictionary words)
+      - 40-80 bits  -> moderate (short random strings)
+      - 80-128 bits -> strong (medium random strings, tokens)
+      - >= 128 bits -> vault (full-entropy keys)
+
+    Usage:
+        - assert:
+            that:
+              - (rotated_password | drzln0.akeyless.secret_strength).classification != 'weak'
+    """
+    import math
+    from collections import Counter
+
+    if not isinstance(value, str):
+        raise AnsibleFilterError(
+            f"secret_strength expects a string, got {type(value).__name__}"
+        )
+    length = len(value)
+    if length == 0:
+        return {"length": 0, "entropy_bits": 0.0, "classification": "weak"}
+
+    # Shannon entropy per char: H = -sum(p * log2(p))
+    counts = Counter(value)
+    char_entropy = -sum(
+        (c / length) * math.log2(c / length) for c in counts.values()
+    )
+    total_bits = char_entropy * length
+
+    if total_bits < 40:
+        classification = "weak"
+    elif total_bits < 80:
+        classification = "moderate"
+    elif total_bits < 128:
+        classification = "strong"
+    else:
+        classification = "vault"
+
+    return {
+        "length": length,
+        "entropy_bits": round(total_bits, 2),
+        "classification": classification,
+    }
+
+
 class FilterModule:
     """Register the akeyless filters with Ansible's filter registry."""
 
@@ -195,4 +285,6 @@ class FilterModule:
             "secret_to_json": secret_to_json,
             "split_pem_bundle": split_pem_bundle,
             "secret_keys_to_env": secret_keys_to_env,
+            "mask_secret": mask_secret,
+            "secret_strength": secret_strength,
         }

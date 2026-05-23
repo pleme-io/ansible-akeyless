@@ -63,6 +63,8 @@ def test_filter_module_registers_all_filters(filters):
         "secret_to_json",
         "split_pem_bundle",
         "secret_keys_to_env",
+        "mask_secret",
+        "secret_strength",
     }
     assert set(registered) == expected
     # Every registered name must resolve to a callable.
