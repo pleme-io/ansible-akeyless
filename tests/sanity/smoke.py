@@ -129,6 +129,12 @@ def main() -> int:
     sdk_misses: set[str] = set()
     total = 0
 
+    # Action-plugin shadow modules: the real work happens in
+    # plugins/action/<name>.py; the modules/<name>.py wrapper exists
+    # only so ansible-doc finds the DOCUMENTATION block. They
+    # intentionally don't import the akeyless_client helper.
+    action_shadow_stems = frozenset({"secret_to_file"})
+
     for fn in sorted(os.listdir(MOD_DIR)):
         if not fn.endswith(".py"):
             continue
@@ -141,6 +147,12 @@ def main() -> int:
             continue
 
         source = p.read_text()
+        stem = fn[:-3]
+
+        if stem in action_shadow_stems:
+            # Skip helper-import + argspec checks; structural sanity
+            # for these lives in tests/sanity/test_action_shadow_coherence.py.
+            continue
 
         if "from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client" not in source:
             failures.append(f"{fn}: missing akeyless_client import")
