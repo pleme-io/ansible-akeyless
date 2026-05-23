@@ -1,6 +1,6 @@
 namespace: drzln0
 name: akeyless
-version: 0.2.13
+version: 0.2.14
 readme: README.md
 authors: [pleme-io]
 description: "Full-service Ansible integration for Akeyless Vault: 209 generated modules covering the V2 API, plus lookup, inventory, filter, test, callback, action, and cache plugins, two roles, two playbooks, and shared action_groups/module_utils."
