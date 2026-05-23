@@ -58,74 +58,40 @@ RETURN = r'''
 # No computed fields
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body,
+    run_standard_crud,
 )
 
-
-def create_resource(module, client, token):
-    """Create the resource."""
-    body = build_body("SetRoleRule", dict(module.params, token=token))
-    return call_api(module, client, "set_role_rule", body)
-
-
-def update_resource(module, client, token):
-    """No-op: role rules are content-addressable; re-applying the same
-    rule is idempotent (returns no-change)."""
-    return None
-
-
-def delete_resource(module, client, token):
-    """Delete the resource."""
-    body = build_body("DeleteRoleRule", dict(module.params, token=token))
-    return call_api(module, client, "delete_role_rule", body)
-
-
-def read_resource(module, client, token):
-    """Read the current state of the resource. Returns None if absent."""
-    body = build_body("GetRole", {"name": module.params.get("role_name"), "token": token})
-    return call_api(module, client, "get_role", body, swallow_404=True)
+argument_spec = {
+    'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
+    'capability': {'type': 'list', 'required': True, 'elements': 'str'},
+    'path': {'type': 'str', 'required': True},
+    'role_name': {'type': 'str', 'required': True},
+    'rule_type': {'type': 'str'},
+    'ttl': {'type': 'int'},
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-        'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'capability': {'type': 'list', 'required': True, 'elements': 'str'},
-        'path': {'type': 'str', 'required': True},
-        'role_name': {'type': 'str', 'required': True},
-        'rule_type': {'type': 'str'},
-        'ttl': {'type': 'int'},
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    # SetRoleRule/DeleteRoleRule are content-addressable on the Akeyless
+    # side: re-applying the same rule is a no-change. We use GetRole as
+    # the existence probe (rules live as a sub-collection of the role);
+    # if the role is present we consider the rule's desired state met
+    # and skip both update and drift detection.
+    run_standard_crud(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        resource_label='role_rule',
+        sdk_create=('SetRoleRule', 'set_role_rule'),
+        sdk_update=None,
+        sdk_delete=('DeleteRoleRule', 'delete_role_rule'),
+        sdk_read=('GetRole', 'get_role'),
+        read_key='role_name',
+        idempotent=True,
     )
-
-    client, token = get_client(module)
-    state = module.params.get('state', 'present')
-    current = read_resource(module, client, token)
-
-    if module.check_mode:
-        changed = (current is None and state == 'present') or (current is not None and state == 'absent')
-        module.exit_json(changed=changed)
-
-    if state == 'absent':
-        if current is not None:
-            result = delete_resource(module, client, token)
-            module.exit_json(changed=True, result=result)
-        module.exit_json(changed=False, msg="role_rule already absent")
-    else:
-        if current is None:
-            result = create_resource(module, client, token)
-            module.exit_json(changed=True, result=result)
-        update_resource(module, client, token)
-        module.exit_json(changed=False, msg="role_rule already present")
 
 
 if __name__ == '__main__':

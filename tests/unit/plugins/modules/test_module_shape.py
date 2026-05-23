@@ -26,12 +26,13 @@ HELPER_IMPORT = (
 )
 HELPER_NAMES = {
     "get_client", "call_api", "build_body",
-    # Standard-CRUD modules now collapse to `run_standard_crud`; action
-    # modules collapse to `run_action_module`. Both wrap the lower-level
-    # primitives, so any of these symbols satisfies "the module is wired
-    # to the helper".
+    # Collapsed-shape helpers: CRUD modules use `run_standard_crud`,
+    # one-shot actions use `run_action_module`, info data-sources use
+    # `run_info_module`. Each wraps the lower-level primitives, so any
+    # of these symbols satisfies "module is wired to the helper".
     "run_standard_crud",
     "run_action_module",
+    "run_info_module",
 }
 AUTH_KEYS = {"gateway_url", "access_id", "access_key", "access_type"}
 
@@ -244,13 +245,40 @@ def test_crud_modules_use_pascal_and_snake(module_path):
 
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)
 def test_action_modules_disable_check_mode(module_path):
-    tree = ast.parse(module_path.read_text())
-    if "run_action" not in _function_defs(tree):
+    """Action modules are one-shot writes; check_mode has no honest
+    'would-do' semantics for them (sign-this / rotate-that). They must
+    either explicitly disable supports_check_mode on AnsibleModule, OR
+    go through `run_action_module()` (which defaults supports_check_mode
+    to False) without overriding that default to True.
+    """
+    src = module_path.read_text()
+    tree = ast.parse(src)
+    fns = _function_defs(tree)
+
+    if "run_action" in fns:
+        # Legacy action module — assert on AnsibleModule kwargs directly.
+        kw = _ansible_module_kwargs(tree)
+        assert kw.get("supports_check_mode") is False, (
+            f"{module_path.name}: action module must set supports_check_mode=False"
+        )
+        assert _argument_spec_entries(tree), (
+            f"{module_path.name}: action module missing argument_spec"
+        )
+        return
+
+    # Post-refactor: check_mode discipline is enforced by the helper's
+    # default; just confirm no caller overrides it to True.
+    if "run_action_module" not in src:
         pytest.skip("not an action module")
-    kw = _ansible_module_kwargs(tree)
-    assert kw.get("supports_check_mode") is False, (
-        f"{module_path.name}: action module must set supports_check_mode=False"
-    )
+    for node in ast.walk(tree):
+        if (isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "run_action_module"):
+            for kw in node.keywords:
+                if kw.arg == "supports_check_mode":
+                    assert not (isinstance(kw.value, ast.Constant) and kw.value.value is True), (
+                        f"{module_path.name}: action module must not opt into check_mode"
+                    )
     assert _argument_spec_entries(tree), (
         f"{module_path.name}: action module missing argument_spec"
     )
@@ -258,19 +286,29 @@ def test_action_modules_disable_check_mode(module_path):
 
 @pytest.mark.parametrize("module_path", MODULE_PATHS, ids=lambda p: p.name)
 def test_info_modules_have_no_state_and_exit_unchanged(module_path):
+    """Info modules must (a) not expose a `state` knob -- they're read-
+    only -- and (b) emit changed=False. The 'changed=False' guarantee is
+    enforced either directly via exit_json in legacy modules, OR
+    structurally by routing through run_info_module() which hard-codes
+    it.
+    """
     if not module_path.name.endswith("_info.py"):
         pytest.skip("not an info module")
-    tree = ast.parse(module_path.read_text())
+    src = module_path.read_text()
+    tree = ast.parse(src)
     spec = _argument_spec_entries(tree)
     assert "state" not in spec, (
         f"{module_path.name}: info module must not declare a `state` parameter"
     )
-    # At least one exit_json must have changed=False; data sources never mutate.
+    # Either the module exits with changed=False directly, or it
+    # delegates to run_info_module which guarantees changed=False.
     saw_unchanged = any(
         kw.get("changed") is False for kw in _exit_json_kwargs(tree)
     )
-    assert saw_unchanged, (
-        f"{module_path.name}: info module never calls exit_json(changed=False)"
+    delegates_to_helper = "run_info_module" in src
+    assert saw_unchanged or delegates_to_helper, (
+        f"{module_path.name}: info module never emits changed=False"
+        " (neither direct exit_json nor run_info_module helper)"
     )
 
 

@@ -32,35 +32,24 @@ allowed_urls_only:
   returned: success
 '''
 
-from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_client import (
-    get_client, call_api, build_body,
+    run_info_module,
 )
 
+argument_spec = {
 
-def read_resource(module, client, token):
-    """Read the data source."""
-    body = build_body("ListSRABastions", dict(module.params, token=token))
-    return call_api(module, client, "list_sra_bastions", body)
+    'gateway_url': {'type': 'str'},
+    'access_id': {'type': 'str'},
+    'access_key': {'type': 'str', 'no_log': True},
+    'access_type': {'type': 'str', 'default': 'access_key'},
+}
 
 
 def main():
-    argument_spec = {
-
-        'gateway_url': {'type': 'str'},
-        'access_id': {'type': 'str'},
-        'access_key': {'type': 'str', 'no_log': True},
-        'access_type': {'type': 'str', 'default': 'access_key'},
-    }
-
-    module = AnsibleModule(
+    run_info_module(
         argument_spec=argument_spec,
-        supports_check_mode=True,
+        sdk_call=('ListSRABastions', 'list_sra_bastions'),
     )
-
-    client, token = get_client(module)
-    result = read_resource(module, client, token) or {}
-    module.exit_json(changed=False, result=result)
 
 
 if __name__ == '__main__':
