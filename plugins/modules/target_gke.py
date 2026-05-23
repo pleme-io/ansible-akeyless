@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_gke
 short_description: Manages a Google GKE target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_gke resources.
 options:
@@ -25,11 +29,9 @@ options:
     gke_account_key:
       description: "GCP service account key JSON (base64)"
       type: str
-      no_log: true
     gke_cluster_cert:
       description: "GKE cluster CA certificate (PEM)"
       type: str
-      no_log: true
     gke_cluster_endpoint:
       description: "GKE cluster API server URL"
       type: str
@@ -113,7 +115,7 @@ def main():
         'gke_cluster_endpoint': {'type': 'str'},
         'gke_cluster_name': {'type': 'str'},
         'gke_service_account_email': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'use_gw_cloud_identity': {'type': 'bool'},

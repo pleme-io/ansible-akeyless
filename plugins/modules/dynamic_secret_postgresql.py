@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_postgresql
 short_description: Manages a PostgreSQL dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_postgresql resources.
 options:
@@ -41,22 +45,29 @@ options:
     password_length:
       description: "The length of the password to be generated"
       type: str
+
     postgresql_db_name:
       description: "PostgreSQL DB Name"
       type: str
+      required: true
+
     postgresql_host:
       description: "PostgreSQL host"
       type: str
+      required: true
+
     postgresql_password:
       description: "PostgreSQL admin password"
       type: str
-      no_log: true
+      required: true
     postgresql_port:
       description: "PostgreSQL port (default: 5432)"
       type: str
+
     postgresql_username:
       description: "PostgreSQL admin username"
       type: str
+      required: true
     producer_encryption_key:
       description: "Dynamic producer encryption key"
       type: str
@@ -140,13 +151,13 @@ def main():
         'description': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'postgresql_db_name': {'type': 'str', 'required': True},
         'postgresql_host': {'type': 'str', 'required': True},
         'postgresql_password': {'type': 'str', 'no_log': True, 'required': True},
         'postgresql_port': {'type': 'str'},
         'postgresql_username': {'type': 'str', 'required': True},
-        'producer_encryption_key': {'type': 'str'},
+        'producer_encryption_key': {'type': 'str', 'no_log': False},
         'revocation_statement': {'type': 'str'},
         'secure_access_delay': {'type': 'int'},
         'ssl': {'type': 'bool'},

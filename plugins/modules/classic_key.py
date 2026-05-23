@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: classic_key
 short_description: Manages a classic cryptographic key
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage classic_key resources.
 options:
@@ -29,7 +33,6 @@ options:
     cert_file_data:
       description: "Certificate PEM data (for RSA keys)"
       type: str
-      no_log: true
     certificate_common_name:
       description: "Common name for generated certificate"
       type: str
@@ -79,7 +82,6 @@ options:
     key_data:
       description: "Key material (base64 encoded)"
       type: str
-      no_log: true
     name:
       description: "ClassicKey name"
       type: str

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_log_forwarding_splunk
 short_description: Manages the Splunk log forwarding configuration on the gateway (singleton)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_log_forwarding_splunk resources.
 options:
@@ -111,7 +115,7 @@ def main():
         'pull_interval': {'type': 'str'},
         'source': {'type': 'str'},
         'source_type': {'type': 'str'},
-        'splunk_token': {'type': 'str'},
+        'splunk_token': {'type': 'str', 'no_log': True},
         'splunk_url': {'type': 'str'},
         'tls_certificate': {'type': 'str'},
         'gateway_url': {'type': 'str'},

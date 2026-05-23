@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_aws
 short_description: Manages an AWS target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_aws resources.
 options:
@@ -23,12 +27,10 @@ options:
       description: "AWS secret access key"
       type: str
       required: true
-      no_log: true
     access_key_id:
       description: "AWS access key ID"
       type: str
       required: true
-      no_log: true
     description:
       description: "Target description"
       type: str
@@ -54,7 +56,6 @@ options:
     session_token:
       description: "AWS session token (for temporary credentials)"
       type: str
-      no_log: true
     use_gw_cloud_identity:
       description: "Use gateway cloud identity for authentication"
       type: bool
@@ -117,7 +118,7 @@ def main():
         'access_key_id': {'type': 'str', 'required': True, 'no_log': True},
         'description': {'type': 'str'},
         'generate_external_id': {'type': 'bool'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'region': {'type': 'str'},

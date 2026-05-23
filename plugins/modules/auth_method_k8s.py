@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: auth_method_k8s
 short_description: Manages a Kubernetes authentication method
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage auth_method_k8s resources.
 options:
@@ -150,7 +154,7 @@ def main():
         'description': {'type': 'str'},
         'expiration_event_in': {'type': 'list', 'elements': 'str'},
         'force_sub_claims': {'type': 'bool'},
-        'gen_key': {'type': 'str'},
+        'gen_key': {'type': 'str', 'no_log': False},
         'gw_bound_ips': {'type': 'list', 'elements': 'str'},
         'jwt_ttl': {'type': 'int'},
         'name': {'type': 'str', 'required': True},

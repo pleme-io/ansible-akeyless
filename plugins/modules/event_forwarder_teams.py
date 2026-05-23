@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: event_forwarder_teams
 short_description: Manages a Microsoft Teams event forwarder in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage event_forwarder_teams resources.
 options:
@@ -122,7 +126,7 @@ def main():
         'every': {'type': 'str'},
         'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
         'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'name': {'type': 'str', 'required': True},
         'runner_type': {'type': 'str', 'required': True},
         'targets_event_source_locations': {'type': 'list', 'elements': 'str'},

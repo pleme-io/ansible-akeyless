@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_rabbitmq
 short_description: Manages a RabbitMQ target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_rabbitmq resources.
 options:
@@ -35,7 +39,6 @@ options:
     rabbitmq_server_password:
       description: "RabbitMQ admin password"
       type: str
-      no_log: true
     rabbitmq_server_uri:
       description: "RabbitMQ management API URI"
       type: str
@@ -98,7 +101,7 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'description': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'rabbitmq_server_password': {'type': 'str', 'no_log': True},

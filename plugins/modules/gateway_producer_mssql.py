@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_mssql
 short_description: Manages a Microsoft SQL Server gateway producer (deprecated; prefer akeyless_dynamic_secret_mssql)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_mssql resources.
 options:
@@ -28,31 +32,41 @@ options:
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
+
     mssql_allowed_db_names:
       description: "CSV of allowed DB names for runtime selection when getting the secret value.
+      type: str
 Empty => use target DB only; '*' => any DB allowed; One or more names => user must choose from this list"
       type: str
     mssql_create_statements:
       description: "MSSQL Creation statements"
       type: str
+
     mssql_dbname:
       description: "MSSQL Name"
       type: str
+      required: true
+
     mssql_host:
       description: "MSSQL Host"
       type: str
+      required: true
+
     mssql_password:
       description: "MSSQL Password"
       type: str
+      required: true
     mssql_port:
       description: "MSSQL Port"
       type: str
     mssql_revocation_statements:
       description: "MSSQL Revocation statements"
       type: str
+
     mssql_username:
       description: "MSSQL Username"
       type: str
+      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -138,12 +152,12 @@ def main():
         'mssql_create_statements': {'type': 'str'},
         'mssql_dbname': {'type': 'str', 'required': True},
         'mssql_host': {'type': 'str', 'required': True},
-        'mssql_password': {'type': 'str', 'required': True},
+        'mssql_password': {'type': 'str', 'required': True, 'no_log': True},
         'mssql_port': {'type': 'str'},
         'mssql_revocation_statements': {'type': 'str'},
         'mssql_username': {'type': 'str', 'required': True},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'secure_access_delay': {'type': 'int'},
         'tags': {'type': 'list', 'elements': 'str'},

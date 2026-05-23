@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_rdp
 short_description: Manages an RDP dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_rdp resources.
 options:
@@ -50,22 +54,29 @@ options:
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
+
     rdp_admin_name:
       description: "RDP admin username"
       type: str
+      required: true
+
     rdp_admin_pwd:
       description: "RDP admin password"
       type: str
-      no_log: true
+      required: true
+
     rdp_host_name:
       description: "RDP host address"
       type: str
+      required: true
     rdp_host_port:
       description: "RDP port (default: 3389)"
       type: str
+
     rdp_user_groups:
       description: "RDP user groups for dynamic users"
       type: str
+      required: true
     secure_access_delay:
       description: "The delay duration, in seconds, to wait after generating just-in-time credentials. Accepted range: 0-120 seconds"
       type: int
@@ -144,11 +155,11 @@ def main():
         'custom_username_template': {'type': 'str'},
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
-        'fixed_user_claim_keyname': {'type': 'str'},
+        'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
         'fixed_user_only': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'rdp_admin_name': {'type': 'str', 'required': True},
         'rdp_admin_pwd': {'type': 'str', 'no_log': True, 'required': True},

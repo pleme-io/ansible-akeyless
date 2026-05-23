@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: kmip_client_v2
 short_description: Manages a KMIP client in Akeyless Vault (no update; changes force recreate)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage kmip_client_v2 resources.
 options:
@@ -84,7 +88,7 @@ def read_resource(module, client, token):
 def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'activate_keys_on_creation': {'type': 'str'},
+        'activate_keys_on_creation': {'type': 'str', 'no_log': False},
         'certificate_ttl': {'type': 'int'},
         'name': {'type': 'str', 'required': True},
         'gateway_url': {'type': 'str'},

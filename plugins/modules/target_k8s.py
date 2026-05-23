@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_k8s
 short_description: Manages a Kubernetes target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_k8s resources.
 options:
@@ -28,15 +32,12 @@ options:
     k8s_client_certificate:
       description: "Kubernetes client certificate (PEM)"
       type: str
-      no_log: true
     k8s_client_key:
       description: "Kubernetes client key (PEM)"
       type: str
-      no_log: true
     k8s_cluster_ca_cert:
       description: "Kubernetes cluster CA certificate (PEM)"
       type: str
-      no_log: true
     k8s_cluster_endpoint:
       description: "Kubernetes API server URL"
       type: str
@@ -46,7 +47,6 @@ options:
     k8s_cluster_token:
       description: "Kubernetes bearer token"
       type: str
-      no_log: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -121,9 +121,9 @@ def main():
         'k8s_client_key': {'type': 'str', 'no_log': True},
         'k8s_cluster_ca_cert': {'type': 'str', 'no_log': True},
         'k8s_cluster_endpoint': {'type': 'str'},
-        'k8s_cluster_name': {'type': 'str'},
+        'k8s_cluster_name': {'type': 'str', 'no_log': False},
         'k8s_cluster_token': {'type': 'str', 'no_log': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'use_gw_service_account': {'type': 'bool'},

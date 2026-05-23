@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_gitlab
 short_description: Manages a GitLab target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_gitlab resources.
 options:
@@ -25,11 +29,9 @@ options:
     gitlab_access_token:
       description: "GitLab personal access token"
       type: str
-      no_log: true
     gitlab_certificate:
       description: "GitLab TLS certificate (PEM)"
       type: str
-      no_log: true
     gitlab_url:
       description: "GitLab URL (for self-hosted)"
       type: str
@@ -102,7 +104,7 @@ def main():
         'gitlab_access_token': {'type': 'str', 'no_log': True},
         'gitlab_certificate': {'type': 'str', 'no_log': True},
         'gitlab_url': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'gateway_url': {'type': 'str'},

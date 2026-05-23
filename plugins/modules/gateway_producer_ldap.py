@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_ldap
 short_description: Manages an LDAP gateway producer (deprecated; prefer akeyless_dynamic_secret_ldap)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_ldap resources.
 options:
@@ -25,9 +29,12 @@ options:
     bind_dn:
       description: "Bind DN"
       type: str
+      required: true
+
     bind_dn_password:
       description: "Bind DN Password"
       type: str
+      required: true
     custom_username_template:
       description: "Customize how temporary usernames are generated using go template"
       type: str
@@ -52,9 +59,11 @@ options:
     ldap_ca_cert:
       description: "CA Certificate File Content"
       type: str
+
     ldap_url:
       description: "LDAP Server URL"
       type: str
+      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -88,13 +97,14 @@ options:
     user_attribute:
       description: "User Attribute"
       type: str
+
     user_dn:
       description: "User DN"
       type: str
+      required: true
     user_ttl:
       description: "User TTL"
-      type: str
-'''
+      type: str'''
 
 EXAMPLES = r'''
 - name: Create gateway_producer_ldap
@@ -151,25 +161,25 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'ProviderType': {'type': 'str'},
         'bind_dn': {'type': 'str', 'required': True},
-        'bind_dn_password': {'type': 'str', 'required': True},
+        'bind_dn_password': {'type': 'str', 'required': True, 'no_log': True},
         'custom_username_template': {'type': 'str'},
         'delete_protection': {'type': 'str'},
         'external_username': {'type': 'str'},
-        'fixed_user_claim_keyname': {'type': 'str'},
+        'fixed_user_claim_keyname': {'type': 'str', 'no_log': False},
         'group_dn': {'type': 'str'},
         'host_provider': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
         'ldap_ca_cert': {'type': 'str'},
         'ldap_url': {'type': 'str', 'required': True},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'secure_access_delay': {'type': 'int'},
         'secure_access_rd_gateway_server': {'type': 'str'},
         'tags': {'type': 'list', 'elements': 'str'},
         'target': {'type': 'list', 'elements': 'str'},
         'target_name': {'type': 'str'},
-        'token_expiration': {'type': 'str'},
+        'token_expiration': {'type': 'str', 'no_log': False},
         'user_attribute': {'type': 'str'},
         'user_dn': {'type': 'str', 'required': True},
         'user_ttl': {'type': 'str'},

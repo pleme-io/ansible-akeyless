@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_sectigo
 short_description: Manages a Sectigo target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_sectigo resources.
 options:
@@ -51,6 +55,15 @@ options:
     timeout:
       description: "Timeout waiting for certificate validation in Duration format (1h - 1 Hour, 20m - 20 Minutes, 33m3s - 33 Minutes and 3 Seconds), maximum 1h."
       type: str
+    password:
+      description: "Password."
+      type: str
+      required: true
+    username:
+      description: "Username."
+      type: str
+      required: true
+
 '''
 
 EXAMPLES = r'''
@@ -110,7 +123,7 @@ def main():
         'customer_uri': {'type': 'str', 'required': True},
         'description': {'type': 'str'},
         'external_requester': {'type': 'str', 'required': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'password': {'type': 'str', 'required': True, 'no_log': True},

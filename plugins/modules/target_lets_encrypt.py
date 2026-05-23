@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_lets_encrypt
 short_description: Manages a Let's Encrypt target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_lets_encrypt resources.
 options:
@@ -28,9 +32,11 @@ options:
     dns_target_creds:
       description: "Name of existing cloud target for DNS credentials. Required when acme-challenge=dns. Supported: AWS, Azure, GCP targets"
       type: str
+
     email:
       description: "Email address for ACME account registration"
       type: str
+      required: true
     gcp_project:
       description: "GCP Cloud DNS: Project ID. Optional - can be derived from service account"
       type: str
@@ -117,7 +123,7 @@ def main():
         'email': {'required': True, 'type': 'str'},
         'gcp_project': {'type': 'str'},
         'hosted_zone': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'lets_encrypt_url': {'type': 'str'},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},

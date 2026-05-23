@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: certificate
 short_description: Manages a certificate in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage certificate resources.
 options:
@@ -32,15 +36,19 @@ options:
       description: "How many days before the expiration of the certificate would you like to be notified."
       type: list
       elements: str
+
     format:
       description: "CertificateFormat of the certificate and private key, possible values: cer,crt,pem,pfx,p12.
+      type: str
 Required when passing inline certificate content with --certificate-data or --key-data, otherwise format is derived from the file extension."
       type: str
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
+
     key:
       description: "The name of a key to use to encrypt the certificate's key (if empty, the
+      type: str
 account default protectionKey key will be used)"
       type: str
     key_data:
@@ -115,8 +123,8 @@ def main():
         'expiration_event_in': {'type': 'list', 'elements': 'str'},
         'format': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
-        'key': {'type': 'str'},
-        'key_data': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
+        'key_data': {'type': 'str', 'no_log': True},
         'name': {'type': 'str', 'required': True},
         'tags': {'type': 'list', 'elements': 'str'},
         'gateway_url': {'type': 'str'},

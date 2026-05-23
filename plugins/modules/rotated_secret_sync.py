@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: rotated_secret_sync
 short_description: Sync a rotated secret value to a Universal Secret Connector
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Sync a rotated secret value to a Universal Secret Connector
 options:
@@ -63,7 +67,7 @@ def run_action(module, client, token):
 def main():
     argument_spec = {
         'DeleteRemote': {'type': 'bool'},
-        'filter_secret_value': {'type': 'str'},
+        'filter_secret_value': {'type': 'str', 'no_log': False},
         'name': {'type': 'str', 'required': True},
         'namespace': {'type': 'str'},
         'remote_secret_name': {'type': 'str'},

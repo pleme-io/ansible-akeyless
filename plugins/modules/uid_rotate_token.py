@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: uid_rotate_token
 short_description: Rotate an Akeyless Universal Identity token
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Rotate an Akeyless Universal Identity token
 options:
@@ -23,6 +27,10 @@ options:
     with_manual_ack:
       description: "Disable automatic ack"
       type: bool
+    uid_token:
+      description: "Uid token."
+      type: str
+
 '''
 
 EXAMPLES = r'''
@@ -53,7 +61,7 @@ def run_action(module, client, token):
 def main():
     argument_spec = {
         'fork': {'type': 'bool'},
-        'send_manual_ack_token': {'type': 'str'},
+        'send_manual_ack_token': {'type': 'str', 'no_log': True},
         'with_manual_ack': {'type': 'bool'},
         # uid_token is the parent token to rotate. Present in the
         # OpenAPI body but iac-forge regen dropped it — stopgap add.

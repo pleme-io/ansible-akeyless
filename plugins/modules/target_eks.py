@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_eks
 short_description: Manages an Amazon EKS target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_eks resources.
 options:
@@ -26,12 +30,10 @@ options:
       description: "AWS access key ID for EKS"
       type: str
       required: true
-      no_log: true
     eks_cluster_ca_cert:
       description: "EKS cluster CA certificate (PEM)"
       type: str
       required: true
-      no_log: true
     eks_cluster_endpoint:
       description: "EKS cluster API server URL"
       type: str
@@ -47,7 +49,6 @@ options:
       description: "AWS secret access key for EKS"
       type: str
       required: true
-      no_log: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str
@@ -120,10 +121,10 @@ def main():
         'eks_access_key_id': {'type': 'str', 'required': True, 'no_log': True},
         'eks_cluster_ca_cert': {'type': 'str', 'required': True, 'no_log': True},
         'eks_cluster_endpoint': {'type': 'str', 'required': True},
-        'eks_cluster_name': {'type': 'str', 'required': True},
+        'eks_cluster_name': {'type': 'str', 'required': True, 'no_log': False},
         'eks_region': {'type': 'str'},
         'eks_secret_access_key': {'type': 'str', 'required': True, 'no_log': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'use_gw_cloud_identity': {'type': 'bool'},

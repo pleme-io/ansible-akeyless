@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Structural smoke test for the generated Ansible collection.
 
 Walks every module under plugins/modules/, AST-parses it, and verifies the

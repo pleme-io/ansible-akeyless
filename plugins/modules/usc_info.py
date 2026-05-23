@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,12 +11,18 @@ DOCUMENTATION = r'''
 ---
 module: usc_info
 short_description: List universal secrets connectors
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Retrieve information about usc_info.
 options:
+
     usc_name:
       description: "Name of the Universal Secrets Connector item"
       type: str
+      required: true
 '''
 
 EXAMPLES = r'''

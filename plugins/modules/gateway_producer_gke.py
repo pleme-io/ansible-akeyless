@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_gke
 short_description: Manages a GKE gateway producer (deprecated; prefer akeyless_dynamic_secret_gke)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_gke resources.
 options:
@@ -122,7 +126,7 @@ def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'delete_protection': {'type': 'str'},
-        'gke_account_key': {'type': 'str'},
+        'gke_account_key': {'type': 'str', 'no_log': True},
         'gke_cluster_cert': {'type': 'str'},
         'gke_cluster_endpoint': {'type': 'str'},
         'gke_cluster_name': {'type': 'str'},

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_mongodb
 short_description: Manages a MongoDB dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_mongodb resources.
 options:
@@ -34,7 +38,6 @@ options:
     mongodb_atlas_api_private_key:
       description: "MongoDB Atlas API private key"
       type: str
-      no_log: true
     mongodb_atlas_api_public_key:
       description: "MongoDB Atlas API public key"
       type: str
@@ -47,16 +50,21 @@ options:
     mongodb_default_auth_db:
       description: "MongoDB default authentication database"
       type: str
+
     mongodb_host_port:
       description: "MongoDB host:port"
       type: str
+      required: true
+
     mongodb_name:
       description: "MongoDB database name"
       type: str
+      required: true
+
     mongodb_password:
       description: "MongoDB admin password"
       type: str
-      no_log: true
+      required: true
     mongodb_roles:
       description: "MongoDB roles (e.g., readWrite@db)"
       type: str
@@ -69,9 +77,11 @@ options:
     mongodb_uri_options:
       description: "MongoDB URI options"
       type: str
+
     mongodb_username:
       description: "MongoDB admin username"
       type: str
+      required: true
     name:
       description: "Dynamic secret name"
       type: str
@@ -168,7 +178,7 @@ def main():
         'mongodb_uri_options': {'type': 'str'},
         'mongodb_username': {'type': 'str', 'required': True},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'secure_access_delay': {'type': 'int'},
         'tags': {'type': 'list', 'elements': 'str'},

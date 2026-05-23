@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: oidc_app
 short_description: Manages an OIDC application in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage oidc_app resources.
 options:
@@ -117,7 +121,7 @@ def main():
         'delete_protection': {'type': 'str'},
         'description': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'name': {'type': 'str', 'required': True},
         'permission_assignment': {'type': 'str'},
         'public': {'type': 'bool'},

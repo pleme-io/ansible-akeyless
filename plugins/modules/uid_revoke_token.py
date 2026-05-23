@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: uid_revoke_token
 short_description: Revoke a Universal Identity token (self or children)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Revoke a Universal Identity token (self or children)
 options:
@@ -55,7 +59,7 @@ def run_action(module, client, token):
 def main():
     argument_spec = {
         'auth_method_name': {'type': 'str'},
-        'revoke_token': {'type': 'str', 'required': True},
+        'revoke_token': {'type': 'str', 'required': True, 'no_log': True},
         'revoke_type': {'type': 'str', 'required': True},
         'gateway_url': {'type': 'str'},
         'access_id': {'type': 'str'},

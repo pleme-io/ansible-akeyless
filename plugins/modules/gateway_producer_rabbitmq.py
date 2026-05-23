@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_rabbitmq
 short_description: Manages a RabbitMQ gateway producer (deprecated; prefer akeyless_dynamic_secret_rabbitmq)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_rabbitmq resources.
 options:
@@ -35,30 +39,42 @@ options:
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
+
     rabbitmq_admin_pwd:
       description: "RabbitMQ Admin password"
       type: str
+      required: true
+
     rabbitmq_admin_user:
       description: "RabbitMQ Admin User"
       type: str
+      required: true
+
     rabbitmq_server_uri:
       description: "Server URI"
       type: str
+      required: true
+
     rabbitmq_user_conf_permission:
       description: "User configuration permission"
       type: str
+      required: true
+
     rabbitmq_user_read_permission:
       description: "User read permission"
       type: str
+      required: true
     rabbitmq_user_tags:
       description: "User Tags"
       type: str
     rabbitmq_user_vhost:
       description: "User Virtual Host"
       type: str
+
     rabbitmq_user_write_permission:
       description: "User write permission"
       type: str
+      required: true
     tags:
       description: "Add tags attached to this object"
       type: list
@@ -127,7 +143,7 @@ def main():
         'delete_protection': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'rabbitmq_admin_pwd': {'type': 'str', 'required': True},
         'rabbitmq_admin_user': {'type': 'str', 'required': True},

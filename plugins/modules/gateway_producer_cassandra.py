@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: gateway_producer_cassandra
 short_description: Manages a Cassandra gateway producer (deprecated; prefer akeyless_dynamic_secret_cassandra)
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage gateway_producer_cassandra resources.
 options:
@@ -126,14 +130,14 @@ def main():
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
         'cassandra_creation_statements': {'type': 'str'},
         'cassandra_hosts': {'type': 'str'},
-        'cassandra_password': {'type': 'str'},
+        'cassandra_password': {'type': 'str', 'no_log': True},
         'cassandra_port': {'type': 'str'},
         'cassandra_username': {'type': 'str'},
         'custom_username_template': {'type': 'str'},
         'delete_protection': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'ssl': {'type': 'bool'},
         'ssl_certificate': {'type': 'str'},

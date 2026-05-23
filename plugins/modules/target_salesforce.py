@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_salesforce
 short_description: Manages a Salesforce target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_salesforce resources.
 options:
@@ -39,7 +43,6 @@ options:
     client_secret:
       description: "Salesforce connected app client secret"
       type: str
-      no_log: true
     description:
       description: "Target description"
       type: str
@@ -60,7 +63,6 @@ options:
     security_token:
       description: "Salesforce security token"
       type: str
-      no_log: true
     tenant_url:
       description: "Salesforce tenant URL"
       type: str
@@ -120,7 +122,7 @@ def read_resource(module, client, token):
 def main():
     argument_spec = {
         'state': {'type': 'str', 'choices': ['present', 'absent'], 'default': 'present'},
-        'app_private_key_data': {'type': 'str'},
+        'app_private_key_data': {'type': 'str', 'no_log': True},
         'auth_flow': {'type': 'str', 'required': True},
         'ca_cert_data': {'type': 'str'},
         'ca_cert_name': {'type': 'str'},
@@ -128,7 +130,7 @@ def main():
         'client_secret': {'type': 'str', 'no_log': True},
         'description': {'type': 'str'},
         'email': {'type': 'str', 'required': True},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'name': {'type': 'str', 'required': True},
         'security_token': {'type': 'str', 'no_log': True},

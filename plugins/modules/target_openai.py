@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: target_openai
 short_description: Manages an OpenAI target in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage target_openai resources.
 options:
@@ -19,9 +23,11 @@ options:
       type: str
       choices: ["present", "absent"]
       default: present
+
     api_key:
       description: "API key for OpenAI"
       type: str
+      required: true
     api_key_id:
       description: "API key ID"
       type: str
@@ -105,7 +111,7 @@ def main():
         'api_key': {'type': 'str', 'no_log': True, 'required': True},
         'api_key_id': {'type': 'str'},
         'description': {'type': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'max_versions': {'type': 'str'},
         'model': {'type': 'str'},
         'name': {'type': 'str', 'required': True},

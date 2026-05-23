@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_dockerhub
 short_description: Manages a Docker Hub dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_dockerhub resources.
 options:
@@ -25,16 +29,19 @@ options:
     description:
       description: "Description of the object"
       type: str
+
     dockerhub_password:
       description: "Docker Hub password or access token"
       type: str
-      no_log: true
+      required: true
     dockerhub_token_scopes:
       description: "Docker Hub token scopes (comma-separated)"
       type: str
+
     dockerhub_username:
       description: "Docker Hub username"
       type: str
+      required: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict
@@ -113,7 +120,7 @@ def main():
         'delete_protection': {'type': 'bool'},
         'description': {'type': 'str'},
         'dockerhub_password': {'type': 'str', 'no_log': True, 'required': True},
-        'dockerhub_token_scopes': {'type': 'str'},
+        'dockerhub_token_scopes': {'type': 'str', 'no_log': False},
         'dockerhub_username': {'type': 'str', 'required': True},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},

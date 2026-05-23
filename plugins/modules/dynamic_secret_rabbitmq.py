@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: dynamic_secret_rabbitmq
 short_description: Manages a RabbitMQ dynamic secret producer
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage dynamic_secret_rabbitmq resources.
 options:
@@ -38,30 +42,42 @@ options:
     producer_encryption_key_name:
       description: "Dynamic producer encryption key"
       type: str
+
     rabbitmq_admin_pwd:
       description: "RabbitMQ Admin password"
       type: str
+      required: true
+
     rabbitmq_admin_user:
       description: "RabbitMQ Admin User"
       type: str
+      required: true
+
     rabbitmq_server_uri:
       description: "RabbitMQ management API URI"
       type: str
+      required: true
+
     rabbitmq_user_conf_permission:
       description: "RabbitMQ configure permission for dynamic users"
       type: str
+      required: true
+
     rabbitmq_user_read_permission:
       description: "RabbitMQ read permission for dynamic users"
       type: str
+      required: true
     rabbitmq_user_tags:
       description: "RabbitMQ tags for dynamic users (comma-separated)"
       type: str
     rabbitmq_user_vhost:
       description: "RabbitMQ vhost for dynamic users"
       type: str
+
     rabbitmq_user_write_permission:
       description: "RabbitMQ write permission for dynamic users"
       type: str
+      required: true
     tags:
       description: "Tags for the producer"
       type: list
@@ -131,7 +147,7 @@ def main():
         'description': {'type': 'str'},
         'item_custom_fields': {'type': 'dict'},
         'name': {'type': 'str', 'required': True},
-        'password_length': {'type': 'str'},
+        'password_length': {'type': 'str', 'no_log': False},
         'producer_encryption_key_name': {'type': 'str'},
         'rabbitmq_admin_pwd': {'type': 'str', 'required': True},
         'rabbitmq_admin_user': {'type': 'str', 'required': True},

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright: (c) 2026, pleme-io
-# MIT License
+# GNU General Public License v3.0+ (see LICENSES/GPL-3.0-or-later.txt or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
@@ -11,6 +11,10 @@ DOCUMENTATION = r'''
 ---
 module: event_forwarder_email
 short_description: Manages an email event forwarder in Akeyless Vault
+author:
+  - "pleme-io (@pleme-io)"
+extends_documentation_fragment:
+  - drzln0.akeyless.auth
 description:
   - Manage event_forwarder_email resources.
 options:
@@ -26,9 +30,11 @@ options:
     description:
       description: "Description of the object"
       type: str
+
     email_to:
       description: "A comma seperated list of email addresses to send event to"
       type: str
+      required: true
     event_types:
       description: "List of event types to notify about [request-access, certificate-pending-expiration, certificate-expired, certificate-provisioning-success, certificate-provisioning-failure, auth-method-pending-expiration, auth-method-expired, next-automatic-rotation, rotated-secret-success, rotated-secret-failure, dynamic-secret-failure, multi-auth-failure, uid-rotation-failure, apply-justification, email-auth-method-approved, usage, rotation-usage, gateway-inactive, static-secret-updated, rate-limiting, usage-report, secret-sync]"
       type: list
@@ -129,7 +135,7 @@ def main():
         'gateways_event_source_locations': {'type': 'list', 'required': True, 'elements': 'str'},
         'include_error': {'type': 'str'},
         'items_event_source_locations': {'type': 'list', 'elements': 'str'},
-        'key': {'type': 'str'},
+        'key': {'type': 'str', 'no_log': False},
         'name': {'type': 'str', 'required': True},
         'override_url': {'type': 'str'},
         'runner_type': {'type': 'str', 'required': True},
