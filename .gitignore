@@ -3,3 +3,10 @@ __pycache__/
 .pytest_cache/
 MATRIX.lock
 .venv/
+
+# ansible-galaxy collection build outputs
+.build/
+drzln0-akeyless-*.tar.gz
+
+# Claude Code per-project session metadata
+.claude/
