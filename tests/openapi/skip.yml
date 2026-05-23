@@ -698,3 +698,17 @@ skip:
   updateAccountSettings:
     category: internal_only
     reason: "Account-level settings managed via console."
+
+  # ----- newly-appeared upstream ops awaiting iac-forge regen -----
+  gatewayCreateProducerCertificateAutomation:
+    category: future_phase
+    reason: "New upstream operation appeared after the last iac-forge regen. Wrap once we regen against the latest OpenAPI; in the meantime gateway_producer_venafi renders to the same backend endpoint."
+  gatewayUpdateProducerCertificateAutomation:
+    category: future_phase
+    reason: "Paired update for gatewayCreateProducerCertificateAutomation; same regen gate."
+  gatewayListAllowedManagementAccess:
+    category: future_phase
+    reason: "New management-access endpoint; awaiting iac-forge regen."
+  gatewayDeleteAllowedManagementAccess:
+    category: future_phase
+    reason: "New management-access endpoint; awaiting iac-forge regen."
