@@ -184,13 +184,35 @@ def _install_minimal_stubs():
         "ansible_collections.drzln0.akeyless.plugins.module_utils",
     ):
         sys.modules.setdefault(name, types.ModuleType(name))
-    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
-            ".akeyless_lookup_auth")
-    if full not in sys.modules:
-        helper_path = PLUGINS_DIR / "module_utils" / "akeyless_lookup_auth.py"
-        spec = importlib.util.spec_from_file_location(full, helper_path)
+    for stem in ("akeyless_lookup_auth", "akeyless_plugin_helpers"):
+        full = (
+            f"ansible_collections.drzln0.akeyless.plugins.module_utils.{stem}"
+        )
+        if full not in sys.modules:
+            helper_path = PLUGINS_DIR / "module_utils" / f"{stem}.py"
+            spec = importlib.util.spec_from_file_location(full, helper_path)
+            m = importlib.util.module_from_spec(spec)
+            sys.modules[full] = m
+            spec.loader.exec_module(m)
+
+    # Register the impl-only shared filter module under its canonical
+    # path so per-filter plugin files (b64decode_secret.py, etc.) that
+    # do `from ansible_collections.<...>.plugins.filter.akeyless import
+    # <name>` resolve under test.
+    sys.modules.setdefault(
+        "ansible_collections.drzln0.akeyless.plugins.filter",
+        types.ModuleType("ansible_collections.drzln0.akeyless.plugins.filter"),
+    )
+    shared_filter_full = (
+        "ansible_collections.drzln0.akeyless.plugins.filter.akeyless"
+    )
+    if shared_filter_full not in sys.modules:
+        shared_path = PLUGINS_DIR / "filter" / "akeyless.py"
+        spec = importlib.util.spec_from_file_location(
+            shared_filter_full, shared_path
+        )
         m = importlib.util.module_from_spec(spec)
-        sys.modules[full] = m
+        sys.modules[shared_filter_full] = m
         spec.loader.exec_module(m)
 
 
