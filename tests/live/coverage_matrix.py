@@ -79,6 +79,14 @@ _SKIP_MODULES = {
     "uid_list_children.py":  "needs uid_token_id from a generated parent",
     "uid_revoke_token.py":   "needs revoke_token",
     "uid_create_child_token.py": "needs uid_token_id from parent",
+    # dynamic_secret_redis hangs the gateway's redis backend probe far
+    # beyond any reasonable client timeout (the gateway holds the
+    # socket open while it retries internally), and the gateway then
+    # rejects subsequent requests on the same connection pool with
+    # ConnectionReset cascades that mis-classify the rest of the run
+    # as DISPATCH_FAIL. Until the gateway gets a redis-probe timeout
+    # or we add per-test SDK client isolation, skip.
+    "dynamic_secret_redis.py": "gateway hangs on redis probe → cascading ConnectionReset on the rest",
     # id-based CRUD (SDK Get/Update/Delete take `id`, not `name`).
     # Idempotent dispatch would need a list-by-name fallback — not in
     # the current generator. Module dispatches fine when caller passes
