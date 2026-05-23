@@ -142,20 +142,60 @@ def test_role_create_calls_sdk(harness, monkeypatch):
     assert client.create_role.called
 
 
-def test_role_update_when_exists(harness):
+def test_role_update_when_exists_and_drift(harness):
+    """When the resource exists AND a desired param differs from
+    current state, the module calls update_resource and reports
+    changed=True with diff metadata. This is the post-idempotency
+    contract -- pre-idempotency, update was unconditional."""
     target, _factory, client = harness(
         "role.py",
-        params={"name": "r1", "access_id": "p", "access_key": "k", "state": "present"},
+        params={
+            "name": "r1",
+            "access_id": "p",
+            "access_key": "k",
+            "state": "present",
+            "description": "new-description",
+        },
     )
-    client.get_role.return_value = _result_mock({"name": "r1"})  # exists
+    # current has different description -> drift -> update called
+    client.get_role.return_value = _result_mock(
+        {"name": "r1", "description": "old-description"})
     client.update_role.return_value = _result_mock({"updated": True})
 
     with pytest.raises(SystemExit) as ei:
         target.main()
     client.update_role.assert_called_once()
     client.create_role.assert_not_called()
-    # The SystemExit was raised by exit_json; its .kwargs has changed=True.
     assert ei.value.kwargs.get("changed") is True
+    diff = ei.value.kwargs.get("diff")
+    assert diff is not None, "drift path must emit diff metadata"
+    assert diff["before"]["description"] == "old-description"
+    assert diff["after"]["description"] == "new-description"
+
+
+def test_role_no_update_when_in_desired_state(harness):
+    """Honest idempotency: when current state matches the desired
+    params, the module skips the API write entirely and returns
+    changed=False. The whole point of the compute_diff layer."""
+    target, _factory, client = harness(
+        "role.py",
+        params={
+            "name": "r1",
+            "access_id": "p",
+            "access_key": "k",
+            "state": "present",
+            "description": "matching-description",
+        },
+    )
+    client.get_role.return_value = _result_mock(
+        {"name": "r1", "description": "matching-description"})
+
+    with pytest.raises(SystemExit) as ei:
+        target.main()
+    client.update_role.assert_not_called()
+    client.create_role.assert_not_called()
+    assert ei.value.kwargs.get("changed") is False
+    assert "already in desired state" in (ei.value.kwargs.get("msg") or "")
 
 
 def test_role_delete_when_exists(harness):
@@ -210,7 +250,11 @@ def test_role_check_mode_short_circuits(harness):
 # ---------------------------------------------------------------------------
 
 
-def test_uid_generate_token_masks_token_in_result(harness):
+def test_uid_generate_token_returns_token_verbatim(harness):
+    """An earlier draft masked the token server-side, but chained tasks
+    (uid_rotate_token / uid_create_child_token / uid_list_children) all
+    need the cleartext value. Redaction has to live at the playbook
+    layer via `no_log: true`, not in the module."""
     target, _factory, client = harness(
         "uid_generate_token.py",
         params={
@@ -226,9 +270,7 @@ def test_uid_generate_token_masks_token_in_result(harness):
     with pytest.raises(SystemExit) as ei:
         target.main()
     result = ei.value.kwargs.get("result")
-    assert result["token"] == "***"
-    # uid_token is not in sensitive_response_fields, so unchanged.
-    # (the module masks only fields listed in the TOML.)
+    assert result["token"] == "real-secret"
     assert result["uid_token"] == "uid-secret"
     assert result["ttl"] == 60
     assert ei.value.kwargs.get("changed") is True

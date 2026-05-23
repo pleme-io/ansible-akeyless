@@ -11,6 +11,10 @@ dependencies = [
     "pytest>=8.0",
     "pytest-xdist>=3.0",
     "pytest-timeout>=2.0",
+    # Property-based testing for the load-bearing helpers
+    # (compute_diff, drift_to_diff, build_body). Hypothesis generates
+    # adversarial inputs that catch edge cases hand-written tests miss.
+    "hypothesis>=6.0",
 ]
 
 [tool.uv]
