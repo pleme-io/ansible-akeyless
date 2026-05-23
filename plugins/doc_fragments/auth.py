@@ -27,16 +27,20 @@ options:
               to C(https://api.akeyless.io) if neither is set.
             - When using a self-hosted gateway, point this at the gateway's
               REST port (typically C(http://gateway.example.invalid:8081)).
+            - The same URL works for both authentication and resource calls.
         type: str
     access_id:
         description:
             - Akeyless access ID (e.g. C(p-xxxxxxx)) used to authenticate.
             - Falls back to the C(AKEYLESS_ACCESS_ID) environment variable.
+            - Recommended pattern in CI: set the env var once at the runner level
+              so individual tasks stay free of credential references.
         type: str
     access_key:
         description:
             - Akeyless access key paired with I(access_id) for authentication.
             - Falls back to the C(AKEYLESS_ACCESS_KEY) environment variable.
+            - Use C(no_log: true) on any task that references this inline.
         type: str
     access_type:
         description:
