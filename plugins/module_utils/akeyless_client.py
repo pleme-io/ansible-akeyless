@@ -260,6 +260,7 @@ def run_standard_crud(
     read_key="name",
     required_if=None,
     immutable=False,
+    idempotent=False,
 ):
     """Drive the full create/read/update/delete lifecycle for a
     standard-shape Akeyless resource module. Replaces the ~80 lines of
@@ -295,6 +296,12 @@ def run_standard_crud(
                        recreate required") instead of an update call.
                        Pass `sdk_update=None` in that case; the helper
                        won't dereference it.
+      idempotent       When True, the create endpoint is content-
+                       addressable / re-applicable (e.g. SetRoleRule):
+                       if the resource exists we skip drift detection
+                       entirely and return changed=False. There's no
+                       update path. Pass `sdk_update=None`. Mutually
+                       exclusive with `immutable=True`.
 
     Behavior:
       - Reads current state via sdk_read (404 → resource absent).
@@ -323,10 +330,12 @@ def run_standard_crud(
     # itself always names the field `name`, so we pass the value through
     # under `name` regardless of read_key. build_body will then filter
     # to whatever the specific model's __init__ accepts.
+    if immutable and idempotent:
+        raise ValueError("immutable=True and idempotent=True are mutually exclusive")
     create_model, create_method = sdk_create
     delete_model, delete_method = sdk_delete
     read_model,   read_method   = sdk_read
-    if immutable:
+    if immutable or idempotent:
         update_model = update_method = None
     else:
         update_model, update_method = sdk_update
@@ -355,9 +364,16 @@ def run_standard_crud(
         result = call_api(module, client, create_method, body)
         module.exit_json(changed=True, result=result)
 
-    # Resource exists -- only update if any desired field differs from
-    # what's in the SDK Get response. Honest convergence:
-    # no drift => no API call => changed=False.
+    # Resource exists. For idempotent (content-addressable) resources,
+    # the upstream Set endpoint is the source of truth and re-applying
+    # is always a no-change; we skip drift entirely.
+    if idempotent:
+        module.exit_json(changed=False,
+                         msg=f"{resource_label} already in desired state")
+
+    # Otherwise -- only update if any desired field differs from what's
+    # in the SDK Get response. Honest convergence: no drift => no API
+    # call => changed=False.
     drift = compute_diff(current, module.params, IDEMPOTENCY_IGNORE_KEYS)
     if not drift:
         module.exit_json(changed=False,
@@ -408,3 +424,31 @@ def run_action_module(argument_spec, sdk_call, supports_check_mode=False):
     body = build_body(sdk_model, dict(module.params, token=token))
     result = call_api(module, client, sdk_method, body)
     module.exit_json(changed=True, result=result)
+
+
+def run_info_module(argument_spec, sdk_call):
+    """Drive a read-only `*_info` module. Replaces the read_resource +
+    main() boilerplate that the 25 info modules (role_info, items_info,
+    target_info, …) carried.
+
+      argument_spec  AnsibleModule argument spec.
+      sdk_call       Tuple ("ModelClassName", "snake_method_name") for
+                     the read endpoint (e.g. ("GetRole", "get_role") or
+                     ("ListItems", "list_items")).
+
+    Behavior: build_body → call_api → exit_json(changed=False,
+    result=<sdk response dict>). Info modules never mutate, so we hard-
+    code changed=False and supports_check_mode=True (the read is always
+    safe under --check).
+    """
+    from ansible.module_utils.basic import AnsibleModule
+
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        supports_check_mode=True,
+    )
+    client, token = get_client(module)
+    sdk_model, sdk_method = sdk_call
+    body = build_body(sdk_model, dict(module.params, token=token))
+    result = call_api(module, client, sdk_method, body) or {}
+    module.exit_json(changed=False, result=result)

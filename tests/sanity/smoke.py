@@ -32,19 +32,45 @@ SDK_V2API = Path(
 )
 
 
+_HELPER_TUPLE_KW = {
+    # run_standard_crud(sdk_create=(Model, method), ...)
+    "sdk_create", "sdk_update", "sdk_delete", "sdk_read",
+    # run_action_module(sdk_call=...) / run_info_module(sdk_call=...)
+    "sdk_call",
+}
+
+
 def extract_call_api_methods(tree: ast.AST) -> list[str]:
-    """Return every string-literal method-name passed to call_api(...)."""
+    """Return every SDK-method string the module routes through.
+
+    Covers two shapes:
+      1. Legacy: call_api(module, client, "method_name", ...) -- the
+         third positional arg is the snake_case method name.
+      2. Post-refactor: run_{standard_crud,action_module,info_module}(
+            sdk_*=("ModelName", "method_name"), ...) -- the second tuple
+         element is the snake_case method name.
+    """
     out: list[str] = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call):
             continue
         func = node.func
         name = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", None)
-        if name != "call_api" or len(node.args) < 3:
+        # Legacy call_api shape.
+        if name == "call_api" and len(node.args) >= 3:
+            m = node.args[2]
+            if isinstance(m, ast.Constant) and isinstance(m.value, str):
+                out.append(m.value)
             continue
-        m = node.args[2]
-        if isinstance(m, ast.Constant) and isinstance(m.value, str):
-            out.append(m.value)
+        # Helper-call shape: pull tuple second-elements out of sdk_* kwargs.
+        for kw in node.keywords:
+            if kw.arg not in _HELPER_TUPLE_KW:
+                continue
+            if (isinstance(kw.value, ast.Tuple)
+                    and len(kw.value.elts) == 2
+                    and isinstance(kw.value.elts[1], ast.Constant)
+                    and isinstance(kw.value.elts[1].value, str)):
+                out.append(kw.value.elts[1].value)
     return out
 
 
@@ -134,7 +160,10 @@ def main() -> int:
 
         methods = extract_call_api_methods(tree)
         if not methods:
-            failures.append(f"{fn}: no call_api(..., 'method_name', ...) found")
+            failures.append(
+                f"{fn}: no SDK method discoverable (neither call_api(...) "
+                "nor run_*(sdk_*=(Model, method)) found)"
+            )
             continue
 
         for m in methods:
