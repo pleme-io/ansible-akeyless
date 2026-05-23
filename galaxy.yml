@@ -1,6 +1,6 @@
 namespace: drzln0
 name: akeyless
-version: 0.2.1
+version: 0.2.2
 readme: README.md
 authors: [pleme-io]
 description: "Auto-generated Ansible modules for Akeyless Vault — managed by iac-forge."
