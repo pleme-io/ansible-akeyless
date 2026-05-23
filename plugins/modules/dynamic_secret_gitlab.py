@@ -32,7 +32,6 @@ options:
     gitlab_access_token:
       description: "GitLab personal access token"
       type: str
-      no_log: true
     gitlab_access_type:
       description: "GitLab access type: personal or project"
       type: str
@@ -40,7 +39,6 @@ options:
     gitlab_certificate:
       description: "GitLab TLS certificate (PEM)"
       type: str
-      no_log: true
     gitlab_role:
       description: "GitLab role for dynamic tokens"
       type: str

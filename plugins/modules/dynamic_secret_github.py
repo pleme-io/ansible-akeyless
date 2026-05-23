@@ -35,7 +35,6 @@ options:
     github_app_private_key:
       description: "GitHub App private key (PEM)"
       type: str
-      no_log: true
     github_base_url:
       description: "GitHub base URL (for GitHub Enterprise)"
       type: str

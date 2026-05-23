@@ -59,7 +59,6 @@ options:
       description: "The secret value"
       type: str
       required: true
-      no_log: true
 '''
 
 EXAMPLES = r'''

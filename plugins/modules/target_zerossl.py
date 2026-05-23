@@ -27,7 +27,6 @@ options:
       description: "ZeroSSL API key"
       type: str
       required: true
-      no_log: true
     description:
       description: "Target description"
       type: str
@@ -39,7 +38,6 @@ options:
       description: "IMAP password"
       type: str
       required: true
-      no_log: true
     imap_port:
       description: "IMAP server port"
       type: str

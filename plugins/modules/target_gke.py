@@ -29,11 +29,9 @@ options:
     gke_account_key:
       description: "GCP service account key JSON (base64)"
       type: str
-      no_log: true
     gke_cluster_cert:
       description: "GKE cluster CA certificate (PEM)"
       type: str
-      no_log: true
     gke_cluster_endpoint:
       description: "GKE cluster API server URL"
       type: str

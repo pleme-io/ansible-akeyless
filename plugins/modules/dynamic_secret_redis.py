@@ -61,7 +61,6 @@ By default the user will have permissions to read all keys '['~*', '+@read']'"
     ssl_certificate:
       description: "SSL certificate (PEM)"
       type: str
-      no_log: true
     tags:
       description: "Tags for the producer"
       type: list

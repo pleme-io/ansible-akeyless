@@ -29,11 +29,9 @@ options:
     gitlab_access_token:
       description: "GitLab personal access token"
       type: str
-      no_log: true
     gitlab_certificate:
       description: "GitLab TLS certificate (PEM)"
       type: str
-      no_log: true
     gitlab_url:
       description: "GitLab URL (for self-hosted)"
       type: str

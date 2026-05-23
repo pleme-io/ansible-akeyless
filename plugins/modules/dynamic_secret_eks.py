@@ -32,14 +32,12 @@ options:
     eks_access_key_id:
       description: "AWS access key ID for EKS"
       type: str
-      no_log: true
     eks_assume_role:
       description: "AWS role ARN to assume for EKS"
       type: str
     eks_cluster_ca_cert:
       description: "EKS cluster CA certificate (PEM)"
       type: str
-      no_log: true
     eks_cluster_endpoint:
       description: "EKS cluster API server URL"
       type: str
@@ -52,7 +50,6 @@ options:
     eks_secret_access_key:
       description: "AWS secret access key for EKS"
       type: str
-      no_log: true
     item_custom_fields:
       description: "Additional custom fields to associate with the item"
       type: dict

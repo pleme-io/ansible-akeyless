@@ -29,7 +29,6 @@ options:
     db_server_certificates:
       description: "Database server certificates (PEM)"
       type: str
-      no_log: true
     db_server_name:
       description: "Database server name for TLS verification"
       type: str
@@ -52,7 +51,6 @@ options:
     oracle_password:
       description: "Oracle admin password"
       type: str
-      no_log: true
     oracle_port:
       description: "Oracle port (default: 1521)"
       type: str

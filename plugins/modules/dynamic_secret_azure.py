@@ -35,7 +35,6 @@ options:
     azure_client_secret:
       description: "Azure client secret"
       type: str
-      no_log: true
     azure_tenant_id:
       description: "Azure tenant ID"
       type: str

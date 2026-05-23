@@ -32,15 +32,12 @@ options:
     k8s_client_certificate:
       description: "Kubernetes client certificate (PEM)"
       type: str
-      no_log: true
     k8s_client_key:
       description: "Kubernetes client key (PEM)"
       type: str
-      no_log: true
     k8s_cluster_ca_cert:
       description: "Kubernetes cluster CA certificate (PEM)"
       type: str
-      no_log: true
     k8s_cluster_endpoint:
       description: "Kubernetes API server URL"
       type: str
@@ -50,7 +47,6 @@ options:
     k8s_cluster_token:
       description: "Kubernetes bearer token"
       type: str
-      no_log: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str

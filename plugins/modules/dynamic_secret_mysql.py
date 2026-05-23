@@ -29,7 +29,6 @@ options:
     db_server_certificates:
       description: "Database server certificates (PEM)"
       type: str
-      no_log: true
     db_server_name:
       description: "Database server name for TLS verification"
       type: str
@@ -51,7 +50,6 @@ options:
     mysql_password:
       description: "MySQL admin password"
       type: str
-      no_log: true
     mysql_port:
       description: "MySQL port (default: 3306)"
       type: str
@@ -83,7 +81,6 @@ options:
     ssl_certificate:
       description: "SSL certificate (PEM)"
       type: str
-      no_log: true
     tags:
       description: "Tags for the producer"
       type: list

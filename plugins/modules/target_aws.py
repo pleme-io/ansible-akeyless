@@ -27,12 +27,10 @@ options:
       description: "AWS secret access key"
       type: str
       required: true
-      no_log: true
     access_key_id:
       description: "AWS access key ID"
       type: str
       required: true
-      no_log: true
     description:
       description: "Target description"
       type: str
@@ -58,7 +56,6 @@ options:
     session_token:
       description: "AWS session token (for temporary credentials)"
       type: str
-      no_log: true
     use_gw_cloud_identity:
       description: "Use gateway cloud identity for authentication"
       type: bool

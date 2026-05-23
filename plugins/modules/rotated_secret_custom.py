@@ -32,7 +32,6 @@ options:
     custom_payload:
       description: "Secret payload to be sent with rotation request"
       type: str
-      no_log: true
     delete_protection:
       description: "Enable delete protection"
       type: bool

@@ -31,7 +31,6 @@ options:
       description: "LDAP bind DN password"
       type: str
       required: true
-      no_log: true
     description:
       description: "Target description"
       type: str

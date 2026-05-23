@@ -39,7 +39,6 @@ options:
     rabbitmq_server_password:
       description: "RabbitMQ admin password"
       type: str
-      no_log: true
     rabbitmq_server_uri:
       description: "RabbitMQ management API URI"
       type: str

@@ -93,7 +93,6 @@ options:
     service_account_creds_data:
       description: "GCP service account credentials JSON"
       type: str
-      no_log: true
     type:
       description: "GCP auth type: gce or iam"
       type: str

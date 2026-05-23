@@ -44,7 +44,6 @@ options:
     hanadb_password:
       description: "HANA admin password"
       type: str
-      no_log: true
     hanadb_port:
       description: "HANA port (default: 443)"
       type: str

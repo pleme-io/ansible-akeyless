@@ -46,7 +46,6 @@ options:
     vault_token:
       description: "HashiCorp Vault token"
       type: str
-      no_log: true
 '''
 
 EXAMPLES = r'''

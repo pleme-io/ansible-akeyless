@@ -32,7 +32,6 @@ options:
     client_secret:
       description: "Azure client secret"
       type: str
-      no_log: true
     connection_type:
       description: "Type of connection [credentials/cloud-identity]"
       type: str

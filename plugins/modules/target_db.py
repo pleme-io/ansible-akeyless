@@ -51,7 +51,6 @@ options:
     db_server_certificates:
       description: "Database server TLS certificates (PEM)"
       type: str
-      no_log: true
     db_server_name:
       description: "Database server name for TLS verification"
       type: str
@@ -77,7 +76,6 @@ options:
     mongodb_atlas_api_private_key:
       description: "MongoDB Atlas API private key"
       type: str
-      no_log: true
     mongodb_atlas_api_public_key:
       description: "MongoDB Atlas API public key"
       type: str
@@ -115,7 +113,6 @@ options:
     pwd:
       description: "Database password"
       type: str
-      no_log: true
     snowflake_account:
       description: "Snowflake account identifier"
       type: str
@@ -131,7 +128,6 @@ options:
     ssl_certificate:
       description: "Client SSL certificate (PEM)"
       type: str
-      no_log: true
     user_name:
       description: "Database username"
       type: str

@@ -31,7 +31,6 @@ options:
       description: "Artifactory admin password"
       type: str
       required: true
-      no_log: true
     base_url:
       description: "Artifactory base URL"
       type: str

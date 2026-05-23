@@ -51,7 +51,6 @@ options:
     client_secret:
       description: "OIDC client secret"
       type: str
-      no_log: true
     delete_protection:
       description: "Enable delete protection"
       type: bool

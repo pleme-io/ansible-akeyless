@@ -57,7 +57,6 @@ options:
     redshift_password:
       description: "Redshift admin password"
       type: str
-      no_log: true
     redshift_port:
       description: "Redshift port (default: 5439)"
       type: str

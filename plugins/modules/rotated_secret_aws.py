@@ -29,7 +29,6 @@ options:
     api_key:
       description: "API key to rotate (relevant only for rotator-type=api-key)"
       type: str
-      no_log: true
     authentication_credentials:
       description: "Credentials to connect with: use-user-creds or use-target-creds"
       type: str

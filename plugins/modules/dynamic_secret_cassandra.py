@@ -32,7 +32,6 @@ options:
     cassandra_password:
       description: "Cassandra admin password"
       type: str
-      no_log: true
     cassandra_port:
       description: "Cassandra port (default: 9042)"
       type: str
@@ -67,7 +66,6 @@ options:
     ssl_certificate:
       description: "SSL certificate (PEM)"
       type: str
-      no_log: true
     tags:
       description: "Tags for the producer"
       type: list

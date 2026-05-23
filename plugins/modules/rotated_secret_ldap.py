@@ -63,7 +63,6 @@ options:
     rotated_password:
       description: "Rotated-username password (relevant only for rotator-type=password)"
       type: str
-      no_log: true
     rotated_username:
       description: "Username to be rotated"
       type: str

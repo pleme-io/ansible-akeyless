@@ -26,7 +26,6 @@ options:
     certificate:
       description: "Client certificate (PEM)"
       type: str
-      no_log: true
     connection_type:
       description: "Type of connection to Windows Server [credentials/parent-target]"
       type: str

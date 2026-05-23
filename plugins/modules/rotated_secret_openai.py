@@ -26,7 +26,6 @@ options:
     api_key:
       description: "API key to rotate (relevant only for rotator-type=api-key)"
       type: str
-      no_log: true
     api_key_id:
       description: "Admin API key ID to rotate (relevant only for rotator-type=api-key)"
       type: str
