@@ -88,6 +88,19 @@ class CacheModule(BaseCacheModule):
         )
         self._prefix = self._get_option("_prefix") or "akeyless_token_"
         self._timeout = int(self._get_option("_timeout") or 1500)
+        # NOTE: We intentionally don't mkdir here. Two reasons:
+        #   1. Constructing the cache module shouldn't have file-system
+        #      side effects (some CI sandboxes -- e.g. nix's
+        #      build-time tests -- run without HOME set, so the
+        #      default ~/.cache path fails PermissionError).
+        #   2. Lazy mkdir is cheaper at module-load time when callers
+        #      construct the cache just to introspect options.
+        # `_ensure_dir()` is called from set() / get() / keys() etc.
+        # before any actual file IO.
+
+    def _ensure_dir(self) -> None:
+        """Lazily create the cache directory. Called before every
+        file-touching operation. Idempotent + tolerant of races."""
         self._cache_dir.mkdir(parents=True, exist_ok=True)
 
     def _get_option(self, name: str) -> Any:
@@ -131,6 +144,7 @@ class CacheModule(BaseCacheModule):
         """Atomically write `value` (json-serialised) to the cache file.
         Uses tmpfile + rename so partial writes never leave a corrupt
         entry visible to a concurrent reader."""
+        self._ensure_dir()
         path = self._path_for(key)
         tmp = path.with_suffix(".tmp")
         tmp.write_text(json.dumps(value))
@@ -140,6 +154,8 @@ class CacheModule(BaseCacheModule):
         os.chmod(path, 0o600)
 
     def keys(self) -> List[str]:
+        if not self._cache_dir.exists():
+            return []
         out = []
         for p in self._cache_dir.glob(f"{self._prefix}*.json"):
             stem = p.stem
@@ -159,6 +175,8 @@ class CacheModule(BaseCacheModule):
 
     def flush(self) -> None:
         """Remove every cached entry. Useful for forced re-auth."""
+        if not self._cache_dir.exists():
+            return
         for p in self._cache_dir.glob(f"{self._prefix}*.json"):
             try:
                 p.unlink()
