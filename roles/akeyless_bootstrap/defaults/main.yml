@@ -1,0 +1,22 @@
+---
+# Required: list of secret paths to fetch. Resolved values land in
+# `akeyless_secrets` (host_var) keyed by the basename of each path.
+akeyless_bootstrap_secrets: []
+
+# Authentication options. Each falls back to its AKEYLESS_* env var
+# when unset so the role plays well with CI runners that inject creds
+# via environment.
+akeyless_bootstrap_gateway_url: "{{ lookup('env', 'AKEYLESS_GATEWAY_URL') | default('https://api.akeyless.io', true) }}"
+akeyless_bootstrap_access_id: "{{ lookup('env', 'AKEYLESS_ACCESS_ID') | default(omit, true) }}"
+akeyless_bootstrap_access_key: "{{ lookup('env', 'AKEYLESS_ACCESS_KEY') | default(omit, true) }}"
+akeyless_bootstrap_access_type: "{{ lookup('env', 'AKEYLESS_ACCESS_TYPE') | default('access_key', true) }}"
+akeyless_bootstrap_token: "{{ lookup('env', 'AKEYLESS_TOKEN') | default(omit, true) }}"
+
+# Where to expose the resolved secrets. Default: the host's
+# `akeyless_secrets` fact, keyed by secret basename.
+akeyless_bootstrap_var_name: akeyless_secrets
+
+# When true, mark the resolved fact with `no_log` so values don't
+# appear in playbook log output. Default true; flip to false during
+# debugging only.
+akeyless_bootstrap_no_log: true
