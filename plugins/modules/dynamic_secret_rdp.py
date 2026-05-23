@@ -60,7 +60,6 @@ options:
     rdp_admin_pwd:
       description: "RDP admin password"
       type: str
-      no_log: true
     rdp_host_name:
       description: "RDP host address"
       type: str

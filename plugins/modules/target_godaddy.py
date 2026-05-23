@@ -27,7 +27,6 @@ options:
       description: "GoDaddy API key"
       type: str
       required: true
-      no_log: true
     customer_id:
       description: "Customer ID (ShopperId) required for renewal of imported certificates"
       type: str
@@ -42,7 +41,6 @@ options:
       description: "IMAP password"
       type: str
       required: true
-      no_log: true
     imap_port:
       description: "IMAP server port"
       type: str
@@ -64,7 +62,6 @@ options:
       description: "GoDaddy API secret"
       type: str
       required: true
-      no_log: true
     timeout:
       description: "GoDaddy API timeout"
       type: str

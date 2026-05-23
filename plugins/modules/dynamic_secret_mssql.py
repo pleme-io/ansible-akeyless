@@ -51,7 +51,6 @@ Empty => use target DB only; '*' => any DB allowed; One or more names => user mu
     mssql_password:
       description: "MSSQL admin password"
       type: str
-      no_log: true
     mssql_port:
       description: "MSSQL port (default: 1433)"
       type: str

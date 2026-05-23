@@ -29,7 +29,6 @@ options:
     dockerhub_password:
       description: "Docker Hub password or access token"
       type: str
-      no_log: true
     dockerhub_username:
       description: "Docker Hub username"
       type: str

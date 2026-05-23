@@ -76,7 +76,6 @@ options:
     keytab_file_data:
       description: "Kerberos keytab file data (base64)"
       type: str
-      no_log: true
     keytab_file_path:
       description: "Path to Kerberos keytab file on gateway"
       type: str

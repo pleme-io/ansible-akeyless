@@ -38,7 +38,6 @@ options:
     mongodb_atlas_api_private_key:
       description: "MongoDB Atlas API private key"
       type: str
-      no_log: true
     mongodb_atlas_api_public_key:
       description: "MongoDB Atlas API public key"
       type: str
@@ -60,7 +59,6 @@ options:
     mongodb_password:
       description: "MongoDB admin password"
       type: str
-      no_log: true
     mongodb_roles:
       description: "MongoDB roles (e.g., readWrite@db)"
       type: str

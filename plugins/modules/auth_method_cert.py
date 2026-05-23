@@ -68,7 +68,6 @@ options:
     certificate_data:
       description: "PEM certificate data for validation"
       type: str
-      no_log: true
     delete_protection:
       description: "Enable delete protection"
       type: bool

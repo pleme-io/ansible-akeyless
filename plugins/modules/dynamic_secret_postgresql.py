@@ -54,7 +54,6 @@ options:
     postgresql_password:
       description: "PostgreSQL admin password"
       type: str
-      no_log: true
     postgresql_port:
       description: "PostgreSQL port (default: 5432)"
       type: str

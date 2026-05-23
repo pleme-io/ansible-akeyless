@@ -29,7 +29,6 @@ options:
     artifactory_admin_pwd:
       description: "Artifactory admin password"
       type: str
-      no_log: true
     artifactory_token_audience:
       description: "Artifactory token audience"
       type: str

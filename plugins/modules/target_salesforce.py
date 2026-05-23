@@ -43,7 +43,6 @@ options:
     client_secret:
       description: "Salesforce connected app client secret"
       type: str
-      no_log: true
     description:
       description: "Target description"
       type: str
@@ -64,7 +63,6 @@ options:
     security_token:
       description: "Salesforce security token"
       type: str
-      no_log: true
     tenant_url:
       description: "Salesforce tenant URL"
       type: str

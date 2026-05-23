@@ -32,7 +32,6 @@ options:
     bind_dn_password:
       description: "LDAP bind DN password"
       type: str
-      no_log: true
     custom_username_template:
       description: "Customize how temporary usernames are generated using go template"
       type: str

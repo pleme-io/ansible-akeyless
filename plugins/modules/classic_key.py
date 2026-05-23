@@ -33,7 +33,6 @@ options:
     cert_file_data:
       description: "Certificate PEM data (for RSA keys)"
       type: str
-      no_log: true
     certificate_common_name:
       description: "Common name for generated certificate"
       type: str
@@ -83,7 +82,6 @@ options:
     key_data:
       description: "Key material (base64 encoded)"
       type: str
-      no_log: true
     name:
       description: "ClassicKey name"
       type: str

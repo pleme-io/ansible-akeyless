@@ -29,7 +29,6 @@ options:
     api_key:
       description: "API key to rotate (relevant only for rotator-type=api-key)"
       type: str
-      no_log: true
     application_id:
       description: "Id of the azure app that hold the serect to be rotated (relevant only for rotator-type=api-key & authentication-credentials=use-target-creds)"
       type: str

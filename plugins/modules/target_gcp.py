@@ -29,7 +29,6 @@ options:
     gcp_key:
       description: "GCP service account key JSON (base64)"
       type: str
-      no_log: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str

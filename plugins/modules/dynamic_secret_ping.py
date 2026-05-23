@@ -70,7 +70,6 @@ options:
     ping_password:
       description: "Ping Identity password"
       type: str
-      no_log: true
     ping_privileged_user:
       description: "Ping Identity privileged username"
       type: str

@@ -30,12 +30,10 @@ options:
       description: "AWS access key ID for EKS"
       type: str
       required: true
-      no_log: true
     eks_cluster_ca_cert:
       description: "EKS cluster CA certificate (PEM)"
       type: str
       required: true
-      no_log: true
     eks_cluster_endpoint:
       description: "EKS cluster API server URL"
       type: str
@@ -51,7 +49,6 @@ options:
       description: "AWS secret access key for EKS"
       type: str
       required: true
-      no_log: true
     key:
       description: "The name of a key that used to encrypt the target secret value (if empty, the account default protectionKey key will be used)"
       type: str

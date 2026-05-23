@@ -32,7 +32,6 @@ options:
     dockerhub_password:
       description: "Docker Hub password or access token"
       type: str
-      no_log: true
     dockerhub_token_scopes:
       description: "Docker Hub token scopes (comma-separated)"
       type: str

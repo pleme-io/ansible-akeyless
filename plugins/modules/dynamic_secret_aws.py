@@ -32,11 +32,9 @@ options:
     aws_access_key_id:
       description: "AWS access key ID for the producer"
       type: str
-      no_log: true
     aws_access_secret_key:
       description: "AWS secret access key for the producer"
       type: str
-      no_log: true
     aws_external_id:
       description: "The AWS External ID associated with the AWS role (relevant only for assume_role mode)"
       type: str

@@ -45,15 +45,12 @@ options:
     private_key:
       description: "SSH private key (PEM)"
       type: str
-      no_log: true
     private_key_password:
       description: "SSH private key passphrase"
       type: str
-      no_log: true
     ssh_password:
       description: "SSH password"
       type: str
-      no_log: true
     ssh_username:
       description: "SSH username"
       type: str

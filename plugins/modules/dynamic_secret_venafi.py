@@ -83,7 +83,6 @@ options:
     venafi_api_key:
       description: "Venafi API key"
       type: str
-      no_log: true
     venafi_baseurl:
       description: "Venafi base URL"
       type: str

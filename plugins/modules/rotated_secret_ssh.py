@@ -41,7 +41,6 @@ options:
     key_data_base64:
       description: "Private key file contents encoded using base64"
       type: str
-      no_log: true
     lock_during_sra_session:
       description: "Lock this secret for read/update while an SRA session is active"
       type: str
@@ -64,7 +63,6 @@ options:
     rotated_password:
       description: "Rotated-username password (relevant only for rotator-type=password)"
       type: str
-      no_log: true
     rotated_username:
       description: "Username to be rotated"
       type: str
