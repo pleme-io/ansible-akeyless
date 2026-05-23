@@ -24,14 +24,18 @@ def _install_ansible_callback_stubs():
     """Stub ansible.plugins.callback.CallbackBase + .default so the
     callback imports without a real Ansible install. We replace
     CallbackBase with a minimal class that supports
-    set_options/get_option."""
-    if "ansible.plugins.callback" in sys.modules:
-        return
+    set_options/get_option.
 
+    UNCONDITIONAL install: another test file (e.g.
+    tests/mock/test_every_plugin_loads.py) may have installed a
+    simpler CallbackBase whose set_options is a no-op, which would
+    cause this file's redaction-token-from-direct test to read the
+    default value rather than the supplied one. We always overwrite
+    with the richer stub this test file needs."""
     ansible_pkg = sys.modules.setdefault("ansible", types.ModuleType("ansible"))
-    plugins_mod = types.ModuleType("ansible.plugins")
-    cb_mod = types.ModuleType("ansible.plugins.callback")
-    cb_default_mod = types.ModuleType("ansible.plugins.callback.default")
+    plugins_mod = sys.modules.get("ansible.plugins") or types.ModuleType("ansible.plugins")
+    cb_mod = sys.modules.get("ansible.plugins.callback") or types.ModuleType("ansible.plugins.callback")
+    cb_default_mod = sys.modules.get("ansible.plugins.callback.default") or types.ModuleType("ansible.plugins.callback.default")
 
     class _StubCallbackBase:
         def __init__(self):

@@ -37,42 +37,41 @@ def _install_action_stubs():
             pass
         errors_mod.AnsibleActionFail = _StubFail
 
-    if "ansible.plugins.action" not in sys.modules:
-        plugins_mod = types.ModuleType("ansible.plugins")
-        action_mod = types.ModuleType("ansible.plugins.action")
-        loader_mod = types.ModuleType("ansible.plugins.loader")
+    # UNCONDITIONAL install: another test file may have already
+    # registered a simpler ActionBase whose _execute_module doesn't
+    # set _last_module_args. We always overwrite.
+    plugins_mod = sys.modules.get("ansible.plugins") or types.ModuleType("ansible.plugins")
+    action_mod = sys.modules.get("ansible.plugins.action") or types.ModuleType("ansible.plugins.action")
+    loader_mod = sys.modules.get("ansible.plugins.loader") or types.ModuleType("ansible.plugins.loader")
 
-        class _StubActionBase:
-            """Same shape as test_secret_to_file.py's stub --
-            sibling test files install whichever installer fires
-            first, so the contract must match (in particular both
-            _last_module_name and _last_module_args attributes).
-            Without this match, running the two test files
-            sequentially fails on AttributeError."""
+    class _StubActionBase:
+        """Same shape as test_secret_to_file.py's stub -- both files
+        force-install with this richer contract regardless of any
+        prior installer."""
 
-            def __init__(self):
-                self._task = None
-                self._templar = None
-                self._loader = None
+        def __init__(self):
+            self._task = None
+            self._templar = None
+            self._loader = None
 
-            def run(self, tmp=None, task_vars=None):
-                return {}
+        def run(self, tmp=None, task_vars=None):
+            return {}
 
-            def _execute_module(self, module_name=None, module_args=None, task_vars=None):
-                self._last_module_name = module_name
-                self._last_module_args = module_args
-                return {
-                    "changed": True,
-                    "dest": (module_args or {}).get("dest"),
-                    "invocation": {"module_args": dict(module_args or {})},
-                }
+        def _execute_module(self, module_name=None, module_args=None, task_vars=None):
+            self._last_module_name = module_name
+            self._last_module_args = module_args
+            return {
+                "changed": True,
+                "dest": (module_args or {}).get("dest"),
+                "invocation": {"module_args": dict(module_args or {})},
+            }
 
-        action_mod.ActionBase = _StubActionBase
-        loader_mod.lookup_loader = MagicMock(name="lookup_loader")
-        sys.modules["ansible.plugins"] = plugins_mod
-        sys.modules["ansible.plugins.action"] = action_mod
-        sys.modules["ansible.plugins.loader"] = loader_mod
-        ansible_pkg.plugins = plugins_mod
+    action_mod.ActionBase = _StubActionBase
+    loader_mod.lookup_loader = MagicMock(name="lookup_loader")
+    sys.modules["ansible.plugins"] = plugins_mod
+    sys.modules["ansible.plugins.action"] = action_mod
+    sys.modules["ansible.plugins.loader"] = loader_mod
+    ansible_pkg.plugins = plugins_mod
 
     # Register plugin_helpers under its canonical FQ name.
     for name in (
