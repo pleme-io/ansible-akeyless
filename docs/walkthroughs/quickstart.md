@@ -37,17 +37,22 @@ The simplest possible playbook:
       ansible.builtin.debug:
         msg: "{{ lookup('drzln0.akeyless.secret', '/app/db/password') }}"
       vars:
-        ansible_akeyless_access_id: p-abc123
-        ansible_akeyless_access_key: "{{ lookup('env', 'AKEYLESS_ACCESS_KEY') }}"
+        akeyless_access_id: p-abc123
+        akeyless_access_key: "{{ lookup('env', 'AKEYLESS_ACCESS_KEY') }}"
 ```
 
 Run it:
 
 ```bash
-ANSIBLE_AKEYLESS_ACCESS_ID=p-abc123 \
-ANSIBLE_AKEYLESS_ACCESS_KEY=<your-access-key> \
+AKEYLESS_ACCESS_ID=p-abc123 \
+AKEYLESS_ACCESS_KEY=<your-access-key> \
   ansible-playbook quickstart.yml
 ```
+
+(Env-var resolution: the lookup options have `env:
+[{name: AKEYLESS_ACCESS_ID}]` declared so `AKEYLESS_*` names work
+out of the box. The playbook-level `vars:` form above gives you
+explicit control when you want it.)
 
 ## Auth precedence
 
