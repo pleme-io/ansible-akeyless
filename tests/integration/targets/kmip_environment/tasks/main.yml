@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create kmip_environment
-      kmip_environment:
+      drzln0.akeyless.kmip_environment:
         state: present
         hostname: "test_value"
         root: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create kmip_environment (idempotent)
-      kmip_environment:
+      drzln0.akeyless.kmip_environment:
         state: present
         hostname: "test_value"
         root: "test_value"
       register: idempotent_result
 
     - name: Delete kmip_environment
-      kmip_environment:
+      drzln0.akeyless.kmip_environment:
         state: absent
         hostname: "test_value"
         root: "test_value"

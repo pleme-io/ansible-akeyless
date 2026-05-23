@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create certificate
-      certificate:
+      drzln0.akeyless.certificate:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create certificate (idempotent)
-      certificate:
+      drzln0.akeyless.certificate:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete certificate
-      certificate:
+      drzln0.akeyless.certificate:
         state: absent
         name: "test_value"
       register: delete_result

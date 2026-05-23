@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create account_custom_field
-      account_custom_field:
+      drzln0.akeyless.account_custom_field:
         state: present
         name: "test_value"
         object: "test_value"
@@ -21,7 +21,7 @@
           - create_result.changed
 
     - name: Create account_custom_field (idempotent)
-      account_custom_field:
+      drzln0.akeyless.account_custom_field:
         state: present
         name: "test_value"
         object: "test_value"
@@ -29,7 +29,7 @@
       register: idempotent_result
 
     - name: Delete account_custom_field
-      account_custom_field:
+      drzln0.akeyless.account_custom_field:
         state: absent
         name: "test_value"
         object: "test_value"

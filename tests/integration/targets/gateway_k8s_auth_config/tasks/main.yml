@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create gateway_k8s_auth_config
-      gateway_k8s_auth_config:
+      drzln0.akeyless.gateway_k8s_auth_config:
         state: present
         access_id: "test_value"
         k8s_host: "test_value"
@@ -22,7 +22,7 @@
           - create_result.changed
 
     - name: Create gateway_k8s_auth_config (idempotent)
-      gateway_k8s_auth_config:
+      drzln0.akeyless.gateway_k8s_auth_config:
         state: present
         access_id: "test_value"
         k8s_host: "test_value"
@@ -31,7 +31,7 @@
       register: idempotent_result
 
     - name: Delete gateway_k8s_auth_config
-      gateway_k8s_auth_config:
+      drzln0.akeyless.gateway_k8s_auth_config:
         state: absent
         access_id: "test_value"
         k8s_host: "test_value"

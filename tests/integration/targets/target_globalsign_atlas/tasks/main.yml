@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_globalsign_atlas
-      target_globalsign_atlas:
+      drzln0.akeyless.target_globalsign_atlas:
         state: present
         api_key: "test_value"
         api_secret: "test_value"
@@ -21,7 +21,7 @@
           - create_result.changed
 
     - name: Create target_globalsign_atlas (idempotent)
-      target_globalsign_atlas:
+      drzln0.akeyless.target_globalsign_atlas:
         state: present
         api_key: "test_value"
         api_secret: "test_value"
@@ -29,7 +29,7 @@
       register: idempotent_result
 
     - name: Delete target_globalsign_atlas
-      target_globalsign_atlas:
+      drzln0.akeyless.target_globalsign_atlas:
         state: absent
         api_key: "test_value"
         api_secret: "test_value"

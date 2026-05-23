@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create gateway_producer_eks
-      gateway_producer_eks:
+      drzln0.akeyless.gateway_producer_eks:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create gateway_producer_eks (idempotent)
-      gateway_producer_eks:
+      drzln0.akeyless.gateway_producer_eks:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete gateway_producer_eks
-      gateway_producer_eks:
+      drzln0.akeyless.gateway_producer_eks:
         state: absent
         name: "test_value"
       register: delete_result

@@ -20,7 +20,9 @@ LOOKUP_PATH = REPO_ROOT / "plugins" / "lookup" / "dynamic_secret.py"
 
 
 def _install_ansible_lookup_stubs():
-    """Idempotent + additive stubs for ansible.errors + ansible.plugins.lookup."""
+    """Idempotent stubs for ansible.errors + ansible.plugins.lookup +
+    the shared lookup_auth helper under its ansible_collections.<...>
+    import path."""
     ansible_pkg = sys.modules.setdefault("ansible", types.ModuleType("ansible"))
     errors_mod = sys.modules.get("ansible.errors")
     if errors_mod is None:
@@ -56,6 +58,26 @@ def _install_ansible_lookup_stubs():
         sys.modules["ansible.plugins"] = plugins_mod
         sys.modules["ansible.plugins.lookup"] = lookup_mod
         ansible_pkg.plugins = plugins_mod
+
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        if name not in sys.modules:
+            sys.modules[name] = types.ModuleType(name)
+    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
+            ".akeyless_lookup_auth")
+    # Force fresh load so the helper's `import akeyless` rebinds to
+    # the current test's fake_akeyless stub.
+    sys.modules.pop(full, None)
+    helper_path = REPO_ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
 
 
 def _load(fake_akeyless):

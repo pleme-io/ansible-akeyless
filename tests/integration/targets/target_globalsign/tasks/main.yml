@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_globalsign
-      target_globalsign:
+      drzln0.akeyless.target_globalsign:
         state: present
         contact_email: "test_value"
         contact_first_name: "test_value"
@@ -24,7 +24,7 @@
           - create_result.changed
 
     - name: Create target_globalsign (idempotent)
-      target_globalsign:
+      drzln0.akeyless.target_globalsign:
         state: present
         contact_email: "test_value"
         contact_first_name: "test_value"
@@ -35,7 +35,7 @@
       register: idempotent_result
 
     - name: Delete target_globalsign
-      target_globalsign:
+      drzln0.akeyless.target_globalsign:
         state: absent
         contact_email: "test_value"
         contact_first_name: "test_value"

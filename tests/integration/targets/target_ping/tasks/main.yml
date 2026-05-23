@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_ping
-      target_ping:
+      drzln0.akeyless.target_ping:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create target_ping (idempotent)
-      target_ping:
+      drzln0.akeyless.target_ping:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete target_ping
-      target_ping:
+      drzln0.akeyless.target_ping:
         state: absent
         name: "test_value"
       register: delete_result

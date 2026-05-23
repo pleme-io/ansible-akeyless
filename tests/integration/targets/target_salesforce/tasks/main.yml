@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_salesforce
-      target_salesforce:
+      drzln0.akeyless.target_salesforce:
         state: present
         auth_flow: "test_value"
         client_id: "test_value"
@@ -23,7 +23,7 @@
           - create_result.changed
 
     - name: Create target_salesforce (idempotent)
-      target_salesforce:
+      drzln0.akeyless.target_salesforce:
         state: present
         auth_flow: "test_value"
         client_id: "test_value"
@@ -33,7 +33,7 @@
       register: idempotent_result
 
     - name: Delete target_salesforce
-      target_salesforce:
+      drzln0.akeyless.target_salesforce:
         state: absent
         auth_flow: "test_value"
         client_id: "test_value"

@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_windows
-      target_windows:
+      drzln0.akeyless.target_windows:
         state: present
         hostname: "test_value"
         name: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create target_windows (idempotent)
-      target_windows:
+      drzln0.akeyless.target_windows:
         state: present
         hostname: "test_value"
         name: "test_value"
       register: idempotent_result
 
     - name: Delete target_windows
-      target_windows:
+      drzln0.akeyless.target_windows:
         state: absent
         hostname: "test_value"
         name: "test_value"

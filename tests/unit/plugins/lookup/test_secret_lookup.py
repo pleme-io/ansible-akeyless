@@ -34,7 +34,35 @@ def fake_akeyless(monkeypatch):
     return fake
 
 
+def _ensure_lookup_auth_helper_registered():
+    """The secret lookup imports `authenticated_client` from
+    ansible_collections.drzln0.akeyless.plugins.module_utils.
+    akeyless_lookup_auth. Stub the parent packages + reload the
+    helper module against the current fake_akeyless so tests resolve
+    the import without a real collection install."""
+    import types
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        sys.modules.setdefault(name, types.ModuleType(name))
+    full = ("ansible_collections.drzln0.akeyless.plugins.module_utils"
+            ".akeyless_lookup_auth")
+    # Force fresh load -- helper caches `akeyless` reference; per-test
+    # fake_akeyless must be picked up.
+    sys.modules.pop(full, None)
+    helper_path = ROOT / "plugins" / "module_utils" / "akeyless_lookup_auth.py"
+    helper_spec = importlib.util.spec_from_file_location(full, helper_path)
+    helper_mod = importlib.util.module_from_spec(helper_spec)
+    sys.modules[full] = helper_mod
+    helper_spec.loader.exec_module(helper_mod)  # type: ignore[union-attr]
+
+
 def _load_lookup_module():
+    _ensure_lookup_auth_helper_registered()
     spec = importlib.util.spec_from_file_location("akeyless_secret_lookup", LOOKUP_PATH)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)  # type: ignore[union-attr]

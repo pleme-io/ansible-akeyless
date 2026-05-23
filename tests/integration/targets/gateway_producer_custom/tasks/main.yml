@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create gateway_producer_custom
-      gateway_producer_custom:
+      drzln0.akeyless.gateway_producer_custom:
         state: present
         create_sync_url: "test_value"
         name: "test_value"
@@ -21,7 +21,7 @@
           - create_result.changed
 
     - name: Create gateway_producer_custom (idempotent)
-      gateway_producer_custom:
+      drzln0.akeyless.gateway_producer_custom:
         state: present
         create_sync_url: "test_value"
         name: "test_value"
@@ -29,7 +29,7 @@
       register: idempotent_result
 
     - name: Delete gateway_producer_custom
-      gateway_producer_custom:
+      drzln0.akeyless.gateway_producer_custom:
         state: absent
         create_sync_url: "test_value"
         name: "test_value"

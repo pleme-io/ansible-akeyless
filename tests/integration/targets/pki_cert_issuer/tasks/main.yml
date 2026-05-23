@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create pki_cert_issuer
-      pki_cert_issuer:
+      drzln0.akeyless.pki_cert_issuer:
         state: present
         name: "test_value"
         ttl: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create pki_cert_issuer (idempotent)
-      pki_cert_issuer:
+      drzln0.akeyless.pki_cert_issuer:
         state: present
         name: "test_value"
         ttl: "test_value"
       register: idempotent_result
 
     - name: Delete pki_cert_issuer
-      pki_cert_issuer:
+      drzln0.akeyless.pki_cert_issuer:
         state: absent
         name: "test_value"
         ttl: "test_value"

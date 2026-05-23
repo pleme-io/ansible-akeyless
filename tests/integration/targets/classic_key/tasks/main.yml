@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create classic_key
-      classic_key:
+      drzln0.akeyless.classic_key:
         state: present
         alg: "test_value"
         name: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create classic_key (idempotent)
-      classic_key:
+      drzln0.akeyless.classic_key:
         state: present
         alg: "test_value"
         name: "test_value"
       register: idempotent_result
 
     - name: Delete classic_key
-      classic_key:
+      drzln0.akeyless.classic_key:
         state: absent
         alg: "test_value"
         name: "test_value"

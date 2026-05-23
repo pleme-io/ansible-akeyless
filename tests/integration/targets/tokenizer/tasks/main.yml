@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create tokenizer
-      tokenizer:
+      drzln0.akeyless.tokenizer:
         state: present
         name: "test_value"
         template_type: "test_value"
@@ -21,7 +21,7 @@
           - create_result.changed
 
     - name: Create tokenizer (idempotent)
-      tokenizer:
+      drzln0.akeyless.tokenizer:
         state: present
         name: "test_value"
         template_type: "test_value"
@@ -29,7 +29,7 @@
       register: idempotent_result
 
     - name: Delete tokenizer
-      tokenizer:
+      drzln0.akeyless.tokenizer:
         state: absent
         name: "test_value"
         template_type: "test_value"

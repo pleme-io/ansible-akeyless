@@ -62,3 +62,38 @@ def test_integration_playbook_starts_with_yaml_directive_or_list(playbook_path):
         f"{playbook_path.relative_to(REPO_ROOT)}: first content line "
         f"{first_content!r} doesn't look like a YAML document or list"
     )
+
+
+@pytest.mark.parametrize("playbook_path", PLAYBOOK_PATHS,
+                         ids=lambda p: f"{p.parent.parent.name}")
+def test_integration_playbook_uses_fqcn(playbook_path):
+    """Every reference to the target module in the integration
+    playbook must use the full `drzln0.akeyless.<name>:` FQCN, not
+    the bare `<name>:` form. Bare references rely on collection-path
+    autoloading which doesn't work in some install modes (e.g. when
+    invoked from outside an ansible-galaxy-installed location).
+    Post-FQCN-sweep this is the pinned convention."""
+    module_name = playbook_path.parent.parent.name
+    text = playbook_path.read_text()
+    # If the file mentions the module name at all, the bare form must
+    # not appear -- only the FQCN.
+    bare_pattern = f"\n      {module_name}:"
+    fqcn_pattern = f"drzln0.akeyless.{module_name}:"
+    if bare_pattern in text:
+        # We allow bare form only when FQCN form is absent (some
+        # playbooks legitimately reference other modules and reach
+        # ours via the cross-module FQCN check). Defensive: if both
+        # appear, that's a partial-rewrite state we want flagged.
+        assert fqcn_pattern in text, (
+            f"{playbook_path.relative_to(REPO_ROOT)} uses bare module "
+            f"reference `{module_name}:` without FQCN. Rewrite to "
+            f"`{fqcn_pattern}` -- run tests/codemod/fqcn_sweep.py."
+        )
+        # The lingering bare form would be ambiguous; flag it.
+        # (After the sweep this shouldn't happen, but pin the
+        # post-state.)
+        pytest.fail(
+            f"{playbook_path.relative_to(REPO_ROOT)}: still contains "
+            f"a bare `{module_name}:` reference alongside the FQCN. "
+            f"Re-run tests/codemod/fqcn_sweep.py."
+        )

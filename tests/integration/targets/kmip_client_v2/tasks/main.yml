@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create kmip_client_v2
-      kmip_client_v2:
+      drzln0.akeyless.kmip_client_v2:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create kmip_client_v2 (idempotent)
-      kmip_client_v2:
+      drzln0.akeyless.kmip_client_v2:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete kmip_client_v2
-      kmip_client_v2:
+      drzln0.akeyless.kmip_client_v2:
         state: absent
         name: "test_value"
       register: delete_result

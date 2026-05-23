@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create role_auth_method_assoc
-      role_auth_method_assoc:
+      drzln0.akeyless.role_auth_method_assoc:
         state: present
         am_name: "test_value"
         role_name: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create role_auth_method_assoc (idempotent)
-      role_auth_method_assoc:
+      drzln0.akeyless.role_auth_method_assoc:
         state: present
         am_name: "test_value"
         role_name: "test_value"
       register: idempotent_result
 
     - name: Delete role_auth_method_assoc
-      role_auth_method_assoc:
+      drzln0.akeyless.role_auth_method_assoc:
         state: absent
         am_name: "test_value"
         role_name: "test_value"

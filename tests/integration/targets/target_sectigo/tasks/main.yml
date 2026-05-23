@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create target_sectigo
-      target_sectigo:
+      drzln0.akeyless.target_sectigo:
         state: present
         certificate_profile_id: 1
         customer_uri: "test_value"
@@ -23,7 +23,7 @@
           - create_result.changed
 
     - name: Create target_sectigo (idempotent)
-      target_sectigo:
+      drzln0.akeyless.target_sectigo:
         state: present
         certificate_profile_id: 1
         customer_uri: "test_value"
@@ -33,7 +33,7 @@
       register: idempotent_result
 
     - name: Delete target_sectigo
-      target_sectigo:
+      drzln0.akeyless.target_sectigo:
         state: absent
         certificate_profile_id: 1
         customer_uri: "test_value"

@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create role
-      role:
+      drzln0.akeyless.role:
         state: present
         name: "test_value"
       register: create_result
@@ -19,13 +19,13 @@
           - create_result.changed
 
     - name: Create role (idempotent)
-      role:
+      drzln0.akeyless.role:
         state: present
         name: "test_value"
       register: idempotent_result
 
     - name: Delete role
-      role:
+      drzln0.akeyless.role:
         state: absent
         name: "test_value"
       register: delete_result

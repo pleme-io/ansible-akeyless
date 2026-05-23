@@ -8,7 +8,7 @@
 
   tasks:
     - name: Create rotated_secret_dockerhub
-      rotated_secret_dockerhub:
+      drzln0.akeyless.rotated_secret_dockerhub:
         state: present
         name: "test_value"
         target_name: "test_value"
@@ -20,14 +20,14 @@
           - create_result.changed
 
     - name: Create rotated_secret_dockerhub (idempotent)
-      rotated_secret_dockerhub:
+      drzln0.akeyless.rotated_secret_dockerhub:
         state: present
         name: "test_value"
         target_name: "test_value"
       register: idempotent_result
 
     - name: Delete rotated_secret_dockerhub
-      rotated_secret_dockerhub:
+      drzln0.akeyless.rotated_secret_dockerhub:
         state: absent
         name: "test_value"
         target_name: "test_value"
