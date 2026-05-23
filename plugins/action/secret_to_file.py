@@ -23,6 +23,9 @@ from typing import Any, Dict
 
 from ansible.errors import AnsibleActionFail
 from ansible.plugins.action import ActionBase
+from ansible_collections.drzln0.akeyless.plugins.module_utils.akeyless_plugin_helpers import (
+    AUTH_OPT_KEYS,
+)
 
 
 class ActionModule(ActionBase):
@@ -33,14 +36,14 @@ class ActionModule(ActionBase):
     # Args this action accepts on the task. `secret` + `dest` are
     # required; the rest mirror ansible.builtin.copy's interface so
     # users can apply the usual perms / ownership / backup options
-    # without learning a separate vocabulary.
+    # without learning a separate vocabulary. AUTH_OPT_KEYS is the
+    # shared (gateway_url, access_id, access_key, access_type, token)
+    # tuple every plugin in this collection respects.
     _VALID_ARGS = frozenset({
         "secret",   # Akeyless secret path
         "dest",     # target file path
         "owner", "group", "mode", "backup", "force",
-        # Auth options (also resolved from env/playbook-level vars)
-        "gateway_url", "access_id", "access_key", "access_type", "token",
-    })
+    } | set(AUTH_OPT_KEYS))
 
     def run(self, tmp: Any = None, task_vars: Any = None) -> Dict[str, Any]:
         task_vars = task_vars or {}
@@ -79,12 +82,7 @@ class ActionModule(ActionBase):
                 loader=self._loader,
                 templar=self._templar,
             )
-            lookup_opts = {
-                k: args[k]
-                for k in ("gateway_url", "access_id", "access_key",
-                          "access_type", "token")
-                if k in args
-            }
+            lookup_opts = {k: args[k] for k in AUTH_OPT_KEYS if k in args}
             values = lookup.run([secret], variables=task_vars, **lookup_opts)
             secret_value = values[0] if values else None
         if secret_value is None:

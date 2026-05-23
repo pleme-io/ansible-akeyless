@@ -73,9 +73,34 @@ def _install_ansible_action_stubs():
     ansible_pkg.plugins = plugins_mod
 
 
+def _install_plugin_helpers_stub():
+    """Action plugin imports AUTH_OPT_KEYS from akeyless_plugin_helpers
+    at module scope. Register the helper under its canonical FQ name."""
+    for name in (
+        "ansible_collections",
+        "ansible_collections.drzln0",
+        "ansible_collections.drzln0.akeyless",
+        "ansible_collections.drzln0.akeyless.plugins",
+        "ansible_collections.drzln0.akeyless.plugins.module_utils",
+    ):
+        sys.modules.setdefault(name, types.ModuleType(name))
+    full = (
+        "ansible_collections.drzln0.akeyless.plugins.module_utils"
+        ".akeyless_plugin_helpers"
+    )
+    sys.modules.pop(full, None)
+    repo_root = Path(__file__).resolve().parents[4]
+    helper_path = repo_root / "plugins" / "module_utils" / "akeyless_plugin_helpers.py"
+    spec = importlib.util.spec_from_file_location(full, helper_path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[full] = mod
+    spec.loader.exec_module(mod)
+
+
 @pytest.fixture
 def action_mod():
     _install_ansible_action_stubs()
+    _install_plugin_helpers_stub()
     spec = importlib.util.spec_from_file_location(
         "secret_to_file_under_test", ACTION_PATH
     )
