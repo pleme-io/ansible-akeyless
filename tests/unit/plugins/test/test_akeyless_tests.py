@@ -14,26 +14,57 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[4]
-TEST_PLUGIN_PATH = REPO_ROOT / "plugins" / "test" / "akeyless.py"
+TEST_PLUGIN_DIR = REPO_ROOT / "plugins" / "test"
+
+# Per-test files (one TestModule per file -- ansible-doc requires
+# this layout for per-test docs to resolve).
+TEST_FILES = {
+    "is_akeyless_path": TEST_PLUGIN_DIR / "is_akeyless_path.py",
+    "is_akeyless_access_id": TEST_PLUGIN_DIR / "is_akeyless_access_id.py",
+    "is_pem_block": TEST_PLUGIN_DIR / "is_pem_block.py",
+    "is_base64": TEST_PLUGIN_DIR / "is_base64.py",
+}
 
 
 @pytest.fixture(scope="module")
 def tests():
-    spec = importlib.util.spec_from_file_location(
-        "akeyless_test_plugins_under_test", TEST_PLUGIN_PATH
-    )
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules["akeyless_test_plugins_under_test"] = mod
-    spec.loader.exec_module(mod)
-    return mod
+    """Merge each per-test file's exports into a single namespace
+    that the existing test cases can reach via `tests.<symbol>`."""
+    merged = type("MergedTestPlugins", (), {})()
+    for name, path in TEST_FILES.items():
+        spec = importlib.util.spec_from_file_location(
+            f"akeyless_test_under_test_{name}", path
+        )
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = mod
+        spec.loader.exec_module(mod)
+        # Expose the test function under its name on the merged namespace.
+        setattr(merged, name, getattr(mod, name))
+    # Synthesise a TestModule that registers ALL test functions for
+    # backward compat with the previous merged file.
+    class _MergedTestModule:
+        def tests(self_):
+            out = {}
+            for n, p in TEST_FILES.items():
+                spec = importlib.util.spec_from_file_location(
+                    f"_merged_tm_{n}", p
+                )
+                m = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(m)
+                out.update(m.TestModule().tests())
+            return out
+    merged.TestModule = _MergedTestModule
+    return merged
 
 
 # ---------------------------------------------------------------------------
-# TestModule registration
+# TestModule registration (across all per-test files)
 # ---------------------------------------------------------------------------
 
 
-def test_test_module_registers_all_tests(tests):
+def test_test_modules_collectively_register_all_tests(tests):
+    """Each per-test file's TestModule registers exactly one test;
+    the merged registration must equal the 4-test set."""
     tm = tests.TestModule()
     registered = tm.tests()
     expected = {
