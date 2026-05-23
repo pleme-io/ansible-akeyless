@@ -1,0 +1,25 @@
+---
+galaxy_info:
+  role_name: akeyless_install_certificate
+  namespace: drzln0
+  author: pleme-io
+  description: >-
+    Fetches a PEM certificate (and optional key) from an Akeyless static
+    secret and installs it on the target host with secure perms. Handles
+    multi-cert bundles via the split_pem_bundle filter, restarts a
+    handler on change, and supports per-host overrides.
+  license: GPL-3.0-or-later
+  min_ansible_version: '2.14'
+  platforms:
+    - name: Any
+      versions: ['all']
+  galaxy_tags:
+    - security
+    - secrets
+    - akeyless
+    - vault
+    - certificate
+    - pki
+    - tls
+
+dependencies: []

@@ -1,0 +1,40 @@
+---
+# Required: Akeyless secret path containing the PEM cert (or bundle).
+akeyless_install_certificate_cert_secret: ""
+
+# Optional: Akeyless secret path containing the matching private key
+# (PEM). When unset, the role installs only the cert (e.g. public
+# trust roots).
+akeyless_install_certificate_key_secret: ""
+
+# Destination paths on the target host. Both default to the systemd-
+# style /etc/ssl layout; override per role-use for non-standard
+# locations (e.g. nginx /etc/nginx/ssl/, vault /etc/vault.d/tls/).
+akeyless_install_certificate_cert_path: /etc/ssl/certs/akeyless-cert.pem
+akeyless_install_certificate_key_path: /etc/ssl/private/akeyless-cert.key
+
+# Cert + key file ownership + mode. Defaults match systemd convention:
+# certs world-readable (644), keys root-only (600).
+akeyless_install_certificate_cert_owner: root
+akeyless_install_certificate_cert_group: root
+akeyless_install_certificate_cert_mode: "0644"
+
+akeyless_install_certificate_key_owner: root
+akeyless_install_certificate_key_group: root
+akeyless_install_certificate_key_mode: "0600"
+
+# Optional: handler name to notify when cert/key changes. Common
+# values: "restart nginx", "restart vault", "reload haproxy".
+# Leave unset to skip notification.
+akeyless_install_certificate_notify: ""
+
+# Authentication options. Each falls back to its AKEYLESS_* env var.
+akeyless_install_certificate_gateway_url: "{{ lookup('env', 'AKEYLESS_GATEWAY_URL') | default('https://api.akeyless.io', true) }}"
+akeyless_install_certificate_access_id: "{{ lookup('env', 'AKEYLESS_ACCESS_ID') | default(omit, true) }}"
+akeyless_install_certificate_access_key: "{{ lookup('env', 'AKEYLESS_ACCESS_KEY') | default(omit, true) }}"
+akeyless_install_certificate_access_type: "{{ lookup('env', 'AKEYLESS_ACCESS_TYPE') | default('access_key', true) }}"
+akeyless_install_certificate_token: "{{ lookup('env', 'AKEYLESS_TOKEN') | default(omit, true) }}"
+
+# When true (default), no_log redacts cert/key values from playbook
+# output during the install tasks.
+akeyless_install_certificate_no_log: true

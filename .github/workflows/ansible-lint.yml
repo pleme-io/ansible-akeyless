@@ -1,0 +1,36 @@
+name: ansible-lint
+
+# Lints the playbook + role surface that ships in the collection
+# tarball (playbooks/, roles/). Generated plugins/modules/ have
+# ansible-test sanity in a separate workflow; this one focuses on
+# playbook-style content where ansible-lint is the right tool.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'playbooks/**'
+      - 'roles/**'
+      - '.github/workflows/ansible-lint.yml'
+  pull_request:
+    paths:
+      - 'playbooks/**'
+      - 'roles/**'
+      - '.github/workflows/ansible-lint.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main
+        with:
+          # Default profile rejects empty playbooks + missing role meta;
+          # 'basic' is the right floor for a generated collection where
+          # some modules don't yet have integration playbook content.
+          # Bump to 'production' once every playbook is hand-tuned.
+          args: "--profile=basic playbooks/ roles/"
