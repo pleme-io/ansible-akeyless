@@ -4,4 +4,7 @@ jobs:
   check:
     uses: pleme-io/substrate/.github/workflows/ansible-collection-ci.yml@main
     with:
-      openapi-spec-url: https://raw.githubusercontent.com/akeylesslabs/akeyless-go/master/api/openapi.yaml
+      # pleme-io fork carries the full Akeyless V2 spec (604 ops vs
+      # 256 on akeylesslabs/akeyless-go master). Modules generated
+      # against the full surface need the same source for CI checks.
+      openapi-spec-url: https://raw.githubusercontent.com/pleme-io/akeyless-go/main/api/openapi.yaml
