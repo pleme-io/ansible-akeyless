@@ -52,7 +52,7 @@ jobs:
           python -m pytest tests/unit/ tests/mock/ tests/sanity/ -q -n auto
 
       - name: Upload coverage XML as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-py${{ matrix.python }}
           path: coverage.xml
