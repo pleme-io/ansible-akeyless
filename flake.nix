@@ -2,10 +2,9 @@
   description = "drzln0.akeyless — auto-generated Ansible collection for Akeyless Vault";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.follows = "substrate/nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
     substrate.url = "github:pleme-io/substrate";
-    substrate.inputs.nixpkgs.follows = "nixpkgs";
     # tatara-lisp ships the `tatara-script` binary that every substrate
     # ansible-collection app is now written against. We pin it explicitly
     # so CI runners + local dev resolve identically (substrate's helper
