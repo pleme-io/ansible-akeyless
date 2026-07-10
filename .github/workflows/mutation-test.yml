@@ -39,10 +39,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.13
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          # Pinned below 3.13 deliberately: mutmut's cache backend
+          # (Pony ORM) cannot decompile Python 3.13 bytecode --
+          # `mutmut results`/`mutmut show` crash with "QueryResultIterator
+          # object is not iterable". 3.12 doesn't hit this. See the
+          # `mutation` extra comment in pyproject.toml for the full story
+          # (also why this is pinned to mutmut 2.x, not 3.x).
+          python-version: '3.12'
 
       - name: Install uv
         run: |
