@@ -38,7 +38,7 @@ mutation = [
     # 3.13 bytecode (`mutmut results`/`mutmut show` crash with
     # "QueryResultIterator object is not iterable"). Python 3.12 does
     # not hit this -- see python-version in mutation-test.yml.
-    "mutmut>=2.5,<3",
+    "mutmut>=2.5,<4",
     "coverage>=7.0",
 ]
 
