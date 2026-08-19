@@ -50,10 +50,13 @@ jobs:
           # (also why this is pinned to mutmut 2.x, not 3.x).
           python-version: '3.12'
 
+      # This was the last pipe-a-remote-script-into-a-shell in the fleet's
+      # workflows: an unpinned third-party installer fetched and executed at job
+      # time, which is exactly what the hermetic supply-chain rule exists to
+      # stop. setup-uv is what python-gate already uses, so this is the fleet's
+      # existing answer rather than a new one.
       - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+        uses: astral-sh/setup-uv@v3
 
       - name: Install dependencies (incl. mutmut extras)
         run: |
@@ -66,33 +69,24 @@ jobs:
           # mutation. Verify green first.
           .venv/bin/python -m pytest tests/unit tests/sanity -q --no-header
 
-      - name: Run mutmut sweep
+      # The sweep and its report are one tool now. Both behaviours that look
+      # like bugs are preserved and explained in the tlisp: mutmut exits
+      # non-zero when mutations SURVIVE and that must not fail the job, and the
+      # report APPENDS to the shared step summary rather than truncating what
+      # earlier steps wrote there.
+      # Deliberately NOT `if: always()`. The merged step inherits the SWEEP's
+      # gating, not the report's: the step above exists to prove the baseline is
+      # green, and mutating against a red baseline reports every real failure as
+      # a surviving mutation. The old report carried always() only because it
+      # was a separate step that had to survive the sweep's non-zero exit — the
+      # tlisp handles that internally now.
+      - name: Run mutmut sweep and report
         id: mutmut
-        run: |
-          PATHS_OVERRIDE="${{ inputs.paths }}"
-          if [ -n "$PATHS_OVERRIDE" ]; then
-            echo "Overriding paths_to_mutate: $PATHS_OVERRIDE"
-            .venv/bin/mutmut run --paths-to-mutate "$PATHS_OVERRIDE" || true
-          else
-            # Use the paths_to_mutate from pyproject.toml [tool.mutmut].
-            .venv/bin/mutmut run || true
-          fi
-          # mutmut exits non-zero on surviving mutations; we capture
-          # the result rather than fail the workflow so the report
-          # uploads.
-
-      - name: Generate mutation report
-        if: always()
-        run: |
-          # Score table for the run summary.
-          {
-            echo "## Mutation testing report"
-            echo ""
-            .venv/bin/mutmut results || true
-            echo ""
-            echo "Inspect a specific surviving mutation with:"
-            echo '  `mutmut show <id>`'
-          } >> "$GITHUB_STEP_SUMMARY"
+        uses: pleme-io/actions/tatara-script@main
+        with:
+          script-file: tools/mutation-sweep.tlisp
+        env:
+          PATHS: ${{ inputs.paths }}
 
       - name: Export full mutmut state as artifact
         if: always()
