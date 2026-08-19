@@ -1,0 +1,70 @@
+;; mutation-sweep — run mutmut and write its score into the run summary.
+;;
+;; DESHELLIFIED 2026-08-19 from .github/workflows/mutation-test.yml.
+;;
+;; TWO BEHAVIOURS ARE DELIBERATE AND WERE PRESERVED EXACTLY, because both look
+;; like bugs to anyone reading quickly:
+;;
+;;   * mutmut exits NON-ZERO when mutations survive, and that must not fail the
+;;     job. The report is the deliverable; failing before it uploads would throw
+;;     away the only artifact the run exists to produce. The shell said this with
+;;     `|| true`; here the status is captured and deliberately not propagated.
+;;   * the baseline suite is verified green by the workflow BEFORE this runs.
+;;     Mutation testing against a red baseline reports every real failure as a
+;;     surviving mutation, so the score would be noise. That check stays in the
+;;     workflow where it can gate this step.
+;;
+;; PATHS (optional) overrides `[tool.mutmut] paths_to_mutate` from pyproject.
+
+(define paths-override (string-trim (env-get "PATHS" "")))
+
+(define (mutmut-argv)
+  (cond
+    ((equal? paths-override "") (list ".venv/bin/mutmut" "run"))
+    (else (list ".venv/bin/mutmut" "run" "--paths-to-mutate" paths-override))))
+
+(define (sweep)
+  (cond
+    ((not (equal? paths-override ""))
+      (log-info (string-append "overriding paths_to_mutate: " paths-override)))
+    (else
+      (log-info "using paths_to_mutate from pyproject.toml [tool.mutmut]")))
+  ;; proc:run, not proc:must — a non-zero exit here is the EXPECTED signal that
+  ;; mutations survived, not a failure to report.
+  (proc:run (mutmut-argv)))
+
+(define (results-text)
+  (let ((r (proc:run (list ".venv/bin/mutmut" "results"))))
+    (cond
+      ((erro:err? r) "(mutmut results unavailable)")
+      (else (stdout-of (erro:value r))))))
+
+(define (summary-lines)
+  (list
+    "## Mutation testing report"
+    ""
+    (results-text)
+    ""
+    "Inspect a specific surviving mutation with:"
+    "  `mutmut show <id>`"))
+
+(sweep)
+
+(let ((path (env-get "GITHUB_STEP_SUMMARY" "")))
+  (cond
+    ((equal? path "")
+      ;; Runnable outside CI: print instead of silently writing nowhere.
+      (reduce (fn (a l) (print-line l) a) 0 (summary-lines)))
+    (else
+      ;; APPEND, never write. The shell used `>>`, and GITHUB_STEP_SUMMARY is a
+      ;; shared file every step in the job writes into — truncating it would
+      ;; silently delete whatever earlier steps had already reported, which
+      ;; looks like those steps never ran. tatara-lisp has `write-file` and no
+      ;; append primitive, so the existing content is read back and re-written
+      ;; with ours on the end.
+      (let ((existing (if (path-exists? path) (read-file path) "")))
+        (write-file path
+          (string-append existing (string-join "\n" (summary-lines)) "\n")))
+      (log-info "mutation report appended to the run summary"))))
+
+(exit 0)
