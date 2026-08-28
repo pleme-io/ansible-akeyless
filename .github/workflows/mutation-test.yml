@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Set up Python 3.12
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           # Pinned below 3.13 deliberately: mutmut's cache backend
           # (Pony ORM) cannot decompile Python 3.13 bytecode --
