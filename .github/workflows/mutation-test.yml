@@ -56,7 +56,7 @@ jobs:
       # stop. setup-uv is what python-gate already uses, so this is the fleet's
       # existing answer rather than a new one.
       - name: Install uv
-        uses: astral-sh/setup-uv@v3
+        uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies (incl. mutmut extras)
         run: |
